@@ -2,6 +2,18 @@
 
 Source: https://developers.google.com/style/code-syntax
 
+Contents:
+
+- Best practices
+- Format a command
+- Command prompt
+- Optional arguments
+- Mutually exclusive arguments
+- Arguments that can repeat
+- Optional arguments in click-to-copy commands
+- Output from commands
+- Command-line terminology
+
 This page shows how to document command-line commands and their arguments. For more information about formatting code that appears in text, placeholders, and code samples, see the following links:
 
 - Code in text

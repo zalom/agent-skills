@@ -2,6 +2,13 @@
 
 Source: https://developers.google.com/style/images
 
+Contents:
+
+- Create and save images
+- Text associated with images
+- High-resolution images
+- Layout of images on a page
+
 Use images only when they provide useful visual explanations of information that is otherwise difficult to express with words. For screenshots, be discreet. Only capture UIs that are important to the discussion.
 
 ## Create and save images

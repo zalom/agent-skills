@@ -2,6 +2,18 @@
 
 Source: https://developers.google.com/style/examples
 
+Contents:
+
+- Example domain names
+- Example email addresses
+- Example person names
+- Example company names
+- Example phone numbers
+- Example IP addresses
+- Example street addresses
+- Example project names
+- Example service account IDs
+
 Don't use real domain names, email addresses, or people's names in your examples. Don't reveal personally identifiable information (PII), such as domain names, email addresses, phone numbers, people's names, project names, or credit card numbers. You can provide imaginary (fictitious) examples or use placeholders, like `USER_ID` or `EMAIL_ADDRESS`.
 
 ## Example domain names

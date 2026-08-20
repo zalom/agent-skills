@@ -2,6 +2,18 @@
 
 Source: https://developers.google.com/style/headings
 
+Contents:
+
+- Heading and title text
+- ML model monitoring overview
+- Configure notebook settings
+- Heading and title format
+- Estimate costs
+- Migrate VMs to Compute Engine
+- Migrate VMs to Compute Engine
+- Refer to a group of sections
+- Views in the data preparation editor
+
 Use sentence case for headings and titles. Use descriptive headings and titles because they help a reader navigate their browser and the page. It's easier to jump between pages and sections of a page if the headings and titles are unique.
 
 ## Heading and title text

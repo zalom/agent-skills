@@ -2,6 +2,17 @@
 
 Source: https://developers.google.com/style/ui-elements
 
+Contents:
+
+- Focus on the task
+- Format names of UI elements
+- Use appropriate capitalization
+- Refer to UI elements
+- Terminology and usage
+- Press and type keyboard keys
+- Prepositions
+- Verbs in procedures
+
 ## Focus on the task
 
 When practical, state instructions in terms of what the reader should accomplish, rather than focusing on the widgets and gestures. By avoiding reference to UI elements, you help the reader understand the purpose of an instruction, and it can help future-proof procedures.

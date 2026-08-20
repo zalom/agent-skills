@@ -2,6 +2,37 @@
 
 Source: https://developers.google.com/style/word-list
 
+Contents:
+
+- Label definitions
+- Numbers and Symbols
+- A
+- B
+- C
+- D
+- E
+- F
+- G
+- H
+- I
+- J
+- K
+- L
+- M
+- N
+- O
+- P
+- Q
+- R
+- S
+- T
+- U
+- V
+- W
+- X
+- Y
+- Z
+
 This word list covers style and usage guidelines specific to developer documentation. If a term isn't listed here, check other editorial resources, including the preferred dictionary, Merriam-Webster. If Merriam-Webster lists multiple spellings, use the first form listed (the most common spelling) — e.g., for *cancel*, the first listed past tense is *canceled*, so that's more common than *cancelled*.
 
 For technical definitions, check the authoritative documentation on the topic. Terminology decisions (how/when to define or contextualize terms) require judgment based on product area, audience, and prevailing convention. Related pages: Jargon, Inclusive language, Write for a global audience, Hyphens, Capitalization. It's fine to deviate from this guidance if it serves readers better (see Break the rules).
@@ -659,6 +690,8 @@ For technical definitions, check the authoritative documentation on the topic. T
 - **would** — Avoid using. Instead, use *can* where possible. See also can, could, may, might, must, and should. For information about clarifying who's performing an action, see Active voice. For information about tenses, see Present tense.
 
 ## X
+
+The source guide has no X entries.
 
 ## Y
 - **ymmv** — Don't use. Instead, use something like *Your results might vary*.

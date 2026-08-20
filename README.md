@@ -16,6 +16,8 @@ ln -s /path/to/writing-style-skill ~/.claude/skills/writing-style
 
 Restart the agent session so it picks up the new skill.
 
+The symlink name matters: the harness requires a skill's directory name to match the `name` field in its `SKILL.md` frontmatter, which is `writing-style`. This repository is called `writing-style-skill` on purpose, to read clearly as a standalone project on its own, so the symlink target name carries that translation. Do not rename the symlink.
+
 ## The layer model
 
 ```
@@ -30,6 +32,15 @@ An agent reads `references/overrides.md` for anything it covers. For everything 
 ## Make it yours
 
 Replace the contents of `references/overrides.md` with your own rules. Nothing else in the skill needs to change: the base layer and the routing in `SKILL.md` stay as they are, and your overrides still win on every conflict.
+
+The pronoun rule in `references/overrides.md` (known gender first, *they* or *them* only when the number of people is unknown) is a deliberate choice by this repository's owner, replacing the gender-neutral default most style guides recommend. Change it in your own copy if it does not fit your context.
+
+## Machine-checkable companions
+
+This skill is judgment applied by an agent, not a linter. Two open-source tools check overlapping ground mechanically, in CI or on a keystroke, and complement it rather than replace it:
+
+- [Vale](https://vale.sh/) with the [`errata-ai/Google`](https://github.com/errata-ai/Google) package runs this same style guide as a set of runnable rules.
+- [proselint](https://github.com/amperser/proselint) checks general usage problems that overlap with parts of this guide.
 
 ## Where the base layer came from
 

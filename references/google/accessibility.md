@@ -2,6 +2,24 @@
 
 Source: https://developers.google.com/style/accessibility
 
+Contents:
+
+- General dos and don'ts
+- Ease of reading
+- Headings and titles
+- Links
+- Lists
+- Images
+- Videos, recordings, and GIFs
+- Buttons and icons
+- UI navigation
+- Tables
+- Interactive elements
+- Forms
+- Custom CSS and JavaScript
+- Document rendering — test your doc under all these conditions
+- More resources
+
 15% of the world's population (1B+ people) has an accessibility need; accessible writing improves the experience for all readers. See also: Write for a global audience, Write inclusive documentation, Voice and tone.
 
 ## General dos and don'ts

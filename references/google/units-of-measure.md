@@ -2,6 +2,17 @@
 
 Source: https://developers.google.com/style/units-of-measure
 
+Contents:
+
+- Spaces in units of measurement
+- Ranges of numbers with units
+- Hyphens with multiplied units
+- Use _k_ to indicate thousands
+- Currency
+- Rates
+- Decimal and binary units
+- More resources
+
 Put a nonbreaking space (`&nbsp;`) between the number and the unit.
 
 ## Spaces in units of measurement

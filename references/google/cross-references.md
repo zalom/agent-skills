@@ -2,6 +2,20 @@
 
 Source: https://developers.google.com/style/cross-references
 
+Contents:
+
+- Choose links selectively
+- Write descriptive link text
+- Write link introductions ("For more information")
+- Clarify the purpose of a link
+- Explain unexpected link behavior
+- Open links in the current tab
+- Don't use external link icons
+- Punctuation around link text
+- Quotation marks and italics
+- Avoid external links in your documentation navigation
+- Style link text
+
 In general, cross-references link to nonessential information that adds to the reader's understanding.
 
 When used well, cross-references help readers navigate and understand documentation. But cross-references can easily become disruptive. The guidelines on this page help you to minimize disruption while providing cross-references that help your readers.

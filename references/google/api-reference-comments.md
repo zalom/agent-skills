@@ -2,6 +2,13 @@
 
 Source: https://developers.google.com/style/api-reference-comments
 
+Contents:
+
+- Documentation basics
+- Classes, interfaces, structs
+- Members
+- Methods
+
 When you're documenting an API, provide a complete API reference, typically generated from source code using document comments that describe all public classes, methods, constants, and other members.
 
 Use the basic guidelines in this document as appropriate for a given programming language. This document doesn't specify how to mark up document comments.

@@ -2,6 +2,23 @@
 
 Source: https://developers.google.com/style/numbers
 
+Contents:
+
+- Ordinal numbers
+- Numbers as words
+- Numbers as numerals
+- Numbers as Roman numerals
+- Fractions
+- Percentages
+- Ranges of numbers
+- Suspended hyphens
+- Currency
+- Commas and decimal points in numbers
+- Dimensions
+- Exponents
+- Accompany numerical concepts with real-world practical implications
+- Mathematical notation and visuals
+
 ## Ordinal numbers
 
 Spell out all ordinal numbers in text.

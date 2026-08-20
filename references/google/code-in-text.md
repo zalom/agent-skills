@@ -2,6 +2,17 @@
 
 Source: https://developers.google.com/style/code-in-text
 
+Contents:
+
+- Some specific items to put in code font
+- Items to put in ordinary (non-code) font
+- Code in UI elements
+- Items that are sometimes in code font
+- Method names
+- HTTP status codes
+- Grammatical treatment of code elements
+- Linking API terms in Android
+
 In ordinary text sentences (as opposed to, say, code samples), use code font to mark up most things that have anything to do with code. Code font helps to clarify for your reader which text refers to an entity in these ways:
 
 - Signals to your reader that the text is meant to be entered verbatim.

@@ -2,6 +2,12 @@
 
 Source: https://developers.google.com/style/dates-times
 
+Contents:
+
+- Express times
+- Express dates
+- Express divisions of the year
+
 Expressing dates and times in a clear and unambiguous way helps support writing for a global audience and reduces confusion.
 
 ## Express times

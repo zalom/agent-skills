@@ -2,6 +2,18 @@
 
 Source: https://developers.google.com/style/lists
 
+Contents:
+
+- List or table?
+- Types of lists
+- Multiple paragraph list items
+- Introductory sentences for lists
+- Unusual list numbering
+- Sub-steps in a numbered procedure
+- Parallel syntax
+- Capitalization and end punctuation
+- Comma-separated lists
+
 ## List or table?
 
 Tables and lists are both ways to present a set of similarly structured items. Sometimes it's not obvious when to choose one presentation over the other. To decide which presentation to use, see List or table? on the Tables page.

@@ -2,6 +2,11 @@
 
 Source: https://developers.google.com/style/placeholders
 
+Contents:
+
+- Placeholders
+- Explain placeholders
+
 This page explains how to format placeholders in commands, code samples, and text strings. This page doesn't explain how to implement visual styling for placeholders, but it does show examples of how Google developer documentation style renders placeholders as visually distinct from other text.
 
 For more information about formatting code, command-line syntax, and code samples, see the following links:

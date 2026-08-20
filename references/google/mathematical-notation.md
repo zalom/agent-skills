@@ -2,6 +2,14 @@
 
 Source: https://developers.google.com/style/mathematical-notation
 
+Contents:
+
+- Use HTML entities for mathematical symbols
+- Format mathematical notation
+- Notation as words
+- Tools for complex or multiline equations
+- More resources
+
 This page describes how to format common mathematical notation such as exponents, expressions, equations, operators, and variables in documentation. Formatting best practices can help ensure that your documentation is compatible with assistive technologies and renders accurately.
 
 For general information about using and formatting numbers, see Numbers.

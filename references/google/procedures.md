@@ -2,6 +2,21 @@
 
 Source: https://developers.google.com/style/procedures
 
+Contents:
+
+- Introductory sentences
+- Single-step procedures
+- Sub-steps in numbered procedures
+- Order of multiple components in a step
+- Multi-action procedures
+- Multiple procedures for the same task
+- Repetitive procedures
+- Optional steps
+- Steps that say where to complete a task
+- Steps with goals
+- Steps with results or justifications
+- Summary of guidelines for writing procedures
+
 A procedure is a sequence of numbered steps for accomplishing a task. For information about lists of items that aren't part of a procedure, see the Lists page.
 
 ## Introductory sentences

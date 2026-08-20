@@ -21,7 +21,7 @@ Write for a reader who is technically strong but reads English as a second langu
 | No rare everyday words | Choose the common word over the uncommon one. |
 | Words over symbols | Write in words. Use a math symbol only when words genuinely fail. Exception: a comparison table may use symbols with a legend below it. |
 | Fewer abbreviations | Fine for well-known concepts. Spell out new or uncommon ones. |
-| Analogies match the domain | An analogy must come from the domain under discussion. Never import one from an unrelated field. |
+| Analogies match the domain | Cross-domain engineering-law analogies (effort and flow across electronics, fluids, and thermal systems, for example Flux equals Potential divided by Resistance) are the favourite kind, provided the analogy comes from the domain under discussion. Never import one from an unrelated field. |
 | Short sentences, active voice | Prefer concrete examples over abstract phrasing. |
 
 ## Pronouns and punctuation
@@ -38,7 +38,7 @@ No em dash and no en dash anywhere in output, ever. Use a hyphen, a comma, a per
 | Terms mean what the field defines | Use engineering terms the way the field uses them. Never add meaning the source did not state. |
 | Use the system's own vocabulary | Use the construct names the system under discussion already has. Never invent a synonym layer on top of a system's own terms. |
 | Write for three readers at once | Assume the room holds the implementing engineer, an engineering manager who knows the system, and a client who wants the feature working. Lead with what it means for the client; stay technically correct for the engineering manager. |
-| Concrete register | Speak in the concrete technical voice of a working engineer or manager. No invented metaphors. Never call a normal professional baseline remarkable. |
+| Concrete register | Speak in the concrete technical voice of software engineers, engineering managers, and business managers of 2000 to 2020. No invented metaphors. Never call a normal professional baseline remarkable. |
 | No process narration in deliverables | A document carries only its resulting content, never its editing history. Do not write "corrected after review" or similar. Apply corrections silently. |
 | Explain a mechanism before using it | Before relying on a system mechanism or a specialized term, state what it is, who decides it, and when or how it applies. |
 
@@ -67,8 +67,16 @@ No em dash and no en dash anywhere in output, ever. Use a hyphen, a comma, a per
 
 | Rule | Apply it this way |
 |---|---|
-| No AI tells in user-facing documents | README files, docs, AGENTS.md files, and product copy carry no em dashes and no AI-sounding phrasing. Rewrite with commas, periods, parentheses, and colons. |
+| No AI tells in user-facing documents | README files, docs, AGENTS.md files, and product copy carry no em dashes and no AI-sounding phrasing. Rewrite with commas, periods, parentheses, and colons. Internal artifacts are exempt: store files and intents can carry them. |
 | No "AI-powered" announcements | Keep the value statement in product copy; drop the tell. |
 | No em dashes in git surfaces | Commit messages, tag names, and release titles use hyphens. Check the diff for a newly added em dash before finishing; it is easy to miss on review. |
 | No AI attribution | No Co-Authored-By line and no Generated-with footer in commits, tags, releases, or pull requests. |
 | Terse authored output | Keep authored content and narration terse. Investigation noise belongs elsewhere, not in the final document. |
+
+## Withdrawn: ASD-STE100
+
+A 2026 trial mandated a numbered background-first checklist (context points before stating a problem, then points describing it), based on ASD-STE100 Simplified Technical English. The owner withdrew it. Do not reintroduce the numbered scaffolding. Two of its practices survive as ordinary habits, not as a mandate: give context before the problem, and define what a named thing is.
+
+## Where SKILL.md already carries the rule
+
+Five rules in this file also appear in `SKILL.md`'s always-on core: the em-dash and en-dash ban, the pronoun rule, tables for work-item listings, no AI attribution, and reporting what was actually done. For those five, the wording in `SKILL.md` is authoritative; this file states them for completeness only.
