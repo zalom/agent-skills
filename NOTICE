@@ -1,0 +1,14 @@
+NOTICE
+
+The content under `references/google/` is adapted from the Google
+developer documentation style guide, https://developers.google.com/style,
+used under the Creative Commons Attribution 4.0 International License:
+https://creativecommons.org/licenses/by/4.0/
+
+Changes made: the guide's pages were converted from HTML to Markdown,
+condensed, and reorganized into one file per page under
+`references/google/`. Each vendored page keeps its own `Source:` URL
+line pointing at the live page it was adapted from.
+
+This project is not affiliated with, sponsored by, or endorsed by
+Google. Google does not endorse this repository or its contents.
