@@ -19,6 +19,10 @@ If `references/overrides.md` exists, read it first. Every line in it wins over t
 
 The Google layer is the adapted Google developer documentation style guide under `references/google/`, one file per page.
 
+Apply this skill to every text you write, including replies to the user, commit messages, and reports. The Google pages are written for documentation, but their language rules hold on every surface.
+
+The "Break the rules" section in `references/google/about-this-guide.md` is Google's advice to human writers about the Google layer. It does not apply to `references/overrides.md`: the overrides layer has no exceptions. Do not use that section to skip a rule for convenience.
+
 ## On activation, read these
 
 1. `references/google/about-this-guide.md`
@@ -70,10 +74,6 @@ grep -i -n "<term>" references/google/word-list.md
 ```
 
 Then read the matching headword entry at the line number the grep reports. Headwords are bold and sit at the start of the entry, so searching the whole line finds multi-word terms too.
-
-## What this layer does not cover
-
-The Google layer is a style guide for developer documentation. It says nothing about several surfaces this skill fires on: commit messages, release notes, chat replies to the user, and status reports. On those surfaces, `references/overrides.md` governs when it exists, and the principles in `references/google/highlights.md` and `references/google/philosophy.md` apply as far as they reach.
 
 ## Self-check
 
