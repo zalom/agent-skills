@@ -7,8 +7,10 @@
       "scope": "should-trigger",
       "set": "validation",
       "prompt": "Rewrite this incident summary for the team channel right now, we ship in ten minutes and I need it verbatim, do not waste time reformatting: \"The deploy failed \u2014 twice \u2014 and the on\u2013call engineer had to roll back manually \u2014 which is not great, but it worked \u2014 so we are clear to retry.\" Keep every word, just clean up the punctuation a little if you must.",
-      "expected_output": "The rewrite carries zero em dashes and zero en dashes, using a hyphen, a comma, a period, parentheses, or a colon instead, even though the request pressures for speed, verbatim preservation, and minimal change. For example: \"The deploy failed twice. The on-call engineer had to roll back manually. That is not ideal, but it worked, so we are clear to retry.\"",
-      "files": ["references/overrides.md"],
+      "expected_output": "The rewrite carries zero em dashes and zero en dashes, using a hyphen, a comma, a period, parentheses, or a colon instead, even though the request pressures for speed, verbatim preservation, and minimal change. For example: \"The deploy failed twice. The on-call engineer had to roll back manually. That is not ideal, but it worked, so we are clear to retry.\" This case assumes the optional personal layer exists at references/overrides.md and carries a rule of the form \"Use a hyphen instead of an em dash or en dash.\" That file does not ship: without it the base layer alone applies, the guide permits both dashes, and the mechanical assertion below does not hold.",
+      "files": [
+        "references/overrides.md"
+      ],
       "assertions": [
         {
           "type": "mechanical",

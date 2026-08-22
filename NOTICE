@@ -13,6 +13,10 @@ This repository combines two separately licensed parts.
    International License, https://creativecommons.org/licenses/by/4.0/.
    See LICENSE-CC-BY-4.0.
 
+SKILL.md is licensed under the MIT License, and its escalation order section
+quotes and adapts the reference hierarchy from the Google guide page above,
+under the same CC BY 4.0 terms.
+
 Changes made to the Google material: the pages were converted from HTML to
 Markdown, adapted, and reorganized into one file per page under
 references/google/. Each page keeps its own Source: URL line pointing at the
