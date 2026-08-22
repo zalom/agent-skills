@@ -21,7 +21,7 @@ The Google layer is the adapted Google developer documentation style guide under
 
 Apply this skill to every text you write, including replies to the user, commit messages, and reports. The Google pages are written for documentation, but their language rules hold on every surface.
 
-The "Break the rules" section in `references/google/about-this-guide.md` is Google's advice to human writers about the Google layer. It does not apply to `references/overrides.md`: the overrides layer has no exceptions. Do not use that section to skip a rule for convenience.
+Follow the overrides layer and the Google layer as written. The only permitted departure from a Google rule is a line in `references/overrides.md`.
 
 ## On activation, read these
 
