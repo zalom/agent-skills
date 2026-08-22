@@ -1,4 +1,4 @@
-# Word List (Full A–Z Reference)
+# Word list
 
 Source: https://developers.google.com/style/word-list
 

@@ -8,61 +8,78 @@ description: >
   "tell me what you found," "clean this up," or "write the announcement."
   Applies to both authored documents and the agent's own communication with
   the user.
-license: CC-BY-4.0
+license: MIT
 ---
 
 # Writing style
 
 ## Layer rule
 
-Check `references/overrides.md` first. It is the personal layer and wins on every conflict. Fall back to the matching page in `references/google/` for anything the overrides layer does not cover. When the two disagree, the overrides layer wins.
+If `references/overrides.md` exists, read it first. Every line in it wins over the Google layer. If it does not exist, the Google layer alone applies.
 
-When both the overrides layer and the matching Google page stay silent, follow the escalation order stated in `references/google/about-this-guide.md`:
+The Google layer is the adapted Google developer documentation style guide under `references/google/`, one file per page.
 
-1. Spelling: the first-listed spelling in Merriam-Webster.
-2. Technical style: the Microsoft Writing Style Guide.
-3. Anything left: established usage.
+## On activation, read these
 
-## Always-on core
+1. `references/google/about-this-guide.md`
+2. `references/google/highlights.md`
+3. `references/google/philosophy.md`
+4. `references/overrides.md`, if that file exists
 
-Apply these even when no reference file is opened.
+Everything else is opened on demand through the routing table below.
 
-- No em dash and no en dash, ever. Use a hyphen, a comma, a period, parentheses, or a colon.
-- Pronouns follow the subject's known gender: he, she, it. Use *they* or *them* only when the number of people is unknown.
-- Plain words for a technically strong, non-native reader. No idioms, no slang, no hype. Standard technical vocabulary needs no gloss.
-- Short sentences, active voice, concrete examples over abstract phrasing.
-- Tables for listings of work items and for comparisons with several factors. Bullets only when a table does not fit, at most three to five.
-- No AI tells and no AI attribution in user-facing text, commit messages, tags, releases, or pull requests.
-- After doing work, report what was actually done: effective changes, outcomes, test results. Never stop at "done."
-- These are guidelines, not rules. Depart from any of them when doing so genuinely improves the content, and stay consistent within a document once you depart.
+## Escalation order
+
+When neither the overrides layer nor a Google page settles the question, `references/google/about-this-guide.md` states the order to follow:
+
+1. **Project-specific style.** Style guidance specific to the project or product, including exceptions to this guide and terms relevant only to that product.
+2. **This style guide.** Follow it when project-specific guidance is not explicit.
+3. **Third-party references**, by the type of question:
+
+| Type of question | Third-party reference |
+|---|---|
+| Spelling | Merriam-Webster. |
+| Nontechnical style | The Chicago Manual of Style, 17th edition (subscription required). |
+| Technical style | The Microsoft Writing Style Guide. Consider whether the guidance applies; some of it applies only to Microsoft products and interfaces. |
+
+At multiple stages of this hierarchy it can help to look to established usage: search the project's own documentation, or check a broad language corpus. This is an aid at any stage, not a further tier below the third-party references.
 
 ## Routing table
 
-Open the matching file at `references/google/<name>.md` when the always-on core is not enough for the task at hand.
+Open `references/google/<name>.md` when the pages loaded on activation do not settle the question.
 
 | Category | Open this when... | Files |
 |---|---|---|
-| Introduction | Orienting to the guide itself, or explaining its purpose and philosophy. `whats-new.md` is a 1244-line changelog of edits to the guide, not a source of rules: open it only for questions about what changed and when | about-this-guide, highlights, whats-new, philosophy |
-| Key resources | Looking up a specific term's usage, or deciding how to format inline code, UI text, or emphasis. `word-list.md` runs to about 24,000 tokens: grep the term first, for example `grep -i "^- \*\*<term>" references/google/word-list.md`, rather than opening the whole file | word-list, product-names, text-formatting |
-| General principles | Writing for accessibility, avoiding overclaiming, writing for a non-native or global audience, keeping text from going stale, or handling third-party material | accessibility, excessive-claims, future-features, global-audience, inclusive-documentation, jargon, prescriptive-documentation, third-party-content, timeless-documentation, voice-and-tone |
-| Language and grammar | Deciding tense, voice, articles, capitalization, contractions, pluralization, possessives, prepositions, pronouns, "you" versus "the user," sentence structure, or verb choice in reference docs | abbreviations, active-voice, anthropomorphism, articles, capitalization, contractions, pluralization, possessives, prepositions, present-tense, pronouns, second-person-and-first-person, sentence-structure, reference-verbs |
-| Punctuation | Placing a comma, colon, semicolon, ellipsis, parenthesis, period, quotation mark, or slash. The whole `references/google/` layer is vendored source text that freely uses the banned em dash (821 occurrences across the layer, most in `references/google/dashes.md` and `references/google/hyphens.md`): the overrides layer governs actual output regardless of what a vendored page demonstrates | colons, commas, dashes, ellipses, hyphens, parentheses, periods-and-end-punctuation, quotation-marks, semicolons, slashes |
-| Formatting and organization | Formatting dates, times, phone numbers, numbers, units; structuring headings, lists, paragraphs, procedures, tables, notices, footnotes, or images; using italics or mathematical notation | dates-times, format-examples, images, footnotes, headings, italics-terms, lists, mathematical-notation, notices, numbers, paragraph-structure, phone-numbers, procedures, tables, units-of-measure |
-| Linking | Writing cross-references or link text, or linking to a heading | cross-references, headings-targets |
-| Computer interfaces | Documenting an API, code sample, command-line syntax, placeholder, UI element, or code mentioned inline in prose | api-reference-comments, code-in-text, code-samples, code-syntax, placeholders, ui-elements |
-| HTML and CSS | Choosing between Markdown and HTML, or formatting HTML and semantic tags | semantic-tagging, html-formatting, markdown |
-| Names and naming | Choosing example domains and names, filenames, or handling trademarks | examples, filenames, trademarks |
+| Guide changelog | You need to know what changed in the guide and when. This is a changelog of edits to the guide, not a source of rules. | whats-new |
+| Key resources | You are checking one term's spelling, capitalization, or usage; naming a product; or deciding code font, bold, or italics for text inside a sentence. | word-list, product-names, text-formatting |
+| General principles | You are writing alt text or otherwise writing for accessibility, checking a claim for overstatement, mentioning an unreleased feature, writing for readers who translate or read English as a second language, choosing inclusive wording, deciding whether a term counts as jargon, writing prescriptive guidance, quoting or linking material you did not write, removing wording that will go stale, or choosing the voice and tone of a page. | accessibility, excessive-claims, future-features, global-audience, inclusive-documentation, jargon, prescriptive-documentation, third-party-content, timeless-documentation, voice-and-tone |
+| Language and grammar | You are choosing tense, voice, an article, capitalization, a contraction, a plural, a possessive, a preposition, a pronoun, "you" against "the user", sentence order, an abbreviation, whether to describe a system as if it were a person, or the verb that describes an API element. | abbreviations, active-voice, anthropomorphism, articles, capitalization, contractions, pluralization, possessives, prepositions, present-tense, pronouns, second-person-and-first-person, sentence-structure, reference-verbs |
+| Punctuation | You are placing a comma, colon, semicolon, ellipsis, parenthesis, period, quotation mark, slash, hyphen, or dash. | colons, commas, dashes, ellipses, hyphens, parentheses, periods-and-end-punctuation, quotation-marks, semicolons, slashes |
+| Formatting and organization | You are formatting a date, time, phone number, number, or unit of measure; or you are structuring a heading, list, paragraph, procedure, table, note or warning, footnote, image, italicized term, or mathematical expression. | dates-times, format-examples, images, footnotes, headings, italics-terms, lists, mathematical-notation, notices, numbers, paragraph-structure, phone-numbers, procedures, tables, units-of-measure |
+| Linking | You are writing link text or a cross-reference, or linking to a heading inside a page. | cross-references, headings-targets |
+| Computer interfaces | You are documenting an API, writing or formatting a code sample, showing command-line syntax, naming a placeholder, naming a UI element, or mentioning code inside a sentence. | api-reference-comments, code-in-text, code-samples, code-syntax, placeholders, ui-elements |
+| HTML and CSS | You are choosing between Markdown and HTML, writing HTML, or picking a semantic tag. | semantic-tagging, html-formatting, markdown |
+| Names and naming | You need an example domain or example person name, a filename, or the correct handling of a trademark. | examples, filenames, trademarks |
 
-## Maintenance
+## Finding a term in the word list
 
-`references/google-pages.md` maps every file above to its live URL and category. Use it to re-sync a page against the live guide.
+`references/google/word-list.md` is the largest page in the layer. Do not open it whole. Run:
+
+```sh
+grep -i -n "<term>" references/google/word-list.md
+```
+
+Then read the matching headword entry at the line number the grep reports. Headwords are bold and sit at the start of the entry, so searching the whole line finds multi-word terms too.
+
+## What this layer does not cover
+
+The Google layer is a style guide for developer documentation. It says nothing about several surfaces this skill fires on: commit messages, release notes, chat replies to the user, and status reports. On those surfaces, `references/overrides.md` governs when it exists, and the principles in `references/google/highlights.md` and `references/google/philosophy.md` apply as far as they reach.
 
 ## Self-check
 
-Before finishing a writing task, verify:
+Before finishing a writing task, check the output against the pages you loaded on activation, not from memory:
 
-- No em dash and no en dash anywhere in the output.
-- None of the banned jargon or hype words from `references/overrides.md` appear.
-- Pronouns follow the rule: known gender, or *they* only when the number of people is unknown.
-- A table is used where the always-on core requires one.
-- Every specialized term is defined at first use.
+- Every rule in `references/overrides.md` holds, if that file exists.
+- The output follows the points in `references/google/highlights.md` that apply to it.
+- Anything those pages did not settle was looked up in the routed page, not guessed.
+- Where a routed page and `references/overrides.md` disagreed, the overrides file won.

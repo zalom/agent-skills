@@ -1,0 +1,4 @@
+# The personal overrides layer. Optional, binding when present, never committed,
+# so a pull or an update never overwrites it. Start from
+# references/overrides.example.md.
+references/overrides.md

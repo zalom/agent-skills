@@ -1,14 +1,22 @@
 NOTICE
 
-The content under `references/google/` is adapted from the Google
-developer documentation style guide, https://developers.google.com/style,
-used under the Creative Commons Attribution 4.0 International License:
-https://creativecommons.org/licenses/by/4.0/
+This repository combines two separately licensed parts.
 
-Changes made: the guide's pages were converted from HTML to Markdown,
-condensed, and reorganized into one file per page under
-`references/google/`. Each vendored page keeps its own `Source:` URL
-line pointing at the live page it was adapted from.
+1. The skill itself: SKILL.md, README.md, references/overrides.example.md,
+   references/google-pages.md, evals/, and every other file outside
+   references/google/. Copyright (c) 2026 Zlatko Alomerovic, licensed under
+   the MIT License. See LICENSE.
 
-This project is not affiliated with, sponsored by, or endorsed by
-Google. Google does not endorse this repository or its contents.
+2. The content under references/google/. Adapted from the Google developer
+   documentation style guide, https://developers.google.com/style,
+   Copyright (c) Google LLC, used under the Creative Commons Attribution 4.0
+   International License, https://creativecommons.org/licenses/by/4.0/.
+   See LICENSE-CC-BY-4.0.
+
+Changes made to the Google material: the pages were converted from HTML to
+Markdown, adapted, and reorganized into one file per page under
+references/google/. Each page keeps its own Source: URL line pointing at the
+live page it was adapted from.
+
+This project is not affiliated with, sponsored by, or endorsed by Google.
+Google does not endorse this repository or its contents.

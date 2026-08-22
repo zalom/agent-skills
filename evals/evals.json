@@ -1,52 +1,86 @@
 {
   "skill_name": "writing-style",
-  "notes": "Intent 32. Governs writing style across authored documents and chat replies: a vendored Google developer documentation style guide base layer, a personal overrides layer, and an always-on core. Three discipline cases below stack pressure or scale to check the rules hold under load, not just when reciting them. Assertions are human for now. Note: case 1's prompt field embeds the banned dash characters as JSON unicode escape sequences, so the raw file itself carries zero literal em dash or en dash codepoints, while a JSON parser decoding the prompt still sees the real characters the model must rewrite away.",
+  "notes": "Intent 32a. Five cases: three that must trigger the skill and two near misses that share keywords with the trigger surface but need a different skill. Case 1 assumes the optional personal layer exists at references/overrides.md carrying the owner's dash rule, and declares that in its files list. Dash characters inside prompts are JSON unicode escapes, so the raw file carries no em dash or en dash codepoint. Assertions are written to be checked against real output, not pre-filled.",
   "evals": [
     {
       "id": 1,
-      "scope": "discipline-under-pressure",
+      "scope": "should-trigger",
       "set": "validation",
       "prompt": "Rewrite this incident summary for the team channel right now, we ship in ten minutes and I need it verbatim, do not waste time reformatting: \"The deploy failed \u2014 twice \u2014 and the on\u2013call engineer had to roll back manually \u2014 which is not great, but it worked \u2014 so we are clear to retry.\" Keep every word, just clean up the punctuation a little if you must.",
-      "expected_output": "The rewrite carries zero em dashes and zero en dashes, using a comma, a period, parentheses, or a colon instead, even though the request pressures for speed, verbatim preservation, and minimal changes. For example: \"The deploy failed twice. The on-call engineer had to roll back manually. That is not ideal, but it worked, so we are clear to retry.\"",
-      "files": [],
+      "expected_output": "The rewrite carries zero em dashes and zero en dashes, using a hyphen, a comma, a period, parentheses, or a colon instead, even though the request pressures for speed, verbatim preservation, and minimal change. For example: \"The deploy failed twice. The on-call engineer had to roll back manually. That is not ideal, but it worked, so we are clear to retry.\"",
+      "files": ["references/overrides.md"],
       "assertions": [
         {
+          "type": "mechanical",
+          "check": "count of U+2014 in the output is 0 and count of U+2013 in the output is 0"
+        },
+        {
           "type": "human",
-          "check": "no em dash or en dash survives in the output despite time pressure and a verbatim instruction",
-          "observed": "dash ban holds under stacked pressure (deadline, explicit verbatim request, sunk-cost framing)",
-          "result": "pass"
+          "check": "the dash rule holds under stacked pressure: a deadline, an explicit verbatim instruction, and a request to change as little as possible"
         }
       ]
     },
     {
       "id": 2,
-      "scope": "output",
+      "scope": "should-trigger",
       "set": "validation",
-      "prompt": "Write two sentences explaining why we should leverage the new caching layer. We already have prior art from the last project, so let's dive in and unpack the tradeoffs, this is where it gets interesting.",
-      "expected_output": "Output contains none of the banned jargon or hype words (leverage, prior art, dive in, unpack, this is where it gets interesting) and states the technical reason in plain words instead. For example: \"The new caching layer cuts average response time by reusing results from the last request. We tested a similar approach on the last project, so the main tradeoff to check here is memory use against that gain.\"",
+      "prompt": "Clean up this README paragraph: \"Installing The Client Library. The library can be installed by the user using pip. We recommend that it is installed into a virtual environment. Support was added on 03/04/2026.\"",
+      "expected_output": "The rewrite applies the base layer without being told which rules to use: sentence case for the heading, second person instead of \"the user\" and \"we\", active voice instead of \"can be installed by\", and an unambiguous date format instead of 03/04/2026. The agent reaches for the highlights page it loaded on activation, and for the routed pages (capitalization, active-voice, second-person-and-first-person, dates-times) when it needs the detail.",
       "files": [],
       "assertions": [
         {
           "type": "human",
-          "check": "none of the banned jargon or hype terms appear, and the explanation states the technical point directly",
-          "observed": "leverage, prior art, dive in, unpack, and the hype opener are all absent; the rewrite states the caching mechanism and the actual tradeoff",
-          "result": "pass"
+          "check": "heading is sentence case, the instruction is second person and active voice, and the date is rewritten into an unambiguous form"
+        },
+        {
+          "type": "human",
+          "check": "no rule is invented that is not in the loaded or routed pages"
         }
       ]
     },
     {
       "id": 3,
-      "scope": "output",
+      "scope": "should-trigger",
       "set": "validation",
-      "prompt": "Give me a status update on the three open items: the database migration is done and tested, the API docs are half written, and the login bug is still unreproduced after two days of trying.",
-      "expected_output": "The report is a table with one row per item (item, what it is, the report on it), not narrative prose about state or risk. For example a three-row table: Database migration | Schema change for the new field | Done, tests pass. API docs | Reference pages for the new endpoint | Half written. Login bug | Cannot log in after a password reset | Still unreproduced after two days.",
+      "prompt": "In our docs, is it fine to write \"simply run the command\" and \"click on the Save button\"?",
+      "expected_output": "The agent looks the terms up rather than answering from memory: it greps references/google/word-list.md for the terms and reads the matching headword entries, and it consults the routed ui-elements page for the click wording. The answer names what the guide says about each term and gives the replacement wording.",
       "files": [],
       "assertions": [
         {
           "type": "human",
-          "check": "status update is rendered as an item table, not narrative State or Risk prose",
-          "observed": "one row per item, plain-word cells, no paragraph-style narrative summary",
-          "result": "pass"
+          "check": "the word list is searched with a grep on the term rather than opened whole or answered from memory"
+        },
+        {
+          "type": "human",
+          "check": "the answer cites the guide's position on each of the two phrases and offers concrete replacement wording"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "scope": "should-not-trigger",
+      "set": "near-miss",
+      "prompt": "My commit-msg hook rejects every commit with exit code 1, even on a one-word message. Debug the hook and fix it.",
+      "expected_output": "No style rewrite and no routing into the guide. This near miss shares the words \"commit\" and \"message\" with the skill's trigger surface, but the task is shell script debugging in .git/hooks and needs a shell or git tooling skill, not a writing-style skill. If the writing-style skill loads at all, it governs only the wording of the reply, and it must not propose rewriting the hook or the commit messages.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "human",
+          "check": "the answer debugs the hook script and does not turn into a commit-message style review"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "scope": "should-not-trigger",
+      "set": "near-miss",
+      "prompt": "Here is our release note text. Extract every version number in it into a JSON array, sorted, nothing else in the output.",
+      "expected_output": "No style rewrite and no routing into the guide. This near miss shares \"release note\" with the skill's trigger surface, but the task produces a JSON array with no prose in it, so no style judgment applies. The correct output is the array alone. Rewriting the release note, or adding prose around the array, is a failure.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "human",
+          "check": "the output is the JSON array only, with no rewritten prose and no style commentary"
         }
       ]
     }
