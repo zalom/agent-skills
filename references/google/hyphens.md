@@ -4,7 +4,7 @@ Source: https://developers.google.com/style/hyphens
 Use a hyphen when needed for clarity — to separate parts of words to avoid misreadings, or to combine terms that should read as a unit.
 
 ## General guidelines
-Hyphenation depends on location (does the term precede a noun or follow a verb?), interpretation/readability (would omitting the hyphen create ambiguity?), and convention (some terms are always/never hyphenated regardless of other guidance). If unsure, check in this order: (1) the documentation you're working in, for an established convention; (2) this guide's word list; (3) Merriam-Webster. Deviate when it serves readers (see Break the rules).
+Hyphenation depends on location (does the term precede a noun or follow a verb?), interpretation/readability (would omitting the hyphen create ambiguity?), and convention (some terms are always/never hyphenated regardless of other guidance). If unsure, check in this order: (1) the documentation you're working in, for an established convention; (2) this guide's word list; (3) Merriam-Webster. Deviate when it serves readers.
 
 Don't use a hyphen or a double hyphen in place of a dash. A dash is a distinct punctuation mark with its own uses (see Dashes).
 

@@ -35,7 +35,7 @@ Contents:
 
 This word list covers style and usage guidelines specific to developer documentation. If a term isn't listed here, check other editorial resources, including the preferred dictionary, Merriam-Webster. If Merriam-Webster lists multiple spellings, use the first form listed (the most common spelling) — e.g., for *cancel*, the first listed past tense is *canceled*, so that's more common than *cancelled*.
 
-For technical definitions, check the authoritative documentation on the topic. Terminology decisions (how/when to define or contextualize terms) require judgment based on product area, audience, and prevailing convention. Related pages: Jargon, Inclusive language, Write for a global audience, Hyphens, Capitalization. It's fine to deviate from this guidance if it serves readers better (see Break the rules).
+For technical definitions, check the authoritative documentation on the topic. Terminology decisions (how/when to define or contextualize terms) require judgment based on product area, audience, and prevailing convention. Related pages: Jargon, Inclusive language, Write for a global audience, Hyphens, Capitalization. It's fine to deviate from this guidance if it serves readers better.
 
 ## Label definitions
 
