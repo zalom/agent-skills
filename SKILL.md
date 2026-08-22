@@ -25,16 +25,14 @@ Follow the overrides layer and the Google layer as written. The only permitted d
 
 ## On activation, read these
 
-1. `references/google/about-this-guide.md`
-2. `references/google/highlights.md`
-3. `references/google/philosophy.md`
-4. `references/overrides.md`, if that file exists
+1. `references/google/highlights.md`
+2. `references/overrides.md`, if that file exists
 
 Everything else is opened on demand through the routing table below.
 
 ## Escalation order
 
-When neither the overrides layer nor a Google page settles the question, `references/google/about-this-guide.md` states the order to follow:
+When neither the overrides layer nor a Google page settles the question, follow the order the Google style guide itself sets:
 
 1. **Project-specific style.** Style guidance specific to the project or product, including exceptions to this guide and terms relevant only to that product.
 2. **This style guide.** Follow it when project-specific guidance is not explicit.

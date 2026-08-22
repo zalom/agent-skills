@@ -4,7 +4,7 @@ An Agent Skill that keeps AI-written text in one consistent style: a documented 
 
 ## What it does
 
-The base layer is the Google developer documentation style guide, adapted into 70 pages under `references/google/`, covering grammar, punctuation, formatting, and naming. On activation the agent reads three of those pages every time: the guide introduction, the highlights, and the philosophy page. The other 67 stay behind a routing table in `SKILL.md` and are opened only when a question needs them.
+The base layer is the Google developer documentation style guide, adapted into 68 pages under `references/google/`, covering grammar, punctuation, formatting, and naming. On activation the agent reads the highlights page every time. The other 67 routed pages stay behind a routing table in `SKILL.md` and are opened only when a question needs them.
 
 The overrides layer, `references/overrides.md`, is optional. It does not ship. When you create it, the agent reads it first on every activation and every line in it wins over the base layer. When it is absent, the base layer applies on its own.
 
@@ -37,7 +37,7 @@ references/
   overrides.md          <- your rules, optional, read first, wins on conflict, not committed
   overrides.example.md  <- the shipped template for the file above
   google-pages.md       <- manifest: file, live URL, category (used for re-syncing)
-  google/               <- 70 adapted pages, the base layer
+  google/               <- 68 adapted pages, the base layer
 ```
 
 ## Machine-checkable companions

@@ -4,10 +4,8 @@ These pages are adapted from the Google developer documentation style guide (htt
 
 | File | Live URL | Category |
 |---|---|---|
-| about-this-guide.md | https://developers.google.com/style/ | Introduction |
 | highlights.md | https://developers.google.com/style/highlights | Introduction |
 | whats-new.md | https://developers.google.com/style/whats-new | Introduction |
-| philosophy.md | https://developers.google.com/style/philosophy | Introduction |
 | word-list.md | https://developers.google.com/style/word-list | Key resources |
 | product-names.md | https://developers.google.com/style/product-names | Key resources |
 | text-formatting.md | https://developers.google.com/style/text-formatting | Key resources |
