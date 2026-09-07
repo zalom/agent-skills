@@ -38,11 +38,53 @@ references/
   overrides.example.md  <- the shipped template for the file above
   google-pages.md       <- manifest: file, live URL, category (used for re-syncing)
   google/               <- 68 adapted pages, the base layer
+hooks/
+  gate.rb               <- delivers the routed pages a draft needs, at the moment it is written
+  lint.rb               <- checks the rules a machine can decide, on every write
 ```
+
+## Enforcement hooks
+
+The routing table asks an agent to open a page when it needs one. An agent that believes the skill is already loaded will skip that step and report the skill as applied, which is the failure these two optional hooks exist to close. Neither replaces the judgment in the skill. They make the mechanical half hold whether or not anything was read.
+
+`hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and injects the full text of only the pages that govern them. Nothing from the guide sits in context for the rest of the session, and no page is ever summarized, so what the agent reads cannot drift from the source. A document receives a given page set once per session, so republishing costs nothing.
+
+`hooks/lint.rb` decides what a page cannot. It reads a file and reports every rule below that the text breaks:
+
+| Rule | What it catches |
+|---|---|
+| `dashes` | An em dash or en dash where the overrides layer asks for a hyphen |
+| `spelling` | British spellings, against the guide's Merriam-Webster reference |
+| `heading-levels` | A skipped level, such as an `h4` directly under an `h2` |
+| `heading-case` | A heading in Title Case rather than sentence case |
+| `heading-gerund` | A heading opening with an `-ing` form |
+| `heading-link` | A link inside a heading |
+| `heading-number` | A sequence number written into heading text |
+| `heading-empty` | A heading with no text |
+| `table-caption` | A table with no `caption` element |
+| `table-scope` | A `th` cell with no `scope` attribute |
+| `table-merge` | `colspan` or `rowspan` in a data table |
+| `cell-br` | `br` used as structure inside a table cell |
+| `numbers` | A number of 10 or greater spelled out, outside sentence-initial position |
+
+Run it on its own at any time:
+
+```sh
+ruby hooks/lint.rb README.md
+```
+
+To install both, symlink them where your agent looks for hooks and register `gate.rb` on the pre-tool event. For Claude Code that is `~/.claude/settings.json`:
+
+```json
+{ "hooks": { "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
+  "hooks": [ { "type": "command", "command": "~/.claude/hooks/writing-style-gate.rb" } ] } ] } }
+```
+
+Three properties are deliberate. Findings are advisory, so nothing is ever blocked; `BLOCKING_TOOLS` in `gate.rb` is the switch that makes a listed tool refuse instead, and it ships empty. A rule the guide genuinely permits in context is silenced by writing `lint-ok: <rule>` on that line, so an exception is recorded rather than taken quietly. And every failure path fails open: bad input, a missing checker, or a broken cache lets the tool call proceed untouched.
 
 ## Machine-checkable companions
 
-This skill is judgment applied by an agent, not a linter. Two open-source tools check overlapping ground mechanically, in CI or on a keystroke, and complement it rather than replace it:
+The hooks above cover the rules this repository can decide. Two open-source tools check overlapping ground, in CI or on a keystroke, and complement the skill rather than replace it:
 
 - [Vale](https://vale.sh/) with the [`errata-ai/Google`](https://github.com/errata-ai/Google) package runs this same style guide as a set of runnable rules.
 - [proselint](https://github.com/amperser/proselint) checks general usage problems that overlap with parts of this guide.

@@ -28,7 +28,14 @@ Follow the overrides layer and the Google layer as written. The only permitted d
 1. `references/google/highlights.md`
 2. `references/overrides.md`, if that file exists
 
-Everything else is opened on demand through the routing table below.
+For a short reply, everything else is opened on demand through the routing table below.
+
+For a document, on demand is not enough. A document is anything longer than a reply: a report,
+a README, a page, a spec, a release note. Before it ships, open the routed page for every
+device the document actually uses and check the draft against that page. A document nearly
+always has headings and numbers, usually tables and lists, and often dates, links and images.
+Those pages are not optional extras. They are the ones that govern what you just wrote, and an
+activation set alone has never been enough to catch what they catch. Name the pages you opened.
 
 ## Escalation order
 
@@ -63,7 +70,7 @@ Open `references/google/<name>.md` when the pages loaded on activation do not se
 | HTML and CSS | You are choosing between Markdown and HTML, writing HTML, or picking a semantic tag. | semantic-tagging, html-formatting, markdown |
 | Names and naming | You need an example domain or example person name, a filename, or the correct handling of a trademark. | examples, filenames, trademarks |
 
-## Finding a term in the word list
+## Find a term in the word list
 
 `references/google/word-list.md` is the largest page in the layer. Do not open it whole. Run:
 
@@ -75,9 +82,11 @@ Then read the matching headword entry at the line number the grep reports. Headw
 
 ## Self-check
 
-Before finishing a writing task, check the output against the pages you loaded on activation, not from memory:
+Before finishing a writing task, check the output against the pages that govern it, not from memory and not against the activation set alone:
 
 - Every rule in `references/overrides.md` holds, if that file exists.
 - The output follows the points in `references/google/highlights.md` that apply to it.
 - Anything those pages did not settle was looked up in the routed page, not guessed.
+- For a document, every device it uses had its routed page opened. Checking a document that is
+  full of headings, tables and numbers against `highlights.md` alone is not a check.
 - Where a routed page and `references/overrides.md` disagreed, the overrides file won.

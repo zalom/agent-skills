@@ -2,3 +2,7 @@
 # so a pull or an update never overwrites it. Start from
 # references/overrides.example.md.
 references/overrides.md
+
+# Editor and tooling backups
+*.bak
+*.bak-*
