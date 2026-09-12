@@ -39,7 +39,7 @@ references/
   google-pages.md       <- manifest: file, live URL, category (used for re-syncing)
   google/               <- 68 adapted pages, the base layer
 hooks/
-  gate.rb               <- delivers the routed pages a draft needs, at the moment it is written
+  gate.rb               <- names the routed pages a draft needs, at the moment it is written
   lint.rb               <- checks the rules a machine can decide, on every write
 ```
 
@@ -47,7 +47,7 @@ hooks/
 
 The routing table asks an agent to open a page when it needs one. An agent that believes the skill is already loaded will skip that step and report the skill as applied, which is the failure these two optional hooks exist to close. Neither replaces the judgment in the skill. They make the mechanical half hold whether or not anything was read.
 
-`hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and injects the full text of only the pages that govern them. Nothing from the guide sits in context for the rest of the session, and no page is ever summarized, so what the agent reads cannot drift from the source. A document receives a given page set once per session, so republishing costs nothing.
+`hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and names the pages that govern them with their paths, so the agent knows the guide holds more than its session does and opens what it has not read. No page text is injected, so nothing from the guide sits in context for the rest of the session. A document is pointed at a given page set once per session; checker findings are reported on every call. Tool calls made by a subagent are skipped entirely, keyed on the `agent_id` field Claude Code sets in the hook input for them.
 
 `hooks/lint.rb` decides what a page cannot. It reads a file and reports every rule below that the text breaks:
 

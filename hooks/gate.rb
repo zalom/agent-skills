@@ -5,14 +5,17 @@
 #
 # Two jobs, deliberately separate:
 #
-#   DELIVERY. Nothing from the guide sits in context all session. Instead, at the
-#   moment a document is written or published, this hook works out which devices the draft
-#   actually uses and injects the FULL TEXT of the pages that govern them. No distillation,
-#   so nothing can drift from the source, and no standing context cost.
+#   POINTER. Nothing from the guide sits in context all session, and no page text is ever
+#   injected. At the moment a document is written or published, this hook works out which
+#   devices the draft actually uses and names the pages that govern them, with their paths,
+#   so the agent knows there is more to the guide and opens what it has not read.
 #
 #   ENFORCEMENT. It runs the deterministic checker over the same draft and reports every
 #   finding alongside the rules. Findings are advisory: nothing is ever blocked. BLOCKING_TOOLS
 #   is the switch that would make a listed tool refuse instead, and it is deliberately empty.
+#
+# Subagent sessions are skipped entirely: Claude Code sets agent_id in the hook input only
+# when a subagent makes the tool call.
 #
 # Fails open everywhere: any error, any unexpected payload, and the tool call proceeds.
 
@@ -29,12 +32,6 @@ BLOCKING_TOOLS = %w[].freeze
 ADVISORY_TOOLS = %w[Artifact Write Edit NotebookEdit].freeze
 
 PROSE_EXT = %w[.md .markdown .html .htm .txt .rst .adoc].freeze
-
-# Too large to inject, and useless injected: word-list is a lookup table you grep, and
-# whats-new is the guide's own changelog, which it states is not a source of rules.
-NEVER_INJECT = %w[word-list whats-new].freeze
-
-MAX_BUNDLE = 120_000 # bytes of reference text; a hard ceiling on one injection
 
 # device present in the draft => page that governs it
 DEVICES = {
@@ -60,6 +57,10 @@ def payload
   JSON.parse(raw)
 rescue StandardError
   nil
+end
+
+def subagent?(data)
+  !data["agent_id"].to_s.empty?
 end
 
 def target(data)
@@ -90,23 +91,7 @@ def pages_for(text)
             else
               DEVICES.select { |_page, re| text.match?(re) }.keys
             end
-  (ALWAYS + matched).uniq - NEVER_INJECT
-end
-
-def bundle(pages)
-  used = []
-  body = +""
-  pages.each do |page|
-    file = File.join(REF_DIR, "#{page}.md")
-    next unless File.file?(file)
-
-    content = File.read(file)
-    break if body.bytesize + content.bytesize > MAX_BUNDLE
-
-    used << page
-    body << "\n\n===== #{page}.md =====\n\n" << content
-  end
-  [used, body]
+  (ALWAYS + matched).uniq.select { |page| File.file?(File.join(REF_DIR, "#{page}.md")) }
 end
 
 def lint(path)
@@ -118,8 +103,8 @@ rescue StandardError
   [true, ""] # a broken checker must never block work
 end
 
-# Records that this document has already received this page set in this session, so a
-# republish does not re-inject the same reference text. Enforcement is never cached: the
+# Records that this document has already been pointed at this page set in this session, so
+# a republish does not repeat the pointer. Enforcement is never cached: the
 # checker above runs on every single call.
 def delivered_before?(data, path, pages)
   session = data["session_id"] || ENV["CLAUDE_CODE_SESSION_ID"] || "nosession"
@@ -157,6 +142,7 @@ end
 
 data = payload
 exit 0 if data.nil?
+exit 0 if subagent?(data)
 exit 0 unless Dir.exist?(REF_DIR)
 
 tool = data["tool_name"].to_s
@@ -183,29 +169,24 @@ if blocking && !clean && !findings.empty?
   MSG
 end
 
-# --- delivery --------------------------------------------------------------------------
+# --- pointer ---------------------------------------------------------------------------
 
 pages = pages_for(text)
-used, refs = bundle(pages)
-exit 0 if used.empty?
+exit 0 if pages.empty?
 
-# Deliver a given page set for a given document once per session. A republish does not pay
-# for the same reference text again; a draft that grows a new device does, because the page
-# set changes and so does the key.
-exit 0 if delivered_before?(data, path, used)
+# Point a given document at a given page set once per session. A draft that grows a new
+# device gets a new pointer, because the page set changes and so does the key. Findings are
+# reported on every call.
+fresh = !delivered_before?(data, path, pages)
+exit 0 unless fresh || !clean
 
-label = tool == "Artifact" ? "publishing this artifact" : "writing #{path}"
-note  = clean ? "" : "\n\nThe deterministic checker also reports:\n\n#{findings}\n"
+label   = tool == "Artifact" ? "publishing this artifact" : "writing #{path}"
+pointer = <<~POINTER
+  The style guide has more rules than this session holds. The pages that govern the devices
+  this draft uses are #{pages.join(', ')}, under #{REF_DIR}/<page>.md. Open each one you
+  have not read in this session before this document ships. For one word's spelling or usage,
+  grep #{File.join(REF_DIR, 'word-list.md')} rather than reading it.
+POINTER
+note = clean ? "" : "The deterministic checker reports:\n\n#{findings}\n"
 
-emit_allow(<<~MSG)
-  WRITING-STYLE RULES for #{label}
-
-  These are the pages of the style guide that govern the devices this draft actually uses.
-  They are delivered here so they do not have to be remembered or looked up. Apply them to
-  this document before it ships, and say which ones you applied.
-
-  Pages included: #{used.join(', ')}
-  For a single word's spelling or usage, grep #{File.join(REF_DIR, 'word-list.md')} rather
-  than reading it.#{note}
-  #{refs}
-MSG
+emit_allow("WRITING-STYLE for #{label}\n\n#{fresh ? pointer : ''}#{fresh && !clean ? "\n" : ''}#{note}")
