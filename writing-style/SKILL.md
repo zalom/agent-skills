@@ -9,6 +9,8 @@ description: >
   Applies to both authored documents and the agent's own communication with
   the user.
 license: MIT
+metadata:
+  author: Zlatko Alomerovic
 ---
 
 # Writing style

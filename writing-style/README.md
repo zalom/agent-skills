@@ -12,13 +12,20 @@ The overrides layer, `references/overrides.md`, is optional. It does not ship. W
 
 ## Install
 
+As a Claude Code plugin, from the `zalom-skills` marketplace:
+
 ```sh
-ln -s /path/to/writing-style-skill ~/.claude/skills/writing-style
+claude plugin marketplace add zalom/agent-skills
+claude plugin install writing-style@zalom-skills
 ```
 
-Restart the agent session so it picks up the new skill.
+Or, from a clone of [zalom/agent-skills](https://github.com/zalom/agent-skills), link the skill directory where your agent looks for skills:
 
-The symlink name matters: the harness requires a skill's directory name to match the `name` field in its `SKILL.md` frontmatter, which is `writing-style`. This repository is called `writing-style-skill` on purpose, to read clearly as a standalone project, so the symlink target name carries that translation. Do not rename the symlink.
+```sh
+ln -s /path/to/agent-skills/writing-style ~/.claude/skills/writing-style
+```
+
+Restart the agent session so it picks up the new skill. The harness requires a skill's directory name to match the `name` field in its `SKILL.md` frontmatter, so keep the link named `writing-style`.
 
 ## Make it yours
 
