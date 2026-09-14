@@ -9,6 +9,7 @@ How to shape Ruby code so a test passes collaborators in instead of patching glo
 - Config objects
 - The anti-pattern
 - Injection is the default, not the only way
+- Small, single-purpose classes
 - Sources
 
 ## Inject collaborators
@@ -69,7 +70,7 @@ exit Tool.new.run(ARGV) if $PROGRAM_NAME == __FILE__
 - Inject IO (`out:`, `err:`, `input:`) and pass `StringIO` in tests, instead of reassigning `$stdout` or `$stdin`.
 - Inject the clock (`clock: Time`, then `@clock.now`) so time is deterministic.
 - Inject paths, the home folder, and settings, and point them at `Dir.mktmpdir` in tests.
-- Inject subprocess and git runners as lambdas. `bin/verify-change` takes `git:` and `run:` this way, and its tests pass stubs.
+- Inject subprocess and git runners as lambdas. The ruby-quality-checking skill's verify-change script takes `git:` and `run:` this way, and its tests pass stubs.
 
 The same test in Minitest:
 
@@ -118,6 +119,10 @@ Rewriting a script's source and evaluating it into the top-level binding mutates
 ## Injection is the default, not the only way
 
 A method that references another class directly is still testable in Ruby: you can reopen the class, `prepend` a module, or stub a constant. The research behind this skill refuted the claim that a direct reference prevents substitution. Choose injection for clarity, decoupling, and readable tests, not because the alternatives are impossible.
+
+## Small, single-purpose classes
+
+Splitting a class into small classes, each responsible for one thing, is a design preference, not a rule this skill enforces. As advice: a small class is easier to test, because its constructor takes fewer collaborators to inject, and a method with one job has fewer branches, so tests reach full coverage sooner and mutation testing has fewer paths to cover. A CRAP score above the limit is one signal that a method has outgrown a single purpose.
 
 ## Sources
 

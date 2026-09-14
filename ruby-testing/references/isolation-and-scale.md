@@ -67,7 +67,7 @@ The minimal reproduction command is:
 | Threads | Weak: races on `$stdout`, class variables, caches, and C extensions | Limited by the GVL for plain Ruby | Only for thread-safe code |
 | A process per file | Total | Slow, because Ruby boots per file | Avoid |
 
-- Rails forks workers with `parallelize(workers: :number_of_processors)` and gives each worker its own test database. SimpleCov needs a `command_name` per worker, as `setup.md` shows.
+- Rails forks workers with `parallelize(workers: :number_of_processors)` and gives each worker its own test database. SimpleCov needs a `command_name` per worker, as the ruby-quality-checking skill's setup reference shows.
 - In plain Ruby with Minitest, `minitest-parallel_fork` forks workers: `bundle exec ruby -rminitest/parallel_fork test/refund_test.rb`. Version 2.1.1 ran green on Minitest 6.0.6 and Ruby 4.0.3. Give each worker its own temporary folders and ports.
 - `MT_CPU` sets the number of workers for Minitest's own parallel executor. `N` no longer does.
 - RSpec 3.13 runs examples in one process. No RSpec parallel runner was tested on Ruby 4.0 for this skill; `parallel_tests` and `turbo_tests` exist.

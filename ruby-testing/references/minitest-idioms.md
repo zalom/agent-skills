@@ -9,7 +9,7 @@ How to write Minitest 6 tests that read well and kill mutants. Open this when wr
 - Assertions
 - Setup and teardown
 - Stubs and mocks
-- Fixtures over factories
+- Test data
 - Running tests
 - Sources
 
@@ -95,11 +95,11 @@ def test_warns_when_the_disk_runs_low
 end
 ```
 
-Stub only at true boundaries: the clock, randomness, the network, and external IO. For internal collaborators, pass real objects through dependency injection, as `testable-design.md` shows. A mock couples the test to the calls the code makes.
+Stub the clock, randomness, the network, and external IO. For an internal collaborator, write a collaboration test instead: check that the right message reaches the right object with the right arguments, as `collaboration-tests.md` shows.
 
-## Fixtures over factories
+## Test data
 
-Static fixtures load fast and are explicit. Factories add indirection and runtime cost. In a plain Ruby project, use plain data, fixture files, or small builder methods in the test.
+A plain Ruby project without a framework preference uses fixture files or small builder methods: static, fast, and explicit. In a Rails app or gem that already uses `factory_bot`, keep using it. `test-data.md` covers both, and a project with both fixtures and factories.
 
 ## Running tests
 

@@ -53,10 +53,7 @@ Where the testing practices in this skill come from. Open this when a person ask
 
 ## Verification tools
 
-- [SimpleCov](https://github.com/simplecov-ruby/simplecov)
-- [Mutineer](https://github.com/davidteren/mutineer)
-- [Skunk](https://github.com/fastruby/skunk)
-- [RubyCritic](https://github.com/whitesmith/rubycritic)
+SimpleCov, Mutineer, Skunk, and RubyCritic are the ruby-quality-checking skill's own tools; its `sources.md` lists where their facts come from.
 
 ## Refuted
 

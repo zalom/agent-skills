@@ -22,8 +22,8 @@ Every claim marked measured ran on Ruby 4.0.3 with rspec-core 3.13.6, rspec-expe
 
 - A new project, or a Rails app on the 37signals style, uses Minitest: it is plain Ruby, it ships with Rails, and every example in this skill starts there.
 - A project that already has `spec/` with `.rspec`, or rspec in `Gemfile.lock`, keeps RSpec. Rewriting a working suite in another framework adds risk and checks nothing new.
-- Never mix both frameworks in one project. `bin/verify-change` picks one per project.
-- Every gate in this skill applies to both: patch coverage, Mutineer, and CRAP read the code, not the test framework.
+- Never mix both frameworks in one project. The ruby-quality-checking skill picks one per project.
+- Every gate in ruby-quality-checking applies to both: patch coverage, Mutineer, and CRAP read the code, not the test framework.
 
 ## Versions on Ruby 4.0
 
@@ -42,7 +42,7 @@ Every claim marked measured ran on Ruby 4.0.3 with rspec-core 3.13.6, rspec-expe
 - `spec/spec_helper.rb` configures RSpec and loads no application code, so a plain Ruby spec stays fast.
 - In Rails, `rails generate rspec:install` also writes `spec/rails_helper.rb`, which requires `spec_helper`, boots the app, and loads `rspec/rails`. Specs that need Rails start with `require "rails_helper"`.
 - RSpec puts `lib/` and `spec/` on the load path, so `require "discount"` finds `lib/discount.rb`.
-- Name each spec after its source: `app/models/post.rb` in `spec/models/post_spec.rb`, `lib/shop/cart.rb` in `spec/shop/cart_spec.rb` or `spec/lib/shop/cart_spec.rb`. `bin/verify-change` finds specs by these names.
+- Name each spec after its source: `app/models/post.rb` in `spec/models/post_spec.rb`, `lib/shop/cart.rb` in `spec/shop/cart_spec.rb` or `spec/lib/shop/cart_spec.rb`. ruby-quality-checking finds specs by these names.
 
 ## Configuration
 
@@ -115,7 +115,7 @@ end
 
 ## Doubles
 
-- Prefer real objects passed in through the constructor, as `testable-design.md` shows. Reach for a double at a boundary.
+- Use a double at a boundary: the clock, randomness, the network, external IO. For an internal collaborator, write a collaboration test: `instance_double` plus `have_received`, as `collaboration-tests.md` shows.
 - Use verifying doubles: `instance_double(Mailer)`, `class_double(Mailer)`, and `object_double(mailer)`. They check the stubbed methods against the real class.
   - Measured: `allow(instance_double(Mailer)).to receive(:send_now)` raised `the Mailer class does not implement the instance method: send_now`.
   - Measured: calling a stubbed `deliver(to)` with 2 arguments raised `Wrong number of arguments`.
@@ -158,11 +158,7 @@ Measured on one spec with common problems, `rubocop --only RSpec` reported these
 
 ## Coverage and mutation testing
 
-- `scripts/setup-project` treats a project with `spec/` and `.rspec`, or with `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock`, as an RSpec project, and stops with exit 4 in a Rails app that has neither spec helper. It adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper, writes `framework: rspec` to `.mutineer.yml`, adds no minitest gem, and leaves every `require` line alone.
-- `bin/verify-change` runs `bundle exec rspec` on the specs it maps from the changed files, then `mutineer run ... --framework rspec`.
-- Mutineer 1.0.0 runs RSpec in its default forked mode. `--daemon` supports Minitest only and exits 2 with RSpec.
-- Measured end to end on a plain Ruby project: see "RSpec projects" in `manual-workflow.md`.
-- A Rails RSpec app gets `--rails` from `bin/verify-change`. That combination has unit tests but no end-to-end run yet.
+Setting up patch coverage, Mutineer, and CRAP for an RSpec project, and running them, is the ruby-quality-checking skill's job: its `setup.md` covers RSpec detection and the coverage block, and its `manual-workflow.md` has a measured RSpec run end to end.
 
 ## Sources
 

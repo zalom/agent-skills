@@ -1,0 +1,145 @@
+{
+  "skill_name": "ruby-quality-checking",
+  "notes": "Split from ruby-verifying's evals.json (2026-09-14): old ids 1, 3, 4, 5, 9, 10, 11, 12, 15 keep their scope here, renumbered 1-9 in that order; old id 2 moved here from ruby-testing per review finding 17, because its expected output is mutation testing (new id 2); old id 8 (RuboCop) is now a positive trigger, not a near miss (new id 8); old id 6 and 7 stay as near misses (new ids 6, 7); new ids 13 and 15 are new cases the review required. Trigger cases run with both ruby-testing and ruby-quality-checking installed from this marketplace, and with any personal ~/.claude/skills/ruby-testing moved out, so a near miss is not passing only because the sibling skill was absent.",
+  "evals": [
+    {
+      "id": 1,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "Add mutation testing and coverage to our Rails 8.1 app, we're on Ruby 4.0 with Minitest.",
+      "expected_output": "The skill activates. It runs SKILL_DIR/scripts/setup-project with --dry-run first, then for real, then bundle install, and names the Rails coverage block and the parallel worker hooks.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "All our tests were green and we still shipped a pricing bug. How do we stop that happening again? It's a Ruby codebase.",
+      "expected_output": "The skill activates on an indirect trigger. It explains that coverage shows code ran, not that it was checked, and proposes mutation testing on changed code with exact assertions.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "Mutineer says 5 mutants survived in app/models/invoice.rb. What do I do with them?",
+      "expected_output": "The skill activates. It reads each survivor's diff, writes a test that fails on it with an exact assertion, reruns Mutineer, and treats a survivor it cannot kill after 2 attempts as a possible equivalent mutant for a person to judge.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "Before I push this branch, make sure the refund change is properly tested.",
+      "expected_output": "The skill activates in a Ruby project. It runs bundle exec bin/verify-change against the base branch rather than the full suite, and reports each gate, lint included.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "What does a CRAP score of 56 mean?",
+      "expected_output": "The skill activates. It gives the formula and explains the score.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 6,
+      "scope": "should-not-trigger",
+      "set": "train",
+      "prompt": "Set up Jest coverage thresholds for our TypeScript monorepo.",
+      "expected_output": "The skill does not activate: coverage for JavaScript and TypeScript is outside a Ruby quality-checking stack.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 7,
+      "scope": "should-not-trigger",
+      "set": "validation",
+      "prompt": "Our Rails checkout request is slow. Profile it and give me a flamegraph.",
+      "expected_output": "The skill does not activate: performance profiling shares the Rails keyword but not the quality-checking task.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 8,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "Add RuboCop to the Ruby project and fix the offenses.",
+      "expected_output": "The skill activates. It detects the project's style guide first with ProjectProfile before doing anything; since RuboCop was asked for by name, --linter rubocop is an allowed way to install it when none is set up, then it fixes the reported offenses.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 9,
+      "scope": "output-quality",
+      "set": "train",
+      "prompt": "bin/crap reports a method at CRAP 56.0 with 0% coverage. What is its complexity, and what score will it have once it is fully covered?",
+      "expected_output": "Complexity 7, because 7 squared plus 7 is 56 at 0% coverage. Fully covered, the score equals the complexity, 7, which is under the limit of 30, so tests alone fix it and no split is needed.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 10,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Mutineer survivor in lib/checkout.rb, Checkout#shipping, operator comparison (>= -> >): `return 0 if @country == \"DE\" && subtotal >= FREE_SHIPPING_FROM`, where FREE_SHIPPING_FROM is 100_00 cents. Write the Minitest test that kills it.",
+      "expected_output": "A Minitest test for a German order with a subtotal of exactly 100_00 that asserts free shipping with an exact value, for example assert_equal 100_00 for the total. A value above the boundary does not kill the mutant.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 11,
+      "scope": "discipline",
+      "set": "validation",
+      "prompt": "I changed one line in lib/refund.rb. Just run the whole test suite so we know nothing broke, it's only 4,000 tests and I'm in a hurry.",
+      "expected_output": "Despite the request, the response does not run the full suite. It runs bundle exec bin/verify-change for the changed file and says the full suite runs in CI.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 12,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "Our gem uses RSpec, with spec/ and a .rspec file. Add the same mutation testing and patch coverage checks you'd use for Minitest.",
+      "expected_output": "The skill activates. It runs SKILL_DIR/scripts/setup-project, which detects RSpec, puts the coverage block in spec/spec_helper.rb, writes framework: rspec to .mutineer.yml, adds no minitest gem, and uses bundle exec rspec in CI.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 13,
+      "scope": "should-not-trigger",
+      "set": "validation",
+      "prompt": "Write RSpec specs for this Checkout class.",
+      "expected_output": "This skill does not activate: writing specs from scratch is the ruby-testing skill's job, not this skill's. This skill only writes a test to kill a named survivor, cover an uncovered changed line, or lower a CRAP score.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 14,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "RSpec project. Mutineer survivor in lib/discount.rb, Discount#price, operator literal_mutation (100 -> 101): `amount - amount * MEMBER_PERCENT / 100` with MEMBER_PERCENT = 10. The current spec says `expect(described_class.new(member: true).price(50_00)).to be < 50_00`. Write the spec that kills it.",
+      "expected_output": "An RSpec example that asserts the exact price with eq, for example expect(described_class.new(member: true).price(50_00)).to eq(45_00), because / 101 gives 45_05. It keeps the expect syntax and described_class, and does not use be < or should.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 15,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "Check this branch before I open the PR.",
+      "expected_output": "The skill activates and runs bin/verify-change. The project has no RuboCop, Standard, or omakase config or gem. It prints the 3 style guide choices and installs none of them unasked; it does not silently pick one.",
+      "files": [
+        { "path": "Gemfile", "content": "source \"https://rubygems.org\"\n\ngem \"rake\"\n" },
+        { "path": "lib/refund.rb", "content": "class Refund\nend\n" },
+        { "path": "test/refund_test.rb", "content": "require \"test_helper\"\n" }
+      ],
+      "assertions": []
+    }
+  ]
+}

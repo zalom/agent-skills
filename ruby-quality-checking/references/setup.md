@@ -8,6 +8,7 @@ What `scripts/setup-project` changes in a project, and the same steps by hand fo
 - The script
 - By hand in a plain Ruby project with Minitest
 - By hand in a Rails app with Minitest
+- RSpec: coverage and mutation testing
 - By hand in an RSpec project
 - Ruby older than 3.4
 
@@ -20,8 +21,8 @@ What `scripts/setup-project` changes in a project, and the same steps by hand fo
 ## The script
 
 ```sh
-ruby path/to/ruby-verifying/scripts/setup-project --dry-run path/to/project
-ruby path/to/ruby-verifying/scripts/setup-project path/to/project
+ruby path/to/ruby-quality-checking/scripts/setup-project --dry-run path/to/project
+ruby path/to/ruby-quality-checking/scripts/setup-project path/to/project
 cd path/to/project
 bundle install
 ```
@@ -138,6 +139,14 @@ Replace the first command with `COVERAGE=1 bin/rails test` in a Rails app with M
    COVERAGE=1 bin/rails test
    bundle exec mutineer run app/models/post.rb --test test/models/post_test.rb --rails
    ```
+
+## RSpec: coverage and mutation testing
+
+- `scripts/setup-project` treats a project with `spec/` and `.rspec`, `spec/spec_helper.rb`, or `spec/rails_helper.rb`, or with `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock`, as an RSpec project, and stops with exit 4 in a Rails app that has neither spec helper. It adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper, writes `framework: rspec` to `.mutineer.yml`, adds no minitest gem, and leaves every `require` line alone.
+- `bin/verify-change` runs `bundle exec rspec` on the specs it maps from the changed files, then `mutineer run ... --framework rspec`.
+- Mutineer 1.0.0 runs RSpec in its default forked mode. `--daemon` supports Minitest only and exits 2 with RSpec.
+- Measured end to end on a plain Ruby project: see "RSpec projects" in `manual-workflow.md`.
+- A Rails RSpec app gets `--rails` from `bin/verify-change`. That combination has unit tests but no end-to-end run yet.
 
 ## By hand in an RSpec project
 

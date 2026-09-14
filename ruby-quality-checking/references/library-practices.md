@@ -1,27 +1,19 @@
 # Library practices
 
-Facts about each library at the pinned versions, taken from its own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section for the library a question about options, versions, or upgrades names.
+Facts about each quality-checking library at the pinned versions, taken from its own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section for the library a question about options, versions, or upgrades names. The ruby-testing skill's `test-libraries.md` covers Minitest and RSpec themselves.
 
 ## Contents
 
 - Versions that work on Ruby 4.0
-- Minitest 6
-- RSpec 3.13
 - SimpleCov 1.3
 - Mutineer 1.0
 - Skunk and RubyCritic
-- Mutation tools that failed
 - Sources
 
 ## Versions that work on Ruby 4.0
 
 | Gem | Pin | Measured | Note |
 |---|---|---|---|
-| minitest | `~> 6.0` | 6.0.6 | Rails 8.1.3 runs on it. |
-| minitest-mock | `~> 5.27` | 5.27.0 | Holds `Minitest::Mock` and `stub` for Minitest 6. |
-| minitest-around | `~> 0.6` | 0.6.0 | Ran green on Minitest 6.0.6. |
-| minitest-parallel_fork | `~> 2.1` | 2.1.1 | Ran green on Minitest 6.0.6. |
-| rspec | `~> 3.13` | 3.13.2 | rspec-core 3.13.6, rspec-expectations 3.13.5, rspec-mocks 3.13.8, rspec-support 3.13.7. Printed no Ruby warnings. |
 | rubocop-rspec | `~> 3.10` | 3.10.2 | Ran with RuboCop 1.91.0 as a plugin. |
 | simplecov | `~> 1.3` | 1.3.0 | Ships the `simplecov` command line tool. |
 | mutineer | `~> 1.0` | 1.0.0 | Needs Ruby 3.4 or later. Runs Minitest and RSpec. Young, so keep the pin. |
@@ -30,32 +22,7 @@ Facts about each library at the pinned versions, taken from its own README, chan
 | flog | `~> 4.9` | 4.9.4 | Used by RubyCritic. |
 | ostruct | `~> 0.6` | 0.6.3 | RubyCritic needs it, and Bundler loads it on Ruby 4.0 only when the Gemfile lists it. |
 
-## Minitest 6
-
-Changes that break a Minitest 5 suite (6.0.0, December 2025):
-
-- `assert_equal nil, value` fails. Write `assert_nil value`. Since 6.0.3, `assert_same nil, value` fails too.
-- `Minitest::Mock` and `stub` moved to the `minitest-mock` gem. Add that gem when a test uses them.
-- Spec expectations are gone from `Object`. Write `_(value).must_equal 3`, not `value.must_equal 3`.
-- The `MiniTest` alias is gone. Write `Minitest`.
-- Plugins load only when required. Require each plugin in the test helper, or call `Minitest.load_plugins`.
-- `N` no longer sets the number of parallel workers. Set `MT_CPU`.
-- `assert_send` is gone. Use `assert_predicate` or `assert_operator`.
-- `--name` still filters tests, but `--include` replaces it.
-
-Additions worth using:
-
-- `bundle exec minitest test/refund_test.rb:13` runs the test on that line.
-- `bundle exec minitest --bisect` finds the test that makes another test fail when they run in order.
-- `rake test:fu` runs only tests with uppercase `FU` in their name, since 6.0.1.
-
-Writing idioms and assertions that kill mutants: `minitest-idioms.md`.
-
-## RSpec 3.13
-
-- This skill targets RSpec 3.13. When it was measured, `4.0.0.beta1` was the only 4.x release.
-- rspec-rails 8.0 needs Rails 7.2 or later, according to the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md). This skill did not run rspec-rails.
-- Configuration, `let`, doubles, and the command line options: `rspec-practices.md`.
+Mutation tools that were tried and rejected, with why: `tool-choices.md`.
 
 ## SimpleCov 1.3
 
@@ -165,18 +132,8 @@ Baselines for large codebases:
 - `SHARE=true skunk` uploads the report to a public site. Never set it on private code.
 - RubyCritic reads `.rubycritic.yml` (`paths`, `formats`, `no_browser`, `minimum_score`, `mode_ci`) and respects an existing Reek configuration. `rubycritic --format console --no-browser app lib` prints to the terminal.
 
-## Mutation tools that failed
-
-| Tool | Result on Ruby 4.0.3 |
-|---|---|
-| Mutant 0.16.3 | Reported every mutant alive, even one that replaced a method body with `raise`, on Ruby 4.0.3 and 3.3.5. Its parser gem reads Ruby 3.3 syntax only. |
-| Evilution 1.1.0 | Ran no Minitest 6 tests: 46 of 47 mutants errored. |
-| Hen'i-tai 0.5.3 | Works with `integration: minitest` in its configuration. It defaults to RSpec and samples 5% of mutants. |
-
 ## Sources
 
-- Minitest `History.rdoc` in the installed 6.0.6 gem.
-- The Changelog files in the installed rspec-core, rspec-mocks, and rspec-support gems, and the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md).
 - [SimpleCov README and configuration guide](https://github.com/simplecov-ruby/simplecov).
 - [Mutineer README, changelog and guide for agents](https://github.com/davidteren/mutineer), and `lib/mutineer/config.rb`, `cli.rb`, and `test_runners/rspec.rb` in the installed 1.0.0 gem.
 - [Skunk README](https://github.com/fastruby/skunk).
