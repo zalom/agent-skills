@@ -4,7 +4,7 @@ require "stringio"
 require "tmpdir"
 require "yaml"
 
-SKILL_ROOT = File.expand_path("../../ruby-verifying", __dir__)
+SKILL_ROOT = File.expand_path("../../ruby-quality-checking", __dir__)
 
 load File.join(SKILL_ROOT, "scripts/setup-project")
 load File.join(SKILL_ROOT, "assets/bin/verify-change")
