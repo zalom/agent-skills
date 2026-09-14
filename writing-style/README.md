@@ -37,6 +37,8 @@ Then replace the instructions in it with your own rules, one rule per line, in y
 
 `references/overrides.md` is listed in `.gitignore`, so it is never committed and pulling an update to this repository never overwrites it. `references/overrides.example.md` is the shipped template and carries no rules.
 
+The plugin install keeps each version in its own cache directory, such as `~/.claude/plugins/cache/zalom-skills/writing-style/0.1.0/`, so an overrides file created there stays behind when the plugin updates. To keep your rules across updates, use the symlink install from a clone and create the file there.
+
 ## The layer model
 
 ```
