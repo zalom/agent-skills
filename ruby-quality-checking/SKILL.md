@@ -5,10 +5,12 @@ description: >
   project's style guide, green tests, patch coverage, mutation score, and
   CRAP scores. Use when checking a branch before a push or pull request;
   adding coverage, mutation testing, CRAP scores, RuboCop, Standard, or
-  rubocop-rails-omakase to a project; reading or fixing surviving mutants,
-  uncovered lines, or high CRAP scores; or when tests passed but a bug
-  still shipped and someone asks whether the tests can be trusted. For
-  writing or refactoring tests in general, use ruby-testing.
+  rubocop-rails-omakase to a project; explaining what a CRAP score,
+  mutation score, or patch coverage number means; reading or fixing
+  surviving mutants, uncovered lines, or high CRAP scores; writing the
+  test or spec that kills a named surviving mutant; or when tests passed
+  but a bug still shipped and someone asks whether the tests can be
+  trusted. For writing or refactoring tests in general, use ruby-testing.
 license: MIT
 compatibility: Needs Ruby, Bundler, git, and a shell that can install gems from rubygems.org.
 metadata:
