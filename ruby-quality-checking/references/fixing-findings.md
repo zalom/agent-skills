@@ -46,11 +46,21 @@ The operator in the report points at the test to write:
 
 Some mutants cannot be killed, because no input can tell them apart from the original. Example: dropping `return 0 if items.empty?` before `items.sum { ... }` changes nothing, because the sum of an empty list is already 0.
 
+State why a survivor looks equivalent before suppressing it; a person decides whether that
+reasoning holds, this skill never decides alone.
+
 1. First, simplify the code so the mutant disappears. In the example, delete the redundant guard.
 2. If the code must stay, suppress the mutant with the reason next to it:
    - inline: `# mutineer:disable-line statement_removal`, or
-   - in `.mutineer.yml`: the survivor's `id` from `--format json` under `ignore:`, with a comment.
-3. After 2 failed attempts to kill the same survivor, stop and ask a person whether it is equivalent. Never loop on it.
+   - in `.mutineer.yml`: run with `--format json`, take the survivor's `id` under
+     `survivors[].id` (12 hex characters, a content-based digest of the mutant, not a file or
+     line reference), and add it under `ignore:`. `.mutineer.yml`'s `ignore:` is a flat array
+     of ids; there is no structured reason field, so give the reason as a YAML comment on the
+     same line.
+3. Rerun and read the `Ignored:` line to confirm the suppression took. A run where every
+   mutant ends up ignored reports mutation score `N/A` and skips the threshold gate, the same
+   as a run with no covered mutants.
+4. After 2 failed attempts to kill the same survivor, stop and ask a person whether it is equivalent. Never loop on it.
 
 ## CRAP scores
 

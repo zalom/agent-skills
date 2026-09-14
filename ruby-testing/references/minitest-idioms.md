@@ -76,7 +76,7 @@ Assertions that kill mutants:
 
 ## Stubs and mocks
 
-Minitest 6 moved `Minitest::Mock` and `Object#stub` to the `minitest-mock` gem. Without that gem, neither is defined. Add `gem "minitest-mock", "~> 5.27"` and require it:
+Minitest 6 moved `Minitest::Mock` and `Object#stub` to the `minitest-mock` gem. Without that gem, neither is defined: `Minitest::Mock.new` raises `NameError: uninitialized constant Minitest::Mock`. A fresh Rails 8.1 app resolves `minitest (6.0.6)` with no `minitest-mock` in the lockfile by default. `detect-tools` reads the resolved version only from the 4-space `GEM specs:` line (`^    minitest \([0-9.]+\)$`), never from a 6-space "required by" line or a `CHECKSUMS` entry, and lists `minitest-mock` as missing only when that version is 6.0 or later and no mocking library was found. Add `gem "minitest-mock", "~> 5.27"` and require it:
 
 ```ruby
 require "minitest/mock"

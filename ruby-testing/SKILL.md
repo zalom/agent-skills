@@ -12,6 +12,7 @@ description: >
   first and warns when coverage, mutation testing, or CRAP scores are
   missing.
 license: MIT
+compatibility: Needs Ruby, Bundler, git, and a shell that can install gems from rubygems.org.
 metadata:
   author: Zlatko Alomerovic
 ---
@@ -34,6 +35,7 @@ Write tests that check behavior and kill mutants, in whatever framework, test da
 - Assert exact values and both sides of each boundary. A direction such as `assert_operator total, :<, 54_90` or `expect(total).to be < 54_90` lets mutants survive.
 - Run the test files you wrote or changed, plus the tests of the feature the change touches. Never run the full suite locally or inside an agent step, even under time pressure or for "just one line changed": the full suite runs in CI, and a red build stops the release.
 - When something needs to start before tests run, start it. Never skip or delete a test because a database or a service will not start; say so and ask.
+- Without a shell that can run Ruby, give the commands to run by hand and say plainly that nothing here was run or verified.
 
 ## Gotchas
 
@@ -44,7 +46,7 @@ Write tests that check behavior and kill mutants, in whatever framework, test da
 
 ## Tasks
 
-Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. Run a script by its full path, `SKILL_DIR/scripts/...`, where `SKILL_DIR` is that directory.
+Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. `SKILL_DIR` is the absolute path of the directory this file was loaded from; find it before running a script. Run a script by its full path, `SKILL_DIR/scripts/...`. Actually execute the script with a Bash tool call and read its real output; never predict, summarize, or invent what it would print instead of running it.
 
 | When | Do |
 |---|---|

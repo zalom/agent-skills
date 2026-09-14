@@ -5,6 +5,7 @@ How `scripts/setup-project` and `bin/verify-change` detect and run a project's s
 ## Contents
 
 - Detection
+- Detection matrix
 - Installing one
 - The lint command
 - Ambiguous style guides
@@ -21,6 +22,21 @@ How `scripts/setup-project` and `bin/verify-change` detect and run a project's s
 - `nil` - none of the above.
 
 `:ambiguous` and no style guide are never a `missing` gap on their own terms; the gap this skill reports is "a style guide", offered as a choice, never installed unasked.
+
+## Detection matrix
+
+Measured 2026-09-14, RuboCop 1.91.0 and standard 1.56.0:
+
+| Setup | Gemfile line | Config file | `Gemfile.lock` DEPENDENCIES |
+|---|---|---|---|
+| Rails default (omakase) | `gem "rubocop-rails-omakase", require: false` | `inherit_gem: { rubocop-rails-omakase: rubocop.yml }` | `rubocop-rails-omakase` present, bare `rubocop`/`standard` absent |
+| `standard` alone | `gem "standard"` | `.standard.yml` present, no `.rubocop.yml` | `standard` present, bare `rubocop` absent from DEPENDENCIES |
+| RuboCop + standard plugin | `gem "rubocop"` and `gem "standard"` | `.rubocop.yml` with both `require: [standard]` (or `require: standard`) and `inherit_gem: { standard: config/base.yml }`; a bare `plugins: standard` fails to load on standard 1.56.0 with RuboCop 1.88-1.91 | both `rubocop` and `standard` present; standard 1.56.0 requires `rubocop ~> 1.88.0`, not 1.91 |
+| Plain RuboCop | `gem "rubocop"` only | `.rubocop.yml` with no Standard or omakase wiring | only `rubocop` present |
+| `rubocop-rails-omakase` added by hand, non-Rails | `gem "rubocop-rails-omakase"` | identical to the Rails-generated case | identical to a real Rails app's DEPENDENCIES; only a Rails marker file (`config/application.rb`, `bin/rails`) tells them apart |
+
+`rubocop --force-exclusion FILES` and `standardrb --force-exclusion FILES` both skip a file
+passed on the command line that is also listed in the config's exclude/ignore list.
 
 ## Installing one
 

@@ -12,6 +12,41 @@ The full suite runs in CI, and a red build stops the release. Local runs and age
 - In an RSpec project, `full-suite` runs `COVERAGE=1 bundle exec rspec`, and `bin/verify-change` runs the specs.
 - Rails jobs run `bin/rails db:test:prepare` first. Add the app's system packages to the job if its tests need them.
 
+## Any CI
+
+`setup-project` writes GitHub Actions only. On a project whose profile reads GitLab CI or
+CircleCI and has no GitHub workflow, it writes no workflow file and prints one line pointing
+here instead. Any CI needs the same 2 things:
+
+- The full suite with coverage on every push to the default branch and on every merge
+  request or pull request: `COVERAGE=1 bundle exec rake test` (or the project's own test
+  command).
+- `bundle exec bin/verify-change` against the target branch on a merge or pull request.
+- Full git history for the merge base `bin/verify-change` computes: `fetch-depth: 0` on
+  GitHub Actions, `GIT_DEPTH: 0` on GitLab CI. A shallow checkout makes `git merge-base` fail.
+
+A GitLab CI example, stated as not run by this skill (never executed against a live GitLab
+project; read it as a starting point, not a measured result):
+
+```yaml
+variables:
+  GIT_DEPTH: 0
+
+verify-change:
+  stage: test
+  script:
+    - bundle install
+    - bundle exec bin/verify-change origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+full-suite:
+  stage: test
+  script:
+    - bundle install
+    - COVERAGE=1 bundle exec rake test
+```
+
 ## When CI is red
 
 1. Stop the release.

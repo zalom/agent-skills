@@ -10,6 +10,7 @@ What `scripts/setup-project` changes in a project, and the same steps by hand fo
 - By hand in a Rails app with Minitest
 - RSpec: coverage and mutation testing
 - By hand in an RSpec project
+- Skunk report (optional)
 - Ruby older than 3.4
 
 ## Requirements
@@ -17,6 +18,8 @@ What `scripts/setup-project` changes in a project, and the same steps by hand fo
 - Ruby 3.4 or later for Mutineer. Every result in this skill was measured on Ruby 4.0.3.
 - A Minitest or RSpec suite. Rails apps use Minitest by default.
 - A git repository with a base branch, because every check compares against it.
+- An existing `gem "simplecov"` pin below 1.3 must be raised: the `skip`/`cover` coverage DSL
+  the `coverage/` assets use needs SimpleCov 1.0 or later, and raises `NoMethodError` on 0.22.0.
 
 ## The script
 
@@ -69,12 +72,12 @@ Replace the first command with `COVERAGE=1 bin/rails test` in a Rails app with M
      gem "minitest", "~> 6.0", require: false
      gem "simplecov", "~> 1.3", require: false
      gem "mutineer", "~> 1.0", require: false
-     gem "skunk", "~> 0.5", require: false
-     gem "rubycritic", "~> 4.12", require: false
-     gem "flog", "~> 4.9", require: false
-     gem "ostruct", "~> 0.6", require: false
    end
    ```
+
+   `bin/crap`'s CRAP gate needs only `prism`, which ships as a default gem on Ruby 3.3 and
+   later; add `gem "prism", "~> 1.0", require: false` only on an older Ruby. Skunk, RubyCritic,
+   and Flog are a separate, optional report: see "Skunk report (optional)" below.
 
 2. Run `bundle install`.
 3. Put the block from `assets/coverage/plain.rb` at the very top of `test/test_helper.rb`:
@@ -180,6 +183,28 @@ Replace the first command with `COVERAGE=1 bin/rails test` in a Rails app with M
 
    In a Rails app, replace `--strategy redefine` with `--rails`. Never add `--daemon` to an RSpec run: Mutineer 1.0 runs the daemon with Minitest only.
 
+## Skunk report (optional)
+
+Skunk, RubyCritic, and Flog are a risk report across the codebase, not part of the default
+setup: `setup-project` no longer adds them. Add them by hand when a team wants the report
+(`team-adoption.md` step 2):
+
+```ruby
+group :development, :test do
+  gem "skunk", "~> 0.5", require: false
+  gem "rubycritic", "~> 4.12", require: false
+  gem "flog", "~> 4.9", require: false
+  gem "ostruct", "~> 0.6", require: false
+end
+```
+
+Pin RubyCritic to `~> 4.12`: Skunk 0.5.4 hard-caps RubyCritic below 5.0
+(`skunk.gemspec` still reads `"< 5.0"`; the one pull request to lift the floor, #132, bumped it
+to 4.11 and was closed unmerged as a compatibility break, with no other open work toward
+RubyCritic 5). Add `ostruct` on Ruby 4.0, because RubyCritic needs it and Ruby 4.0 only loads
+a gem Bundler doesn't otherwise pull in when the Gemfile lists it. Never set `SHARE=true`: it
+uploads the report to a public site.
+
 ## Ruby older than 3.4
 
 Mutineer runs on Ruby 3.4 or later. For a project on Ruby 3.3 or older, either upgrade the project, or install Mutineer under a newer Ruby and run the project's tests in the project's own Ruby:
@@ -189,4 +214,26 @@ RAILS_ENV=test mutineer run app/models/post.rb --test test/models/post_test.rb \
   --test-command "bundle exec rails test %{files}"
 ```
 
-That mode runs one mutant at a time and without coverage narrowing, so its score reads higher than a normal run and the two are not comparable. `bin/verify-change` does not use it.
+That mode runs every `--test` file for every mutant (no per-mutant coverage narrowing) and
+ignores `--jobs`: Mutineer prints that it forces 1. Its score is an upper bound, not
+comparable to an in-process run, because an infrastructure failure in the child scores as a
+kill same as a real one. Measured identical mutant counts (6 mutants, 5 killed, 83.3%) against
+a native in-process run on the project's own Ruby, so the mode is trustworthy, just not
+directly comparable across runs. `bin/verify-change` does not use it.
+
+Under mise, a naive `--test-command` fails with `RubyVersionMismatch`: Mutineer's own
+PATH-scrubbing only recognizes rbenv and asdf's version-manager layout, not mise's
+`~/.local/share/mise/installs/ruby/<version>/bin`. A wrapper script fixes it:
+
+```sh
+#!/bin/bash
+export PATH="$(mise where ruby@3.3.5)/bin:$PATH"
+exec bundle exec ruby -Ilib -Itest "$@"
+```
+
+Pass it as `--test-command "./run_tests.sh %{files}"`. This is a reference recipe, not an
+asset the script copies; write it into the project by hand.
+
+On Ruby 3.3.6 through 3.3.x (henitai needs 3.3.6 or later; not 3.3.5), `henitai` 0.5.3 runs
+in-process as the alternative and needs no `--test-command` workaround: see
+`tool-choices.md`.

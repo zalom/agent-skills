@@ -70,7 +70,15 @@ The minimal reproduction command is:
 - Rails forks workers with `parallelize(workers: :number_of_processors)` and gives each worker its own test database. SimpleCov needs a `command_name` per worker, as the ruby-quality-checking skill's setup reference shows.
 - In plain Ruby with Minitest, `minitest-parallel_fork` forks workers: `bundle exec ruby -rminitest/parallel_fork test/refund_test.rb`. Version 2.1.1 ran green on Minitest 6.0.6 and Ruby 4.0.3. Give each worker its own temporary folders and ports.
 - `MT_CPU` sets the number of workers for Minitest's own parallel executor. `N` no longer does.
-- RSpec 3.13 runs examples in one process. No RSpec parallel runner was tested on Ruby 4.0 for this skill; `parallel_tests` and `turbo_tests` exist.
+- RSpec 3.13 runs examples in one process. `parallel_tests` 5.8.0, `turbo_tests` 2.2.5, and `flatware` 2.4.0 all installed and ran green on Ruby 4.0.3, RSpec 3.13, Rails 8.1 (measured 2026-09-14). Recommend `parallel_tests`: it installs standalone with no resolver conflict and uses the `TEST_ENV_NUMBER` convention SimpleCov's own docs assume. `turbo_tests` requires `parallel_tests >= 3.3, < 5`, so it cannot sit in the same Gemfile as a standalone `parallel_tests 5.8.0`; pick one, or isolate with a second Gemfile. Add the `TEST_ENV_NUMBER` interpolation to `config/database.yml` first; a fresh Rails 8 app ships without it:
+
+  ```yaml
+  test:
+    <<: *default
+    database: storage/test<%= ENV["TEST_ENV_NUMBER"] %>.sqlite3
+  ```
+
+  Prepare worker databases with `bin/rails db:migrate` then `bin/rails "parallel:load_schema[N]"`. `turbo_tests` numbers workers `1..N` and `flatware` numbers them `0..N-1` (not `parallel_tests`' `""`, `2..N`), so either needs its own worker-1 or worker-0 database created once. For SimpleCov to merge each worker's coverage, add `SimpleCov.command_name "rspec-#{ENV['TEST_ENV_NUMBER']}"` to `spec/spec_helper.rb`; the ruby-quality-checking skill's setup reference has the full block. `flatware` boots once in the parent before `TEST_ENV_NUMBER` is set per forked worker, so this interpolation resolves the same for every worker there, but SimpleCov's own `(subprocess: N)` disambiguation still merges the results correctly. At 80 examples with ~2s of real work, none of the three meaningfully beat plain `rspec`, because Rails boot time dominates a suite this small; the win shows at hundreds of files.
 - A parallel run exposes coupling as well as saving time: tests that share state start to fail.
 
 ## Sources

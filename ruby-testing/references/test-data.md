@@ -51,7 +51,9 @@ Factories add indirection (a definition file, a sequence, a trait) and the runti
 
 ## A project with both
 
-Detect the project's test data with `detect-tools`. A project can have `fixtures` and `factories` at once, most often mid-migration or where legacy tests kept fixtures while new tests moved to factories. Write a new test in whichever style the tests near it use; do not convert a fixture-based test to a factory or vice versa unless that is the task.
+Detect the project's test data with `detect-tools`. A project can have `fixtures` and `factories` at once, most often mid-migration or where legacy tests kept fixtures while new tests moved to factories. Write a new test in whichever style the tests near it use; do not convert a fixture-based test to a factory or vice versa unless that is the task. Measured on rspec-rails 8.0.4, Rails 8.1, Ruby 4.0.3: fixtures and factories both work in one RSpec run with no conflict.
+
+rspec-rails 6 and later sets `config.fixture_paths` in the generated `rails_helper.rb` by default, whether or not a project uses fixtures, so `config.fixture_paths` being present is not evidence either way. Detect fixtures from `*.yml` files under `test/fixtures` or `spec/fixtures`, and from a spec that calls `fixtures :all` or `fixtures :name`.
 
 ## Choosing for a new project
 
