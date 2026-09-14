@@ -286,8 +286,7 @@ class VerifyChange
   end
 
   def suite
-    lockfile = File.join(@root, "Gemfile.lock")
-    listed = File.file?(lockfile) && File.read(lockfile).match?(RSPEC_DEPENDENCY)
+    listed = dependencies_section.match?(RSPEC_DEPENDENCY)
     (exist?(".rspec") && File.directory?(File.join(@root, "spec"))) || listed ? RSPEC : MINITEST
   end
 

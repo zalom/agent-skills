@@ -192,7 +192,7 @@ class ProjectProfile
     config = rubocop_config
     return false if config.empty?
 
-    config.match?(/inherit_gem:\s*\n?\s*standard:/m) ||
+    config.match?(/inherit_gem:\s*\{?\s*standard:/m) ||
       config.match?(/^(plugins|require):\s*\n(\s*-\s*standard\s*\n)+/m) ||
       config.match?(/^(plugins|require):\s*\[[^\]]*\bstandard\b[^\]]*\]/m)
   end

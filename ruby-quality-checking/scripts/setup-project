@@ -12,7 +12,7 @@ class SetupProject
     RSpec (an RSpec project has spec/ and .rspec, or rspec, rspec-core, or
     rspec-rails under DEPENDENCIES in Gemfile.lock):
 
-      Gemfile                 simplecov, mutineer, skunk, rubycritic, flog, ostruct (and minitest in plain Ruby with Minitest)
+      Gemfile                 simplecov, mutineer (and minitest in plain Ruby with Minitest; prism only below Ruby 3.3, where it is not a default gem)
       test/test_helper.rb     Minitest: coverage when COVERAGE=1, parallel worker hooks in Rails
       spec/spec_helper.rb     RSpec: coverage when COVERAGE=1 (spec/rails_helper.rb when it is the only helper)
       .rspec                  RSpec: --require spec_helper, only when missing
@@ -40,9 +40,10 @@ class SetupProject
 
   ASSETS = File.expand_path("../assets", __dir__)
   MUTINEER_MINIMUM_RUBY = Gem::Version.new("3.4")
-  TOOL_GEMS = [["simplecov", "~> 1.3"], ["mutineer", "~> 1.0"], ["skunk", "~> 0.5"], ["rubycritic", "~> 4.12"],
-               ["flog", "~> 4.9"], ["ostruct", "~> 0.6"]].freeze
+  PRISM_MINIMUM_RUBY = Gem::Version.new("3.3")
+  TOOL_GEMS = [["simplecov", "~> 1.3"], ["mutineer", "~> 1.0"]].freeze
   MINITEST_GEM = ["minitest", "~> 6.0"].freeze
+  PRISM_GEM = ["prism", "~> 1.0"].freeze
   COPIED_ASSETS = { "bin/crap" => "bin/crap", "bin/verify-change" => "bin/verify-change", "tools/crap.rb" => "tools/crap.rb" }.freeze
   MINITEST_ASSETS = { "test/tools/crap_test.rb" => "test/tools/crap_test.rb" }.freeze
   RSPEC_ASSETS = { "spec/tools/crap_spec.rb" => "spec/tools/crap_spec.rb", "rspec" => ".rspec" }.freeze
@@ -164,7 +165,10 @@ class SetupProject
     version = ruby_version
     return unless version && Gem::Version.correct?(version) && Gem::Version.new(version) < MUTINEER_MINIMUM_RUBY
 
-    @err.puts "Ruby #{version}: Mutineer needs Ruby 3.4 or later. Upgrade the project, or run Mutineer from a newer Ruby with --test-command."
+    @err.puts "Ruby #{version}: Mutineer needs Ruby 3.4 or later. Upgrade the project, or run Mutineer from a newer Ruby " \
+              "with --test-command, which runs every --test file for every mutant, ignores --jobs, and reports the " \
+              "score as an upper bound, not comparable to an in-process run. See references/setup.md, \"Ruby older " \
+              "than 3.4\", for the mise wrapper script and the Hen-i-tai alternative on Ruby 3.3.6 or later."
   end
 
   def warn_about_ambiguous_style_guide
@@ -182,6 +186,7 @@ class SetupProject
       missing.each { |item| @out.puts "  #{item.goal}: #{item.why}" }
     end
     print_linter_choices if @profile.style_guide.nil?
+    print_serial_mutation_notice
     @out.puts ""
   end
 
@@ -190,9 +195,24 @@ class SetupProject
     @out.puts "Pass --linter omakase|standard|rubocop to install one."
   end
 
+  def print_serial_mutation_notice
+    adapter = @profile.database_adapter
+    return unless %w[postgresql mysql2].include?(adapter)
+
+    @out.puts "Test database: #{adapter}. Mutineer's --daemon per-worker database isolation is SQLite only, so " \
+              "mutation testing runs serially here (--rails without --daemon). Never add --daemon; keep runs small " \
+              "with --since on changed lines."
+  end
+
+  def needs_explicit_prism?
+    version = ruby_version
+    version && Gem::Version.correct?(version) && Gem::Version.new(version) < PRISM_MINIMUM_RUBY
+  end
+
   def add_gems
     gemfile = read("Gemfile")
     wanted = rails? || rspec? ? TOOL_GEMS : [MINITEST_GEM] + TOOL_GEMS
+    wanted += [PRISM_GEM] if needs_explicit_prism?
     missing = wanted.reject { |name, _| gemfile.match?(/^\s*gem\s+["']#{Regexp.escape(name)}["']/) }
     return record("kept", "Gemfile") if missing.empty?
 
@@ -271,6 +291,8 @@ class SetupProject
 
   def add_workflow
     workflows = Dir.glob(".github/workflows/*.{yml,yaml}", base: @root).sort
+    return other_ci_notice if workflows.empty? && (@profile.ci & %i[gitlab circleci]).any?
+
     verifying = workflows.find { |workflow| read(workflow).include?("bin/verify-change") }
     return record("kept", verifying) if verifying
 
@@ -279,6 +301,11 @@ class SetupProject
 
     template = workflows.empty? ? asset("github/ci.yml") : asset("github/verify-change.yml")
     write(target, fill_workflow(template), "created")
+  end
+
+  def other_ci_notice
+    @out.puts "GitLab CI or CircleCI detected, no GitHub workflow: see references/ci.md, \"Any CI\", for the commands " \
+              "to run there. No GitHub workflow written."
   end
 
   def fill_workflow(template)
