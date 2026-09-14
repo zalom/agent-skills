@@ -7,6 +7,8 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 | Skill | What it does |
 |---|---|
 | `writing-style` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
+| `skill-creating` | Authors or revises an Agent Skill, a subagent or agent role file, or a lifecycle hook with progressive disclosure. |
+| `skill-evaluating` | Evaluates skills for correctness, convention compliance, and progressive disclosure. |
 
 ## Install
 

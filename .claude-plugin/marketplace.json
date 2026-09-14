@@ -19,6 +19,34 @@
       "license": "MIT AND CC-BY-4.0",
       "keywords": ["writing", "style-guide", "documentation", "google-style"],
       "category": "productivity"
+    },
+    {
+      "name": "skill-creating",
+      "source": "./skill-creating",
+      "strict": false,
+      "description": "Author or revise an Agent Skill, a subagent or agent role file, or a lifecycle hook with progressive disclosure.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["skills", "agent-skills", "authoring", "progressive-disclosure"],
+      "category": "development"
+    },
+    {
+      "name": "skill-evaluating",
+      "source": "./skill-evaluating",
+      "strict": false,
+      "description": "Evaluate skills for correctness, convention compliance, and progressive disclosure.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["skills", "agent-skills", "evals", "testing"],
+      "category": "development"
     }
   ]
 }
