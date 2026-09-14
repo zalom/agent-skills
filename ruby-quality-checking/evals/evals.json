@@ -71,7 +71,10 @@
       "set": "train",
       "prompt": "Add RuboCop to the Ruby project and fix the offenses.",
       "expected_output": "The skill activates. It detects the project's style guide first with ProjectProfile before doing anything; since RuboCop was asked for by name, --linter rubocop is an allowed way to install it when none is set up, then it fixes the reported offenses.",
-      "files": [],
+      "files": [
+        { "path": "Gemfile", "content": "source \"https://rubygems.org\"\n\ngem \"minitest\"\n" },
+        { "path": "lib/shop.rb", "content": "class Shop\n  def total(items)\n    items.sum { |item| item[:price] }\n  end\nend\n" }
+      ],
       "assertions": []
     },
     {

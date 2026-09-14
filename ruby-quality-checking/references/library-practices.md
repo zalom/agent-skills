@@ -1,6 +1,6 @@
 # Library practices
 
-Facts about each quality-checking library at the pinned versions, taken from its own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section for the library a question about options, versions, or upgrades names. The ruby-testing skill's `test-libraries.md` covers Minitest and RSpec themselves.
+Facts about each quality-checking library at the pinned versions, taken from its own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section for the library a question about options, versions, or upgrades names. The ruby-testing skill covers Minitest and RSpec themselves.
 
 ## Contents
 
@@ -108,7 +108,7 @@ Rails:
 
 - `--rails` boots `config/environment` once, forks a process per mutant, sets `RAILS_ENV=test`, and runs 1 job at a time.
 - `--rails --daemon --jobs 4` runs Minitest in parallel with a database per worker. SQLite only in 1.0: `lib/mutineer/rails_worker_db.rb#worker_db_config` raises `NotImplementedError` for any other adapter, unconditionally, with no flag or env var to bypass it. On Postgres 17 this turned every mutant into an `error` (score `nil`), even at `--jobs 1`; MySQL is inferred to behave the same from the same adapter check, not separately measured. `--rails --jobs N` without `--daemon` on Postgres or MySQL prints "runs serially (shared test DB); forcing --jobs 1" and correctly runs 1 job; do not add `--daemon` there. A Rails initializer that pre-creates per-worker databases and shadows the gem's own worker-DB module can get `--daemon --jobs 4` to score correctly, but it bypasses the gem's own safety guard, has no upstream support, and breaks silently on a Mutineer version bump; treat it as an unsupported escape hatch, not a default, and give no code for it.
-- Mutineer itself needs Ruby 3.4. For an app on older Ruby, `--test-command "bundle exec rails test %{files}"` runs the suite in the app's Ruby. That mode runs serially and without coverage narrowing, so its score reads higher than an in-process score and is not comparable. `setup.md`'s "Ruby older than 3.4" has the mise wrapper this needs and the henitai alternative on Ruby 3.3.6 or later.
+- Mutineer itself needs Ruby 3.4. For an app on older Ruby, `--test-command "bundle exec rails test %{files}"` runs the suite in the app's Ruby. That mode runs serially and without coverage narrowing, so its score reads higher than an in-process score and is not comparable. `setup.md`'s "Ruby older than 3.4" has the mise wrapper this needs; henitai 0.5.3 declares Ruby 3.3.6 or later, but it was measured only on Ruby 4.0.3 and never run on 3.3.x.
 
 RSpec:
 

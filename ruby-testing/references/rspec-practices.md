@@ -158,7 +158,7 @@ Measured on one spec with common problems, `rubocop --only RSpec` reported these
 
 ## Coverage and mutation testing
 
-Setting up patch coverage, Mutineer, and CRAP for an RSpec project, and running them, is the ruby-quality-checking skill's job: its `setup.md` covers RSpec detection and the coverage block, and its `manual-workflow.md` has a measured RSpec run end to end.
+Setting up patch coverage, Mutineer, and CRAP for an RSpec project, and running them, is the ruby-quality-checking skill's job.
 
 ## Sources
 

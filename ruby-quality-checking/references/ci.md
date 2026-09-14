@@ -16,7 +16,7 @@ The full suite runs in CI, and a red build stops the release. Local runs and age
 
 `setup-project` writes GitHub Actions only. On a project whose profile reads GitLab CI or
 CircleCI and has no GitHub workflow, it writes no workflow file and prints one line pointing
-here instead. Any CI needs the same 2 things:
+here instead. Any CI needs the same 3 things:
 
 - The full suite with coverage on every push to the default branch and on every merge
   request or pull request: `COVERAGE=1 bundle exec rake test` (or the project's own test

@@ -1,6 +1,6 @@
 # Test libraries
 
-Facts about the test-writing libraries at the pinned versions, taken from each one's own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section a question about options, versions, or upgrades names. `library-practices.md` in the ruby-quality-checking skill covers SimpleCov, Mutineer, Skunk, RubyCritic, and rubocop-rspec.
+Facts about the test-writing libraries at the pinned versions, taken from each one's own README, changelog, and source, and from runs on Ruby 4.0.3. Open the section a question about options, versions, or upgrades names. The ruby-quality-checking skill covers SimpleCov, Mutineer, Skunk, RubyCritic, and rubocop-rspec.
 
 ## Contents
 

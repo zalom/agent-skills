@@ -8,9 +8,7 @@ description: >
   message to a mailer, gateway, or job; removing shared state from specs;
   choosing Minitest or RSpec for a new project; making code testable with
   injection; fixing flaky, order-dependent, or slow tests; or when a
-  Minitest 5 suite breaks on Minitest 6. Checks the project's test tools
-  first and warns when coverage, mutation testing, or CRAP scores are
-  missing.
+  Minitest 5 suite breaks on Minitest 6.
 license: MIT
 compatibility: Needs Ruby, Bundler, git, and a shell that can install gems from rubygems.org.
 metadata:
@@ -46,7 +44,7 @@ Write tests that check behavior and kill mutants, in whatever framework, test da
 
 ## Tasks
 
-Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. `SKILL_DIR` is the absolute path of the directory this file was loaded from; find it before running a script. Run a script by its full path, `SKILL_DIR/scripts/...`. Actually execute the script with a Bash tool call and read its real output; never predict, summarize, or invent what it would print instead of running it.
+Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. `SKILL_DIR` is the absolute path of that directory; find it before running a script. Run a script by its full path, `SKILL_DIR/scripts/...`, and read its real output. Never predict or invent what a script prints.
 
 | When | Do |
 |---|---|
@@ -60,7 +58,7 @@ Paths in this file start at the skill directory, the directory that holds this `
 | A question names options, versions, or upgrades of Minitest or RSpec themselves | Read `references/test-libraries.md`. |
 | Someone asks where a testing practice comes from | Read `references/sources.md`. |
 | The task is checking a change before a push, adding patch coverage or mutation testing, or reading a `Failed:` line | Use the ruby-quality-checking skill instead. |
-| The task is writing a test to kill a named mutation survivor, cover an uncovered changed line, or lower a CRAP score | Use the ruby-quality-checking skill instead; that is its `fixing-findings.md`, not this skill's test writing. |
+| The task is writing a test to kill a named mutation survivor, cover an uncovered changed line, or lower a CRAP score | Use the ruby-quality-checking skill instead; that is the ruby-quality-checking skill's job, not this skill's test writing. |
 
 ## Scripts
 

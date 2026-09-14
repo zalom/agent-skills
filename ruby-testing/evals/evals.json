@@ -33,7 +33,7 @@
       "id": 4,
       "scope": "should-trigger",
       "set": "validation",
-      "prompt": "This Checkout class is core logic and nothing covers it. Can you make sure it's protected before we ship?",
+      "prompt": "This Checkout class is core logic and nothing covers it. Add the tests it needs.",
       "expected_output": "The skill activates on an indirect trigger: it writes tests for Checkout in the project's own framework, without the prompt saying 'test' or naming a framework.",
       "files": [],
       "assertions": []
@@ -44,7 +44,10 @@
       "set": "validation",
       "prompt": "Write a test for Checkout#complete: it should charge the gateway for the order total and deliver a receipt through OrderMailer.",
       "expected_output": "A collaboration test that checks the gateway receives charge with the order total and OrderMailer is asked to deliver a receipt, using a Minitest::Mock or spy, an RSpec instance_double with have_received, or a Rails mailer assertion, not a hand-rolled stub of the whole gateway response.",
-      "files": [],
+      "files": [
+        { "path": "app/services/checkout.rb", "content": "class Checkout\n  def initialize(gateway:)\n    @gateway = gateway\n  end\n\n  def complete(order)\n    @gateway.charge(order.total_cents)\n    OrderMailer.receipt(order).deliver_later\n  end\nend\n" },
+        { "path": "test/test_helper.rb", "content": "ENV[\"RAILS_ENV\"] ||= \"test\"\nrequire_relative \"../config/environment\"\nrequire \"rails/test_help\"\n" }
+      ],
       "assertions": []
     },
     {
@@ -62,7 +65,14 @@
       "set": "validation",
       "prompt": "Add a test for this Rails model. The project has both test/fixtures and FactoryBot factories already.",
       "expected_output": "The skill detects both fixtures and factories are present and writes the test in whichever style the existing tests near this model use, rather than picking one on its own or converting existing tests.",
-      "files": [],
+      "files": [
+        { "path": "Gemfile", "content": "source \"https://rubygems.org\"\n\ngem \"rails\", \"~> 8.1\"\ngem \"factory_bot_rails\", \"~> 6.5\"\n" },
+        { "path": "config/application.rb", "content": "require \"rails/all\"\n\nmodule Demo\n  class Application < Rails::Application\n  end\nend\n" },
+        { "path": "app/models/order.rb", "content": "class Order < ApplicationRecord\n  belongs_to :customer\nend\n" },
+        { "path": "test/fixtures/orders.yml", "content": "first:\n  customer: alice\n  total_cents: 5000\n" },
+        { "path": "test/factories/orders.rb", "content": "FactoryBot.define do\n  factory :order do\n    customer\n    total_cents { 5000 }\n  end\nend\n" },
+        { "path": "test/models/customer_test.rb", "content": "require \"test_helper\"\n\nclass CustomerTest < ActiveSupport::TestCase\n  test \"has a name\" do\n    assert_equal \"Alice\", customers(:alice).name\n  end\nend\n" }
+      ],
       "assertions": []
     },
     {

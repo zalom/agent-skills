@@ -37,7 +37,7 @@ The script reads the project's files to decide what kind of project it is:
 | It finds | It treats the project as |
 |---|---|
 | `config/application.rb` | A Rails app |
-| `spec/` and `.rspec`, or `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock` | An RSpec project |
+| `spec/` with `.rspec`, `spec/spec_helper.rb`, or `spec/rails_helper.rb`, or `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock` | An RSpec project |
 
 A direct `rspec-expectations` or `rspec-mocks` dependency, or rspec listed only as another gem's dependency, does not make a project an RSpec project. When both `test/` and `spec/` exist, the script warns that it sets up only one of them, and `bin/verify-change` warns that it runs only one.
 
@@ -217,11 +217,11 @@ RAILS_ENV=test mutineer run app/models/post.rb --test test/models/post_test.rb \
 That mode runs every `--test` file for every mutant (no per-mutant coverage narrowing) and
 ignores `--jobs`: Mutineer prints that it forces 1. Its score is an upper bound, not
 comparable to an in-process run, because an infrastructure failure in the child scores as a
-kill same as a real one. Measured identical mutant counts (6 mutants, 5 killed, 83.3%) against
-a native in-process run on the project's own Ruby, so the mode is trustworthy, just not
-directly comparable across runs. `bin/verify-change` does not use it.
+kill same as a real one. Mutant counts matched a native run of the same project on Ruby
+3.4.4 (6 mutants, 5 killed, 83.3%, Mutineer 1.0.0). The score is still an upper bound.
+`bin/verify-change` does not use it.
 
-Under mise, a naive `--test-command` fails with `RubyVersionMismatch`: Mutineer's own
+Under mise, a naive `--test-command` fails with `RubyVersionMismatch`: Mutineer 1.0.0's own
 PATH-scrubbing only recognizes rbenv and asdf's version-manager layout, not mise's
 `~/.local/share/mise/installs/ruby/<version>/bin`. A wrapper script fixes it:
 
@@ -234,6 +234,5 @@ exec bundle exec ruby -Ilib -Itest "$@"
 Pass it as `--test-command "./run_tests.sh %{files}"`. This is a reference recipe, not an
 asset the script copies; write it into the project by hand.
 
-On Ruby 3.3.6 through 3.3.x (henitai needs 3.3.6 or later; not 3.3.5), `henitai` 0.5.3 runs
-in-process as the alternative and needs no `--test-command` workaround: see
-`tool-choices.md`.
+henitai 0.5.3 declares Ruby 3.3.6 or later; it was measured only on Ruby 4.0.3 and never run
+on 3.3.x. See `tool-choices.md`.

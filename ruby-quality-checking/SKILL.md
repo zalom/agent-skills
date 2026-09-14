@@ -35,7 +35,7 @@ Prove a change against 5 gates on the changed code only, in the project's own to
 
 ## Gotchas
 
-- Mutant 0.16.3 reports every mutant alive on Ruby 4.0, and Evilution fails on Minitest 6. Use Mutineer.
+- Mutant 0.16.3 reports every mutant alive on Ruby 4.0. Evilution 1.1.0 errors on Minitest 5.27 and 6 yet reports PASS; it works only with RSpec. Use Mutineer.
 - `--operators` replaces Mutineer's 5 default operators. Keep all 11 in `.mutineer.yml`.
 - `strategy` is not a `.mutineer.yml` key. Pass `--strategy redefine` in plain Ruby, or `--rails` in a Rails app.
 - Mutineer's `--daemon` runs Minitest only. RSpec runs in the default mode with `--framework rspec`.
@@ -47,7 +47,7 @@ Prove a change against 5 gates on the changed code only, in the project's own to
 
 ## Tasks
 
-Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. `SKILL_DIR` is the absolute path of the directory this file was loaded from; find it before running a script. Run a script by its full path, `SKILL_DIR/scripts/...`. Actually execute the script with a Bash tool call and read its real output; never predict, summarize, or invent what it would print instead of running it.
+Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. `SKILL_DIR` is the absolute path of that directory; find it before running a script. Run a script by its full path, `SKILL_DIR/scripts/...`, and read its real output. Never predict or invent what a script prints.
 
 | When | Do |
 |---|---|

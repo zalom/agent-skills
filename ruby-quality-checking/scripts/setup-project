@@ -169,7 +169,8 @@ class SetupProject
     @err.puts "Ruby #{version}: Mutineer needs Ruby 3.4 or later. Upgrade the project, or run Mutineer from a newer Ruby " \
               "with --test-command, which runs every --test file for every mutant, ignores --jobs, and reports the " \
               "score as an upper bound, not comparable to an in-process run. See references/setup.md, \"Ruby older " \
-              "than 3.4\", for the mise wrapper script and the Hen-i-tai alternative on Ruby 3.3.6 or later."
+              "than 3.4\", for the mise wrapper script; henitai 0.5.3 declares Ruby 3.3.6 or later, but it was " \
+              "measured only on Ruby 4.0.3 and never run on 3.3.x."
   end
 
   def warn_about_ambiguous_style_guide
