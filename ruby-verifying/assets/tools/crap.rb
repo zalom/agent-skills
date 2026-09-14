@@ -101,7 +101,8 @@ module Crap
       lib/, app/, and tools/. With --since REF it scores only the methods whose
       lines changed since REF.
     
-      Exit codes: 0 no method above the threshold (default 30), 1 at least one above it, 2 an unknown option.
+      Exit codes: 0 no method above the threshold (default 30), 1 at least one above it, 2 an unknown
+      option, or --threshold, --since, or --coverage with no value.
     TEXT
     
     def initialize(argv, root:, out: $stdout, git: ->(*args) { Open3.capture2("git", "-C", root, *args).first })
@@ -109,6 +110,7 @@ module Crap
       @root = root
       @out = out
       @git = git
+      @missing_value = false
     end
 
     def run
@@ -117,7 +119,7 @@ module Crap
       threshold = option("--threshold", "30").to_f
       since = option("--since", nil)
       resultset = File.join(@root, option("--coverage", "coverage/.resultset.json"))
-      return usage(2) if @argv.any? { |argument| argument.start_with?("-") }
+      return usage(2) if @missing_value || @argv.any? { |argument| argument.start_with?("-") }
 
       paths = @argv.empty? ? Dir.glob(%w[lib/**/*.rb app/**/*.rb tools/**/*.rb], base: @root) : @argv
       coverage = File.exist?(resultset) ? Crap.line_coverage(File.read(resultset)) : {}
@@ -137,6 +139,13 @@ module Crap
     def option(flag, default)
       index = @argv.index(flag)
       return default unless index
+
+      value = @argv[index + 1]
+      if value.nil? || value.start_with?("--")
+        @argv.delete_at(index)
+        @missing_value = true
+        return default
+      end
 
       @argv.delete_at(index)
       @argv.delete_at(index)

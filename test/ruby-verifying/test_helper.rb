@@ -2,6 +2,7 @@ require "minitest/autorun"
 require "fileutils"
 require "stringio"
 require "tmpdir"
+require "yaml"
 
 SKILL_ROOT = File.expand_path("../../ruby-verifying", __dir__)
 

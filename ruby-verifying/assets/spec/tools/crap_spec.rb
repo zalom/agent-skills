@@ -132,4 +132,18 @@ RSpec.describe Crap do
     expect(Crap::CLI.new(["--bogus"], root: Dir.pwd, out: out).run).to eq(2)
     expect(out.string).to include("Usage: bin/crap")
   end
+
+  it "rejects an option missing its value at the end of the arguments", :aggregate_failures do
+    out = StringIO.new
+
+    expect(Crap::CLI.new(["--threshold"], root: Dir.pwd, out: out).run).to eq(2)
+    expect(out.string).to include("Usage: bin/crap")
+  end
+
+  it "rejects an option missing its value before another option", :aggregate_failures do
+    out = StringIO.new
+
+    expect(Crap::CLI.new(["--since", "--coverage", "coverage/.resultset.json"], root: Dir.pwd, out: out).run).to eq(2)
+    expect(out.string).to include("Usage: bin/crap")
+  end
 end

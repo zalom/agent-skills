@@ -27,6 +27,8 @@ class VerifyChange
   CRAP_THRESHOLD = 30
   TESTS_STEP = "Tests with coverage"
   DEFAULT_BASES = %w[origin/main main master].freeze
+  ALL_OPERATORS = %w[arithmetic comparison boolean_connector boolean_literal statement_removal return_nil
+                      literal_mutation condition_negation string_literal regex collection_method].freeze
   SOURCE_PATH = %r{\A(app|lib|tools)/.+\.rb\z}
   RSPEC_DEPENDENCY = /^  rspec(-core|-rails)?(\s|!|$)/
 
@@ -152,7 +154,8 @@ class VerifyChange
   def mutation_command(sources, tests, base, rails, suite)
     %w[bundle exec mutineer run] + sources + tests.flat_map { |test| ["--test", test] } +
       %W[--since #{base} --threshold #{MUTATION_THRESHOLD}] + (suite == RSPEC ? %w[--framework rspec] : []) +
-      (rails ? %w[--rails] : %w[--strategy redefine])
+      (rails ? %w[--rails] : %w[--strategy redefine]) +
+      (exist?(".mutineer.yml") ? [] : ["--operators", ALL_OPERATORS.join(",")])
   end
 
   def execute(plan, requested_base)
@@ -165,7 +168,7 @@ class VerifyChange
       return 1
     end
     unless exist?(".mutineer.yml") || plan.sources.empty?
-      @err.puts "Missing .mutineer.yml: Mutineer would run its 5 default operators only."
+      @err.puts "Missing .mutineer.yml: passing all 11 operators on the command line instead."
     end
 
     @out.puts "Base:    #{requested_base}"

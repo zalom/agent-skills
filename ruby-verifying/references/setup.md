@@ -40,6 +40,8 @@ A direct `rspec-expectations` or `rspec-mocks` dependency, or rspec listed only 
 In an RSpec project, the script:
 
 - Adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper. A plain Ruby project without either helper gets a new `spec/spec_helper.rb`. A Rails app without either helper stops with exit 4 and changes nothing: run `bin/rails generate rspec:install` first.
+
+A Rails app that uses Minitest and has no `test/test_helper.rb` stops with exit 5 and changes nothing: set up the Rails test directory first, then run the script again.
 - Creates `.rspec` with `--require spec_helper` when it is missing.
 - Writes `framework: rspec` into a new `.mutineer.yml`.
 - Copies `spec/tools/crap_spec.rb` in place of `test/tools/crap_test.rb`.

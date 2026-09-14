@@ -1,6 +1,6 @@
 # Minitest idioms
 
-How to write Minitest 6 tests that read well and kill mutants. Open this when you write or review a Minitest test, or when a Minitest 5 suite breaks after an upgrade.
+How to write Minitest 6 tests that read well and kill mutants. Open this when writing or reviewing a Minitest test, or when a Minitest 5 suite breaks after an upgrade.
 
 ## Contents
 

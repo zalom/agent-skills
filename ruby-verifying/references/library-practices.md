@@ -53,7 +53,7 @@ Writing idioms and assertions that kill mutants: `minitest-idioms.md`.
 
 ## RSpec 3.13
 
-- RSpec 3.13 is the current line. RSpec 4 exists only as the `4.0.0.beta1` prerelease.
+- This skill targets RSpec 3.13. When it was measured, `4.0.0.beta1` was the only 4.x release.
 - rspec-rails 8.0 needs Rails 7.2 or later, according to the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md). This skill did not run rspec-rails.
 - Configuration, `let`, doubles, and the command line options: `rspec-practices.md`.
 
@@ -148,7 +148,7 @@ Equivalent mutants, the ones no test can kill because behavior does not change:
 - Inline: `return 0 if items.empty? # mutineer:disable-line return_nil`.
 - In `.mutineer.yml`: an `ignore:` list of survivor ids from the JSON report, each with a comment giving the reason.
 - Suppressed mutants leave the score and appear under `ignored` in the JSON report.
-- Mutineer's guide for agents: after a few failed attempts to kill a survivor, flag it for a person instead of looping.
+- Mutineer's guide for agents says to flag a survivor for a person instead of looping. This skill sets the limit at 2 failed attempts.
 
 Baselines for large codebases:
 

@@ -33,6 +33,6 @@ The case for the stack, a rollout order for an existing codebase, and the limits
 
 - Mutation time grows with the size of a change. Keep pull requests small.
 - In Rails, Mutineer runs one mutant at a time unless the app uses `--daemon`, which supports SQLite only in Mutineer 1.0.
-- Mutineer 1.0.0 was released in September 2026. Pin it and read its changelog before upgrading.
+- Pin Mutineer to `~> 1.0` and read its changelog before upgrading.
 - Equivalent mutants need a person's judgment.
 - Skunk needs RubyCritic 4.12 until Skunk supports RubyCritic 5.

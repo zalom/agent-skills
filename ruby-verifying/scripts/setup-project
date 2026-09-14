@@ -31,7 +31,8 @@ class SetupProject
       --no-ci     Skip the GitHub Actions workflow
 
     Exit codes: 0 done, 1 usage error, 2 not a Ruby project (no Gemfile), 3 filesystem error,
-    4 RSpec detected in a Rails app without spec/spec_helper.rb or spec/rails_helper.rb.
+    4 RSpec detected in a Rails app without spec/spec_helper.rb or spec/rails_helper.rb,
+    5 Minitest detected in a Rails app without test/test_helper.rb.
   TEXT
 
   ASSETS = File.expand_path("../assets", __dir__)
@@ -79,6 +80,7 @@ class SetupProject
 
   def call
     return stop_without_spec_helper if rspec? && rails? && SPEC_HELPERS.none? { |helper| exist?(helper) }
+    return stop_without_test_helper if rails? && !rspec? && !exist?("test/test_helper.rb")
 
     warn_about_both_suites
     warn_about_old_ruby
@@ -117,6 +119,11 @@ class SetupProject
     4
   end
 
+  def stop_without_test_helper
+    @err.puts "No test/test_helper.rb in this Rails app: set up the Rails test directory first, then run this again."
+    5
+  end
+
   def warn_about_both_suites
     return unless File.directory?(path("test")) && File.directory?(path("spec"))
 
@@ -143,11 +150,7 @@ class SetupProject
 
   def add_coverage
     helper = read("test/test_helper.rb")
-    if helper.nil?
-      return write("test/test_helper.rb", asset("test/test_helper.rb"), "created") unless rails?
-
-      return @err.puts("test/test_helper.rb is missing. Generate the Rails test setup first, then run this again.")
-    end
+    return write("test/test_helper.rb", asset("test/test_helper.rb"), "created") if helper.nil?
 
     updated = helper.include?("SimpleCov") ? helper : asset(rails? ? "coverage/rails.rb" : "coverage/plain.rb") + helper
     updated = add_parallel_coverage(updated) if rails?

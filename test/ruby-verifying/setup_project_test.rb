@@ -112,6 +112,20 @@ class SetupProjectTest < Minitest::Test
     end
   end
 
+  def test_rails_app_without_a_test_helper_stops_with_exit_five
+    in_project(RAILS.except("test/test_helper.rb")) do |root|
+      code, out, err = setup_project(root)
+
+      assert_equal 5, code
+      assert_includes err, "No test/test_helper.rb in this Rails app: set up the Rails test directory first"
+      assert_empty out
+      assert_equal RAILS["Gemfile"], read(root, "Gemfile")
+      refute File.exist?(File.join(root, "test/tools/crap_test.rb"))
+      refute File.exist?(File.join(root, "bin/verify-change"))
+      refute File.exist?(File.join(root, ".mutineer.yml"))
+    end
+  end
+
   def test_no_ci_skips_the_workflow
     in_project(PLAIN) do |root|
       setup_project(root, "--no-ci")

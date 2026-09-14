@@ -1,6 +1,6 @@
 # Manual workflow
 
-The checks `bin/verify-change` runs, one command at a time, so a person can run and read them without an agent. Open this when you run the checks one by one, or teach a person to run them. The Minitest outputs come from the refund change in the demo shop, and the RSpec outputs from a member discount change in a plain Ruby RSpec project. The base branch is `main` in every command.
+The checks `bin/verify-change` runs, one command at a time, so a person can run and read them without an agent. Open this when running the checks one by one, or teaching a person to run them. The Minitest outputs come from the refund change in the demo shop, and the RSpec outputs from a member discount change in a plain Ruby RSpec project. The base branch is `main` in every command.
 
 ## Contents
 

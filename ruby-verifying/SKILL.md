@@ -1,19 +1,15 @@
 ---
 name: ruby-verifying
 description: >
-  Writes, reviews, and verifies tests for Ruby and Rails code with Minitest or
-  RSpec, SimpleCov patch coverage, Mutineer mutation testing, and CRAP scores,
-  on the changed code only. Use when writing or reviewing Ruby tests or specs,
-  making Ruby code testable, choosing between Minitest and RSpec, adding the
-  verification stack to a project, checking a change before a push or pull
-  request, reading a mutation, coverage, CRAP, or Skunk report, or fixing
-  surviving mutants. Also use when tests passed but a bug still shipped, when
-  a script is hard to test because it reads ENV or global constants, or when
-  someone asks whether the tests or the coverage can be trusted.
+  Writes, reviews, and verifies Ruby and Rails tests. Use when writing or
+  reviewing Minitest tests or RSpec specs, making Ruby code testable, choosing
+  a test framework, adding patch coverage, Mutineer mutation testing, or CRAP
+  scores to a project, checking a change before a push, reading those reports,
+  or fixing surviving mutants. Also use when tests passed but a bug still
+  shipped, or when someone asks whether the tests can be trusted.
 license: MIT
 metadata:
   author: Zlatko Alomerovic
-user-invocable: true
 ---
 
 # Ruby verifying
@@ -53,14 +49,16 @@ Verifying a change:
 
 ## Tasks
 
+Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. Run a script by its full path, `SKILL_DIR/scripts/...`, where `SKILL_DIR` is that directory.
+
 | When | Do |
 |---|---|
-| You write or review a Minitest test, or a Minitest 5 suite breaks on Minitest 6 | Read `references/minitest-idioms.md`. |
-| You write or review an RSpec spec, change `spec_helper.rb` or `.rspec`, or choose between Minitest and RSpec | Read `references/rspec-practices.md`. |
+| Writing or reviewing a Minitest test, or a Minitest 5 suite that breaks on Minitest 6 | Read `references/minitest-idioms.md`. |
+| Writing or reviewing an RSpec spec, changing `spec_helper.rb` or `.rspec`, or choosing between Minitest and RSpec | Read `references/rspec-practices.md`. |
 | Code is hard to test: it reads `ENV`, globals, the clock, or `$stdout`, or a script runs when a test loads it | Read `references/testable-design.md`. |
 | A test fails only next to others or under some seeds, leaves state behind, or the suite is too slow | Read `references/isolation-and-scale.md`. |
-| A project lacks `bin/verify-change` | Run `scripts/setup-project --dry-run PROJECT_DIR`, then again without `--dry-run`, then `bundle install`. Read `references/setup.md` when the script warns, keeps a file you expected it to change, or a person sets up by hand. |
-| A change is ready for a push or a pull request | Run `bundle exec bin/verify-change main`. Read `references/manual-workflow.md` when you run the checks one at a time or teach a person to run them. |
+| A project lacks `bin/verify-change` | Run `ruby SKILL_DIR/scripts/setup-project --dry-run PROJECT_DIR`, then again without `--dry-run`, then `bundle install` in the project. Read `references/setup.md` when the script warns, keeps a file that was expected to change, or a person sets up by hand. |
+| A change is ready for a push or a pull request | Run `bundle exec bin/verify-change main`. Read `references/manual-workflow.md` when running the checks one at a time or teaching a person to run them. |
 | `bin/verify-change` ends with `Failed:` | Read `references/fixing-findings.md` at the section the `Failed:` line names. |
 | Someone asks what a report line or a score means | Read `references/reading-reports.md` for each tool's output, and `references/concepts.md` for definitions, formulas, and worked examples. |
 | A question names options, versions, or upgrades of Minitest, RSpec, SimpleCov, Mutineer, Skunk, or RubyCritic | Read `references/library-practices.md`. |
@@ -70,5 +68,5 @@ Verifying a change:
 
 ## Scripts and assets
 
-- `scripts/setup-project [--dry-run] [--no-ci] PROJECT_DIR`: execute it, do not read it. It detects Rails and RSpec, and a second run changes nothing. Exit 0 means done, 1 a usage error, 2 no Gemfile, 3 a filesystem error, 4 an RSpec Rails app without a spec helper.
-- `assets/` holds the files the script copies into a project: `bin/verify-change`, `bin/crap`, `tools/crap.rb` with its Minitest test and its RSpec spec, `mutineer.yml`, `rspec`, `spec/spec_helper.rb`, the coverage blocks in `coverage/`, and the CI templates in `github/`.
+- `ruby SKILL_DIR/scripts/setup-project [--dry-run] [--no-ci] PROJECT_DIR`: execute it, do not read it. It detects Rails and RSpec, and a second run changes nothing. Exit 0 means done, 1 a usage error, 2 no Gemfile, 3 a filesystem error, 4 an RSpec Rails app without a spec helper, 5 a Rails app with Minitest and no `test/test_helper.rb`.
+- `assets/` holds the files the script copies into a project: `bin/verify-change`, `bin/crap`, `tools/crap.rb` with its Minitest test and its RSpec spec, `test/test_helper.rb`, `mutineer.yml`, `rspec`, `spec/spec_helper.rb`, the coverage blocks in `coverage/`, and the CI templates in `github/`.

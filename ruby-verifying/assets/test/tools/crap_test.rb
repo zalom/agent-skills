@@ -123,4 +123,16 @@ class CrapTest < Minitest::Test
     assert_equal 2, Crap::CLI.new(["--bogus"], root: Dir.pwd, out: out).run
     assert_includes out.string, "Usage: bin/crap"
   end
+
+  def test_cli_rejects_an_option_missing_its_value_at_the_end_of_the_arguments
+    out = StringIO.new
+    assert_equal 2, Crap::CLI.new(["--threshold"], root: Dir.pwd, out: out).run
+    assert_includes out.string, "Usage: bin/crap"
+  end
+
+  def test_cli_rejects_an_option_missing_its_value_before_another_option
+    out = StringIO.new
+    assert_equal 2, Crap::CLI.new(["--since", "--coverage", "coverage/.resultset.json"], root: Dir.pwd, out: out).run
+    assert_includes out.string, "Usage: bin/crap"
+  end
 end

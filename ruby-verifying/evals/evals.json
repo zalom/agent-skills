@@ -7,7 +7,7 @@
       "scope": "should-trigger",
       "set": "train",
       "prompt": "Add mutation testing and coverage to our Rails 8.1 app, we're on Ruby 4.0 with Minitest.",
-      "expected_output": "The skill activates. It runs scripts/setup-project with --dry-run first, then for real, then bundle install, and names the Rails coverage block and the parallel worker hooks.",
+      "expected_output": "The skill activates. It runs SKILL_DIR/scripts/setup-project with --dry-run first, then for real, then bundle install, and names the Rails coverage block and the parallel worker hooks.",
       "files": [],
       "assertions": []
     },
@@ -106,7 +106,7 @@
       "scope": "should-trigger",
       "set": "train",
       "prompt": "Our gem uses RSpec, with spec/ and a .rspec file. Add the same mutation testing and patch coverage checks you'd use for Minitest.",
-      "expected_output": "The skill activates. It runs scripts/setup-project, which detects RSpec, puts the coverage block in spec/spec_helper.rb, writes framework: rspec to .mutineer.yml, adds no minitest gem, and uses bundle exec rspec in CI.",
+      "expected_output": "The skill activates. It runs SKILL_DIR/scripts/setup-project, which detects RSpec, puts the coverage block in spec/spec_helper.rb, writes framework: rspec to .mutineer.yml, adds no minitest gem, and uses bundle exec rspec in CI.",
       "files": [],
       "assertions": []
     },

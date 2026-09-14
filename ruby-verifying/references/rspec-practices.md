@@ -1,6 +1,6 @@
 # RSpec practices
 
-How to write, configure, and run RSpec specs in a project that already uses RSpec, and how the verification stack runs on them. Open this when you write or review a spec, change `spec_helper.rb` or `.rspec`, or choose between Minitest and RSpec.
+How to write, configure, and run RSpec specs in a project that already uses RSpec, and how the verification stack runs on them. Open this when writing or reviewing a spec, changing `spec_helper.rb` or `.rspec`, or choosing between Minitest and RSpec.
 
 Every claim marked measured ran on Ruby 4.0.3 with rspec-core 3.13.6, rspec-expectations 3.13.5, rspec-mocks 3.13.8, and rspec-support 3.13.7.
 
@@ -33,7 +33,7 @@ Every claim marked measured ran on Ruby 4.0.3 with rspec-core 3.13.6, rspec-expe
 | rspec-rails | `~> 8.0` | not run | Needs Rails 7.2 or later, from the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md). |
 | rubocop-rspec | `~> 3.10` | 3.10.2 | Ran with RuboCop 1.91.0. |
 
-- RSpec 4 is not released. `4.0.0.beta1` is a prerelease that drops the `should` syntax and the global DSL. Stay on 3.13.
+- This skill targets RSpec 3.13. When it was measured, `4.0.0.beta1` was the only 4.x release, a prerelease that drops the `should` syntax and the global DSL.
 - A spec helper that follows this page already runs the way RSpec 4 will: without monkey patching and without `should`.
 
 ## Project layout

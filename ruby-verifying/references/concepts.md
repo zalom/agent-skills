@@ -1,4 +1,4 @@
-# The three checks
+# The checks
 
 Plain definitions, the formulas, and a worked example for each check, all taken from the demo shop in the Ruby verification stack demo repository. Open this when a person asks what a report means or why a check exists.
 

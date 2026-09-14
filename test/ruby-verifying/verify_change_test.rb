@@ -144,6 +144,22 @@ class VerifyChangeTest < Minitest::Test
     end
   end
 
+  def test_a_missing_mutineer_config_passes_all_operators_on_the_command_line
+    in_project("lib/refund.rb" => "", "test/refund_test.rb" => "") do |root|
+      _code, _out, err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+
+      mutation = commands[2].last
+      assert_equal ["--operators", VerifyChange::ALL_OPERATORS.join(",")], mutation.last(2)
+      assert_includes err, "Missing .mutineer.yml"
+    end
+  end
+
+  def test_all_operators_matches_the_mutineer_yml_asset
+    operators = YAML.load_file(File.join(SKILL_ROOT, "assets/mutineer.yml")).fetch("operators")
+
+    assert_equal operators, VerifyChange::ALL_OPERATORS
+  end
+
   def test_an_unknown_base_exits_two
     in_project({}) do |root|
       code, _out, err, = verify(root, ["nope"], merge_base: nil)

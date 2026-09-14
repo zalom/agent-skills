@@ -74,7 +74,7 @@ lib/checkout.rb
 ## bin/crap
 
 - One row per method, worst first: the CRAP score, the complexity, the method's line coverage, the method name, and its file and line.
-- The last line counts the methods above the threshold. The command exits 1 when any method is above it, and 2 on an unknown option.
+- The last line counts the methods above the threshold. The command exits 1 when any method is above it, and 2 on an unknown option or a `--threshold`, `--since`, or `--coverage` flag with no value.
 - With `--since REF`, it scores only the methods whose lines changed.
 - Without `coverage/.resultset.json`, every method reads 0% coverage.
 
