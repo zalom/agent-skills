@@ -1,0 +1,5 @@
+coverage/
+tmp/
+writing-style/references/overrides.md
+*.bak
+*.bak-*

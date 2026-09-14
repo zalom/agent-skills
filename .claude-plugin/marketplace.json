@@ -1,0 +1,24 @@
+{
+  "name": "zalom-skills",
+  "owner": {
+    "name": "Zlatko Alomerovic",
+    "url": "https://github.com/zalom"
+  },
+  "description": "Agent skills written by Zlatko Alomerovic.",
+  "plugins": [
+    {
+      "name": "writing-style",
+      "source": "./writing-style",
+      "strict": false,
+      "description": "Keeps AI-written prose, docs, commit messages, and replies in one style: the Google developer documentation style guide plus optional personal overrides.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT AND CC-BY-4.0",
+      "keywords": ["writing", "style-guide", "documentation", "google-style"],
+      "category": "productivity"
+    }
+  ]
+}
