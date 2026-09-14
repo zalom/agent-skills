@@ -1,5 +1,121 @@
 #!/usr/bin/env ruby
+require "json"
 require_relative "project_profile"
 
-# Skeleton: real reporting lands with the code commit.
-exit 1
+class DetectTools
+  USAGE = <<~TEXT
+    Usage: detect-tools [--json] PROJECT_DIR
+
+    Reads a plain Ruby or Rails project's test setup and prints a report: Ruby
+    and Rails, the test framework with its evidence, test data, mocking,
+    coverage, mutation tool, CRAP scores, style guide, and CI, the test
+    command and what needs to start first, then what is missing with why it
+    matters and the fix. Reads files only; runs nothing.
+
+    Exit codes: 0 report printed, 1 usage error, 2 PROJECT_DIR is not a directory.
+  TEXT
+
+  def self.run(argv, out: $stdout, err: $stderr)
+    json = argv.include?("--json")
+    paths = argv.reject { |argument| argument == "--json" }
+    return usage(err, 1) unless paths.size == 1
+
+    root = File.expand_path(paths.first)
+    unless File.directory?(root)
+      err.puts "#{root} is not a directory."
+      return 2
+    end
+
+    new(ProjectProfile.new(root), out: out).call(json: json)
+  end
+
+  def self.usage(stream, code)
+    stream.puts USAGE
+    code
+  end
+
+  def initialize(profile, out: $stdout)
+    @profile = profile
+    @out = out
+  end
+
+  def call(json: false)
+    return json_report if json
+
+    report
+    0
+  end
+
+  private
+
+  def json_report
+    @out.puts JSON.pretty_generate(@profile.to_h)
+    0
+  end
+
+  def report
+    p = @profile
+    @out.puts "Ruby: #{p.ruby_version || "not pinned"}  Rails: #{p.rails? ? "yes" : "no"}"
+    @out.puts "Frameworks: #{frameworks_line}"
+    @out.puts "Primary: #{p.primary_framework}" unless p.frameworks.empty?
+    @out.puts "Test data: #{list_or_none(p.test_data)}"
+    @out.puts "Mocking: #{list_or_none(p.mocking)}"
+    @out.puts "Coverage: #{p.coverage || "none"}"
+    @out.puts "Mutation tool: #{p.mutation_tool || "none"}"
+    @out.puts "CRAP: #{p.crap_configured? ? "bin/crap" : "none"}"
+    @out.puts "Style guide: #{p.style_guide || "none"}"
+    @out.puts "CI: #{list_or_none(p.ci)}"
+    @out.puts "Test command: #{test_command}"
+    start_first.each { |line| @out.puts "Start first: #{line}" }
+    print_missing
+  end
+
+  def frameworks_line
+    return "none. Recommend Minitest for a new project; RSpec works too." if @profile.frameworks.empty?
+
+    @profile.frameworks.join(", ")
+  end
+
+  def list_or_none(values)
+    values.empty? ? "none" : values.join(", ")
+  end
+
+  def test_command
+    return "bundle exec rspec" if @profile.primary_framework == :rspec
+    return "bin/rails test" if @profile.rails?
+
+    "bundle exec rake test"
+  end
+
+  def start_first
+    lines = []
+    lines << "bin/rails db:test:prepare" if @profile.rails?
+    adapter = @profile.database_adapter
+    lines << "a running #{adapter} server for the test database" if %w[postgresql mysql2].include?(adapter)
+    lines << "docker compose up (compose.yaml or docker-compose.yml found)" if @profile.compose_file?
+    lines
+  end
+
+  def print_missing
+    items = @profile.missing.dup
+    items.unshift(ProjectProfile::Missing.new(goal: "a Gemfile", why: "this is not a Bundler project yet", tool: "bundle init")) unless @profile.gemfile?
+    return if items.empty?
+
+    @out.puts ""
+    @out.puts "Missing:"
+    items.each { |item| @out.puts "- #{item.goal}: #{item.why} #{fix_for(item)}" }
+  end
+
+  def fix_for(item)
+    case item.goal
+    when "a Gemfile" then "Run bundle init."
+    when "test framework" then "Recommend Minitest for a new project; RSpec works too."
+    when "patch coverage", "mutation testing", "CRAP scores", "a style guide"
+      "Run the ruby-quality-checking skill, or add #{item.tool} by hand."
+    when "minitest-mock" then "Add the minitest-mock gem."
+    else "Add #{item.tool}."
+    end
+  end
+end
+
+exit DetectTools.run(ARGV) if $PROGRAM_NAME == __FILE__

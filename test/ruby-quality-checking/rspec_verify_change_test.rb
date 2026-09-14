@@ -36,7 +36,7 @@ class RSpecVerifyChangeTest < Minitest::Test
   end
 
   def test_both_scripts_share_one_rspec_dependency_pattern
-    assert_equal SetupProject::RSPEC_DEPENDENCY, VerifyChange::RSPEC_DEPENDENCY
+    assert_equal ProjectProfile::RSPEC_DEPENDENCY, VerifyChange::RSPEC_DEPENDENCY
     ["  rspec (~> 3.13)", "  rspec!", "  rspec", "  rspec-core (~> 3.13)", "  rspec-rails (~> 8.0)"].each do |line|
       assert_match VerifyChange::RSPEC_DEPENDENCY, line
     end

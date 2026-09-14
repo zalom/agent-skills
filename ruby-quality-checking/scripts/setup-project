@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 require "fileutils"
 require "pathname"
+require_relative "project_profile"
 
 class SetupProject
   USAGE = <<~TEXT
-    Usage: setup-project [--dry-run] [--no-ci] PROJECT_DIR
+    Usage: setup-project [--dry-run] [--no-ci] [--linter omakase|standard|rubocop] PROJECT_DIR
 
     Adds the Ruby verification stack to a plain Ruby project or a Rails app
     (a Rails app is one with config/application.rb), tested with Minitest or
@@ -24,11 +25,13 @@ class SetupProject
       .github/workflows       ci.yml when there is no workflow, otherwise verify-change.yml
 
     Existing files are kept, and running it twice changes nothing. When both
-    test/ and spec/ exist, it warns and sets up only one of them.
+    test/ and spec/ exist, it warns and sets up only one of them. With no
+    style guide, it prints the choices and installs nothing unless asked.
 
     Options:
-      --dry-run   Print what would change, write nothing
-      --no-ci     Skip the GitHub Actions workflow
+      --dry-run          Print what would change, write nothing
+      --no-ci            Skip the GitHub Actions workflow
+      --linter VALUE     Install omakase, standard, or rubocop when none is set up
 
     Exit codes: 0 done, 1 usage error, 2 not a Ruby project (no Gemfile), 3 filesystem error,
     4 RSpec detected in a Rails app without spec/spec_helper.rb or spec/rails_helper.rb,
@@ -44,14 +47,18 @@ class SetupProject
   MINITEST_ASSETS = { "test/tools/crap_test.rb" => "test/tools/crap_test.rb" }.freeze
   RSPEC_ASSETS = { "spec/tools/crap_spec.rb" => "spec/tools/crap_spec.rb", "rspec" => ".rspec" }.freeze
   SPEC_HELPERS = %w[spec/spec_helper.rb spec/rails_helper.rb].freeze
-  RSPEC_DEPENDENCY = /^  rspec(-core|-rails)?(\s|!|$)/
+  RSPEC_DEPENDENCY = ProjectProfile::RSPEC_DEPENDENCY
   EXECUTABLES = %w[bin/crap bin/verify-change].freeze
+  LINTER_CHOICES = %w[omakase standard rubocop].freeze
 
   def self.run(argv, out: $stdout, err: $stderr)
     return print_usage(out, 0) if argv.include?("--help") || argv.include?("-h")
 
-    options = argv.select { |argument| argument.start_with?("-") }
-    paths = argv - options
+    args, linter = extract_linter(argv)
+    return print_usage(err, 1) if args.nil?
+
+    options = args.select { |argument| argument.start_with?("-") }
+    paths = args - options
     return print_usage(err, 1) unless paths.size == 1 && (options - %w[--dry-run --no-ci]).empty?
 
     root = File.expand_path(paths.first)
@@ -59,10 +66,31 @@ class SetupProject
       err.puts "#{root} has no Gemfile. Run bundle init there first."
       return 2
     end
-    new(root, dry_run: options.include?("--dry-run"), ci: !options.include?("--no-ci"), out: out, err: err).call
+    new(root, dry_run: options.include?("--dry-run"), ci: !options.include?("--no-ci"), linter: linter, out: out, err: err).call
   rescue SystemCallError => error
     err.puts "Setup stopped: #{error.message}"
     3
+  end
+
+  # Returns [remaining_args, linter_value], or [nil, nil] on a bad --linter.
+  def self.extract_linter(argv)
+    args = argv.dup
+    index = args.index { |argument| argument == "--linter" || argument.start_with?("--linter=") }
+    return [args, nil] unless index
+
+    flag = args[index]
+    if flag == "--linter"
+      value = args[index + 1]
+      return [nil, nil] unless value && LINTER_CHOICES.include?(value)
+
+      args.slice!(index, 2)
+    else
+      value = flag.split("=", 2).last
+      return [nil, nil] unless LINTER_CHOICES.include?(value)
+
+      args.delete_at(index)
+    end
+    [args, value]
   end
 
   def self.print_usage(stream, code)
@@ -70,12 +98,14 @@ class SetupProject
     code
   end
 
-  def initialize(root, dry_run: false, ci: true, out: $stdout, err: $stderr)
+  def initialize(root, dry_run: false, ci: true, linter: nil, out: $stdout, err: $stderr)
     @root = root
     @dry_run = dry_run
     @ci = ci
+    @linter = linter
     @out = out
     @err = err
+    @profile = ProjectProfile.new(root)
   end
 
   def call
@@ -84,6 +114,8 @@ class SetupProject
 
     warn_about_both_suites
     warn_about_old_ruby
+    warn_about_ambiguous_style_guide
+    print_profile
     add_gems
     rspec? ? add_spec_coverage : add_coverage
     use_require_relative unless rails? || rspec?
@@ -92,24 +124,21 @@ class SetupProject
     add_rakefile unless rails? || rspec?
     ignore_reports
     add_workflow if @ci
+    handle_linter
     print_next_steps
     0
   end
 
   def rails?
-    exist?("config/application.rb")
+    @profile.rails?
   end
 
   def rspec?
-    (exist?(".rspec") && File.directory?(path("spec"))) || read("Gemfile.lock").to_s.match?(RSPEC_DEPENDENCY)
+    @profile.frameworks.include?(:rspec)
   end
 
   def ruby_version
-    version_file = read(".ruby-version")&.strip&.delete_prefix("ruby-")
-    tool_versions = read(".tool-versions")&.[](/^ruby\s+(\S+)/, 1)
-    mise = read("mise.toml")&.[](/^ruby\s*=\s*"([^"]+)"/, 1)
-    gemfile = read("Gemfile")&.[](/^ruby\s+["']([^"']+)["']/, 1)
-    [version_file, tool_versions, mise, gemfile].compact.reject(&:empty?).first
+    @profile.ruby_version
   end
 
   private
@@ -136,6 +165,29 @@ class SetupProject
     return unless version && Gem::Version.correct?(version) && Gem::Version.new(version) < MUTINEER_MINIMUM_RUBY
 
     @err.puts "Ruby #{version}: Mutineer needs Ruby 3.4 or later. Upgrade the project, or run Mutineer from a newer Ruby with --test-command."
+  end
+
+  def warn_about_ambiguous_style_guide
+    return unless @profile.style_guide == :ambiguous
+
+    @err.puts "Two style guides found: .standard.yml and .rubocop.yml. Choose one by hand; setup continues without touching either."
+  end
+
+  def print_profile
+    @out.puts "Ruby: #{ruby_version || "not pinned"}  Rails: #{rails? ? "yes" : "no"}  Frameworks: #{@profile.frameworks.empty? ? "none" : @profile.frameworks.join(", ")}"
+    @out.puts "Style guide: #{@profile.style_guide || "none"}"
+    missing = @profile.missing
+    unless missing.empty?
+      @out.puts "Missing:"
+      missing.each { |item| @out.puts "  #{item.goal}: #{item.why}" }
+    end
+    print_linter_choices if @profile.style_guide.nil?
+    @out.puts ""
+  end
+
+  def print_linter_choices
+    @out.puts "Choose a style guide: rubocop-rails-omakase (the Rails default), standard, or rubocop with the community Ruby Style Guide."
+    @out.puts "Pass --linter omakase|standard|rubocop to install one."
   end
 
   def add_gems
@@ -247,6 +299,50 @@ class SetupProject
   def default_branch
     head = read(".git/HEAD")&.[](%r{ref: refs/heads/(\S+)}, 1)
     %w[main master].include?(head) ? head : "main"
+  end
+
+  def handle_linter
+    return unless @linter
+
+    guide = @profile.style_guide
+    if guide == :ambiguous
+      @err.puts "Two style guides found: choose one by hand. #{@linter} was not installed."
+      return
+    end
+
+    if guide
+      return record("kept", style_guide_file(guide)) if guide.to_s == @linter
+
+      @err.puts "#{guide} is already set up: keeping it instead of #{@linter}."
+      return
+    end
+
+    install_linter(@linter)
+  end
+
+  def style_guide_file(guide)
+    guide == :standard ? ".standard.yml" : ".rubocop.yml"
+  end
+
+  def install_linter(name)
+    case name
+    when "omakase"
+      add_gem_line("rubocop-rails-omakase")
+      write(".rubocop.yml", "inherit_gem:\n  rubocop-rails-omakase: rubocop.yml\n", "created") unless exist?(".rubocop.yml")
+    when "standard"
+      add_gem_line("standard")
+      write(".standard.yml", "# See https://github.com/standardrb/standard\n", "created") unless exist?(".standard.yml")
+    when "rubocop"
+      add_gem_line("rubocop")
+      write(".rubocop.yml", "# See https://docs.rubocop.org\n", "created") unless exist?(".rubocop.yml")
+    end
+  end
+
+  def add_gem_line(name)
+    gemfile = read("Gemfile")
+    return if gemfile.to_s.match?(/^\s*gem\s+["']#{Regexp.escape(name)}["']/)
+
+    write("Gemfile", "#{gemfile.chomp}\n\ngem \"#{name}\", require: false\n", "updated")
   end
 
   def print_next_steps

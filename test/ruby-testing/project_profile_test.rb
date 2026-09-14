@@ -136,7 +136,7 @@ class ProjectProfileTest < Minitest::Test
 
   def test_a_fully_set_up_project_has_no_gaps
     lockfile = "GEM\n  specs:\n    minitest (6.0.6)\n    simplecov (1.3.0)\n\n" \
-               "DEPENDENCIES\n  minitest (~> 6.0)\n  simplecov (~> 1.3)\n  mutineer (~> 1.0)\n  rubocop (~> 1.0)\n"
+               "DEPENDENCIES\n  minitest (~> 6.0)\n  minitest-mock (~> 5.27)\n  simplecov (~> 1.3)\n  mutineer (~> 1.0)\n  rubocop (~> 1.0)\n"
     files = {
       "Gemfile.lock" => lockfile,
       "test/test_helper.rb" => "",

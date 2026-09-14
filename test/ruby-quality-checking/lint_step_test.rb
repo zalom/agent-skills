@@ -49,7 +49,8 @@ class LintStepTest < Minitest::Test
   end
 
   def test_a_change_only_to_a_migration_is_linted
-    files = { ".rubocop.yml" => "", "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.0)\n" }
+    files = { ".rubocop.yml" => "", "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.0)\n",
+              "db/migrate/20260101_create_widgets.rb" => "" }
     in_project(files) do |root|
       _code, out, _err, commands = verify(root, ["main"], changed: ["db/migrate/20260101_create_widgets.rb"])
 

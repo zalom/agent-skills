@@ -9,15 +9,21 @@ class VerifyChange
     Checks only the code changed since the merge base of BASE and HEAD
     (BASE defaults to origin/main, then main, then master):
 
-      1. the tests for the changed files, plus every --test FILE, with coverage on
-      2. patch coverage of the changed lines (simplecov patch)
-      3. mutation testing of the changed lines (mutineer, operators from .mutineer.yml)
-      4. CRAP scores of the changed methods (bin/crap)
+      1. lint on the changed Ruby files, in the project's style guide
+      2. the tests for the changed files, plus every --test FILE, with coverage on
+      3. patch coverage of the changed lines (simplecov patch)
+      4. mutation testing of the changed lines (mutineer, operators from .mutineer.yml)
+      5. CRAP scores of the changed methods (bin/crap)
 
-    Runs RSpec specs in a project with spec/ and .rspec, or with rspec,
-    rspec-core, or rspec-rails under DEPENDENCIES in Gemfile.lock, and
-    Minitest tests otherwise. Warns when both test/ and spec/ exist.
-    Pass --test for the integration or system tests of a feature the change touches.
+    Runs RSpec specs in a project with spec/ and .rspec, spec/spec_helper.rb,
+    or spec/rails_helper.rb, or with rspec, rspec-core, or rspec-rails under
+    DEPENDENCIES in Gemfile.lock, and Minitest tests otherwise. Warns when
+    both test/ and spec/ exist. Pass --test for the integration or system
+    tests of a feature the change touches.
+
+    A lint failure is reported but does not stop the other checks. Lint is
+    skipped, not failed, with no style guide, two style guides, no changed
+    Ruby files, or the linter gem missing from Gemfile.lock.
 
     Exit codes: 0 verified, 1 a check failed, 2 usage or git error.
   TEXT
@@ -26,6 +32,7 @@ class VerifyChange
   MUTATION_THRESHOLD = 75
   CRAP_THRESHOLD = 30
   TESTS_STEP = "Tests with coverage"
+  LINT_STEP = "Lint"
   DEFAULT_BASES = %w[origin/main main master].freeze
   ALL_OPERATORS = %w[arithmetic comparison boolean_connector boolean_literal statement_removal return_nil
                       literal_mutation condition_negation string_literal regex collection_method].freeze
@@ -39,7 +46,8 @@ class VerifyChange
                     locations: { %r{\Aapp/} => ["spec/"], %r{\Alib/} => ["spec/", "spec/lib/"], %r{\Atools/} => ["spec/tools/"] })
 
   Step = Struct.new(:title, :env, :command)
-  Plan = Struct.new(:sources, :tests, :untested, :steps)
+  LintDecision = Struct.new(:step, :skip_reason)
+  Plan = Struct.new(:sources, :tests, :untested, :lint_files, :lint_decision, :steps)
 
   def self.test_candidates(source, suite = MINITEST)
     suite.locations.flat_map do |prefix, targets|
@@ -74,12 +82,13 @@ class VerifyChange
 
   def plan(changed:, extra_tests:, base:, rails:, suite: MINITEST)
     sources = changed.grep(SOURCE_PATH).select { |path| exist?(path) }
+    lint_files = changed.select { |path| File.extname(path) == ".rb" && exist?(path) }
     mapped = sources.to_h { |source| [source, self.class.test_candidates(source, suite).select { |path| exist?(path) }] }
     changed_tests = changed.grep(suite.test_path)
     tests = (changed_tests + mapped.values.flatten + extra_tests).uniq.select { |path| exist?(path) }
     covered_elsewhere = !extra_tests.empty? || changed_tests.any?
     untested = covered_elsewhere ? [] : mapped.select { |_source, found| found.empty? }.keys
-    Plan.new(sources, tests, untested, steps(sources, tests, base, rails, suite))
+    Plan.new(sources, tests, untested, lint_files, lint_decision(lint_files), steps(sources, tests, base, rails, suite))
   end
 
   private
@@ -151,6 +160,82 @@ class VerifyChange
     %w[bundle exec ruby -Ilib -Itools -Itest -e] + ["ARGV.each { |file| require File.expand_path(file) }"] + tests
   end
 
+  def lint_decision(lint_files)
+    return LintDecision.new(nil, "no changed Ruby files to lint") if lint_files.empty?
+    return LintDecision.new(nil, "two style guides found: .standard.yml and .rubocop.yml") if ambiguous_style_guide?
+
+    if rubocop_file?
+      return lint_gem_available?(:rubocop) ? LintDecision.new(lint_step(:rubocop, lint_files), nil) : LintDecision.new(nil, "the rubocop gem is not in Gemfile.lock")
+    end
+
+    if standard_file? || dependencies_section.match?(/^  standard(\s|!|$)/)
+      return lint_gem_available?(:standard) ? LintDecision.new(lint_step(:standard, lint_files), nil) : LintDecision.new(nil, "the standard gem is not in Gemfile.lock")
+    end
+
+    LintDecision.new(nil, "no style guide found")
+  end
+
+  def lint_step(guide, lint_files)
+    command = guide == :standard ? %w[bundle exec standardrb --force-exclusion] : %w[bundle exec rubocop --force-exclusion]
+    Step.new(LINT_STEP, {}, command + lint_files)
+  end
+
+  def lint_gem_available?(command_gem)
+    return true if command_gem == :rubocop && (dependencies_section.match?(/^  rubocop(\s|!|$)/) ||
+                    dependencies_section.match?(/^  standard(\s|!|$)/) || dependencies_section.match?(/^  rubocop-rails-omakase(\s|!|$)/))
+    return true if command_gem == :standard && dependencies_section.match?(/^  standard(\s|!|$)/)
+
+    false
+  end
+
+  def ambiguous_style_guide?
+    standard_file? && rubocop_file? && !rubocop_config_uses_standard?
+  end
+
+  def rubocop_config_uses_standard?
+    config = rubocop_config
+    return false if config.empty?
+
+    config.match?(/inherit_gem:\s*\n?\s*standard:/m) ||
+      config.match?(/^(plugins|require):\s*\n(\s*-\s*standard\s*\n)+/m) ||
+      config.match?(/^(plugins|require):\s*\[[^\]]*\bstandard\b[^\]]*\]/m)
+  end
+
+  def rubocop_config
+    exist?(".rubocop.yml") ? File.read(File.join(@root, ".rubocop.yml")) : ""
+  end
+
+  def standard_file?
+    exist?(".standard.yml")
+  end
+
+  def rubocop_file?
+    exist?(".rubocop.yml")
+  end
+
+  def dependencies_section
+    return @dependencies_section if defined?(@dependencies_section)
+
+    lockfile = exist?("Gemfile.lock") ? File.read(File.join(@root, "Gemfile.lock")) : nil
+    unless lockfile
+      return @dependencies_section = ""
+    end
+
+    lines = lockfile.lines
+    start = lines.index { |line| line.strip == "DEPENDENCIES" }
+    unless start
+      return @dependencies_section = ""
+    end
+
+    section = []
+    lines[(start + 1)..].each do |line|
+      break if line.strip.empty?
+
+      section << line
+    end
+    @dependencies_section = section.join
+  end
+
   def mutation_command(sources, tests, base, rails, suite)
     %w[bundle exec mutineer run] + sources + tests.flat_map { |test| ["--test", test] } +
       %W[--since #{base} --threshold #{MUTATION_THRESHOLD}] + (suite == RSPEC ? %w[--framework rspec] : []) +
@@ -159,7 +244,7 @@ class VerifyChange
   end
 
   def execute(plan, requested_base)
-    if plan.sources.empty? && plan.tests.empty?
+    if plan.sources.empty? && plan.tests.empty? && plan.lint_files.empty?
       @out.puts "No changed Ruby files since #{requested_base}."
       return 0
     end
@@ -176,6 +261,12 @@ class VerifyChange
     @out.puts "Tests:   #{plan.tests.join(", ")}"
     FileUtils.rm_rf(File.join(@root, "coverage"))
     failed = []
+    if plan.lint_decision.step
+      @out.puts "\n== #{LINT_STEP}"
+      failed << plan.lint_decision.step unless @run.call(plan.lint_decision.step.env, plan.lint_decision.step.command)
+    elsif plan.lint_decision.skip_reason
+      @out.puts "\nLint skipped: #{plan.lint_decision.skip_reason}"
+    end
     plan.steps.each do |step|
       @out.puts "\n== #{step.title}"
       next if @run.call(step.env, step.command)
