@@ -74,6 +74,15 @@ class DetectToolsTest < Minitest::Test
     end
   end
 
+  def test_the_missing_line_ends_the_reason_with_a_period_before_the_fix
+    in_project("test/test_helper.rb" => "") do |root|
+      out, _err, status = run_detect(root)
+
+      assert status.success?
+      assert_includes out, "without it. Run"
+    end
+  end
+
   def test_a_path_that_is_not_a_directory_exits_two
     Dir.mktmpdir do |root|
       missing = File.join(root, "nope")

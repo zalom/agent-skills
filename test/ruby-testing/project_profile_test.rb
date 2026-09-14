@@ -92,6 +92,13 @@ class ProjectProfileTest < Minitest::Test
     end
   end
 
+  def test_factory_bot_rails_under_dependencies_with_no_factories_folder_reads_as_factories
+    lockfile = "GEM\n  specs:\n    factory_bot_rails (6.5.1)\n\nDEPENDENCIES\n  factory_bot_rails (~> 6.5)\n  rspec-rails (~> 8.0)\n"
+    in_project("Gemfile.lock" => lockfile) do |root|
+      assert_equal [:factories], profile(root).test_data
+    end
+  end
+
   # Tool declared beyond the lockfile
 
   def test_simplecov_declared_only_in_the_gemfile_is_read_without_a_lockfile
@@ -121,6 +128,23 @@ class ProjectProfileTest < Minitest::Test
   def test_minitest_five_without_minitest_mock_has_no_gap
     lockfile = "GEM\n  specs:\n    minitest (5.25.4)\n\nDEPENDENCIES\n  minitest (~> 5.25)\n"
     in_project("Gemfile.lock" => lockfile, "test/test_helper.rb" => "") do |root|
+      refute profile(root).missing.any? { |item| item.tool == "minitest-mock" }
+    end
+  end
+
+  def test_minitest_six_with_mocha_has_no_minitest_mock_gap
+    lockfile = "GEM\n  specs:\n    minitest (6.0.6)\n    mocha (2.7.1)\n\nDEPENDENCIES\n  minitest (~> 6.0)\n  mocha\n"
+    in_project("Gemfile.lock" => lockfile, "test/test_helper.rb" => "") do |root|
+      p = profile(root)
+      assert_equal [:mocha], p.mocking
+      refute p.missing.any? { |item| item.tool == "minitest-mock" }
+    end
+  end
+
+  def test_minitest_mock_declared_in_the_gemfile_only_counts_as_present
+    files = { "test/test_helper.rb" => "", "Gemfile" => %(gem "minitest"\ngem "minitest-mock"\n),
+              "Gemfile.lock" => "GEM\n  specs:\n    minitest (6.0.6)\n\nDEPENDENCIES\n  minitest\n" }
+    in_project(files) do |root|
       refute profile(root).missing.any? { |item| item.tool == "minitest-mock" }
     end
   end
@@ -192,6 +216,28 @@ class ProjectProfileTest < Minitest::Test
     lockfile = "DEPENDENCIES\n  rubocop (~> 1.0)\n  rubocop-rails-omakase\n"
     in_project("Gemfile.lock" => lockfile) do |root|
       assert_equal :omakase, profile(root).style_guide
+    end
+  end
+
+  def test_omakase_flow_form_with_no_gem_line_still_reads_as_omakase
+    config = "inherit_gem: { rubocop-rails-omakase: rubocop.yml }\n"
+    in_project(".rubocop.yml" => config) do |root|
+      assert_equal :omakase, profile(root).style_guide
+    end
+  end
+
+  def test_plugins_block_list_with_standard_not_first_reads_as_standard
+    config = "plugins:\n  - rubocop-performance\n  - standard\n"
+    in_project(".rubocop.yml" => config) do |root|
+      assert_equal :standard, profile(root).style_guide
+    end
+  end
+
+  def test_rubocop_and_standard_declared_with_a_plain_rubocop_yml_reads_as_rubocop
+    files = { ".rubocop.yml" => "AllCops:\n  NewCops: enable\n", "Gemfile" => %(gem "rubocop"\ngem "standard"\n),
+              "Gemfile.lock" => "DEPENDENCIES\n  rubocop\n  standard\n" }
+    in_project(files) do |root|
+      assert_equal :rubocop, profile(root).style_guide
     end
   end
 

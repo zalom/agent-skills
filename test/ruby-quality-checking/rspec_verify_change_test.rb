@@ -61,6 +61,15 @@ class RSpecVerifyChangeTest < Minitest::Test
     end
   end
 
+  def test_a_spec_helper_without_dot_rspec_runs_rspec
+    files = { "spec/spec_helper.rb" => "", "lib/refund.rb" => "", "spec/refund_spec.rb" => "", ".mutineer.yml" => "" }
+    in_project(files) do |root|
+      _code, _out, _err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+
+      assert_equal %w[bundle exec rspec spec/refund_spec.rb], commands.first.last
+    end
+  end
+
   def test_rspec_in_the_lockfile_finds_a_spec_under_spec_lib
     files = { "Gemfile.lock" => LOCKFILE, "lib/shop/cart.rb" => "", "spec/lib/shop/cart_spec.rb" => "", ".mutineer.yml" => "" }
     in_project(files) do |root|

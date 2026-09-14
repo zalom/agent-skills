@@ -5,14 +5,20 @@ require_relative "support/project_fixtures"
 class SkillComplianceTest < Minitest::Test
   ALLOWED_FRONTMATTER_KEYS = %w[name description license compatibility metadata allowed-tools].freeze
   SKILL_DIR_SENTENCE = "Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. " \
-                       "`SKILL_DIR` is the absolute path of the directory this file was loaded from; find it before " \
-                       "running a script. Run a script by its full path, `SKILL_DIR/scripts/...`. Actually execute " \
-                       "the script with a Bash tool call and read its real output; never predict, summarize, or " \
-                       "invent what it would print instead of running it."
+                       "`SKILL_DIR` is the absolute path of that directory; find it before running a script. Run a " \
+                       "script by its full path, `SKILL_DIR/scripts/...`, and read its real output. Never predict " \
+                       "or invent what a script prints."
   SKILLS = { "ruby-testing" => TESTING_SKILL_ROOT, "ruby-quality-checking" => QUALITY_SKILL_ROOT }.freeze
   QUALITY_STACK_NAMES = %w[setup-project bin/verify-change .mutineer.yml bin/crap].freeze
 
-  MOCK_BAN_PATTERN = /stub only at|only at (a |true )?boundar(y|ies)|(pass|prefer) real objects|couples the test|fixtures over factories/i
+  MOCK_BAN_PATTERN = /stub only at|at (a |true )?boundar(y|ies)|(pass|prefer) real objects|couples the test|fixtures over factories/i
+  # Lines that match MOCK_BAN_PATTERN by coincidence but read as advice, not a boundary-only or
+  # fixtures-over-factories rule (review finding 5).
+  MOCK_BAN_ALLOWED = [
+    "Integration tests run real objects",
+    "Use a double at a boundary",
+    "Stub the clock, randomness, the network, and external IO"
+  ].freeze
 
   def test_frontmatter_is_within_the_allowed_keys_and_matches_the_folder
     SKILLS.each do |name, root|
@@ -66,8 +72,7 @@ class SkillComplianceTest < Minitest::Test
       content = File.read(file)
       next unless content.match?(MOCK_BAN_PATTERN)
 
-      # "Integration tests run real objects" is the one allowed exception.
-      offending = content.each_line.select { |line| line.match?(MOCK_BAN_PATTERN) && !line.include?("Integration tests run real objects") }
+      offending = content.each_line.select { |line| line.match?(MOCK_BAN_PATTERN) && MOCK_BAN_ALLOWED.none? { |allowed| line.include?(allowed) } }
       assert_empty offending, "#{file}: #{offending.join}"
     end
   end
@@ -79,11 +84,16 @@ class SkillComplianceTest < Minitest::Test
 
   def test_every_sibling_path_in_a_skill_resolves_inside_that_skill
     SKILLS.each do |name, root|
-      files = [File.join(root, "SKILL.md")] + markdown_files(root)
-      files.uniq.each do |file|
-        File.read(file).scan(/`((?:references|scripts|assets)\/[^`]+)`/).each do |(relative)|
+      markdown_files(root).each do |file|
+        content = File.read(file)
+        content.scan(/`((?:references|scripts|assets)\/[^`]+)`/).each do |(relative)|
           path = relative.split(/[\s(]/).first
           assert File.exist?(File.join(root, path)), "#{name} #{file}: #{path} does not resolve inside #{name}"
+        end
+        content.scan(/`([\w-]+\.md)`/).each do |(bare)|
+          next if bare == "SKILL.md"
+
+          assert File.exist?(File.join(root, "references", bare)), "#{name} #{file}: #{bare} does not resolve inside #{name}/references"
         end
       end
     end
@@ -98,6 +108,6 @@ class SkillComplianceTest < Minitest::Test
   end
 
   def markdown_files(root)
-    Dir.glob(File.join(root, "references/**/*.md"))
+    Dir.glob(File.join(root, "{SKILL.md,references/**/*.md}"))
   end
 end

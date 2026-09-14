@@ -172,7 +172,7 @@ class VerifyChangeTest < Minitest::Test
     end
   end
 
-  def test_a_mutation_run_where_every_mutant_errors_fails_the_gate
+  def test_the_mutation_command_always_passes_the_threshold
     # Mutineer 1.0.0's reporter (lib/mutineer/reporter.rb#exit_code) exits 1 whenever every
     # attempted mutant errored and --threshold was given: mutation_command always passes
     # --threshold 75, so the tool's own exit code already fails a broken run. bin/verify-change
@@ -181,11 +181,15 @@ class VerifyChangeTest < Minitest::Test
     files = { "lib/refund.rb" => "", "test/refund_test.rb" => "", ".mutineer.yml" => "" }
     in_project(files) do |root|
       out = StringIO.new
-      runner = ->(_env, command) { !command.include?("mutineer") }
+      commands = []
+      runner = ->(_env, command) { commands << command; !command.include?("mutineer") }
       code = VerifyChange.new(["main"], root: root, out: out, err: StringIO.new, git: git_stub(changed: ["lib/refund.rb"]), run: runner).call
 
       assert_equal 1, code
       assert_includes out.string, "Failed: Mutation testing"
+      mutation_command = commands.find { |command| command.include?("mutineer") }
+      assert_includes mutation_command, "--threshold"
+      assert_equal "75", mutation_command[mutation_command.index("--threshold") + 1]
     end
   end
 

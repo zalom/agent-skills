@@ -29,7 +29,24 @@ class StyleGuideParityTest < Minitest::Test
                                                                           "Gemfile.lock" => "DEPENDENCIES\n  standard (~> 1.0)\n" }, profile: :standard, lint: :rubocop },
     { name: "standard via inherit_gem flow form in .rubocop.yml", files: { ".rubocop.yml" => "require: standard\ninherit_gem: { standard: config/base.yml }\n",
                                                                              "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.88)\n  standard (~> 1.56)\n" }, profile: :standard, lint: :rubocop },
+    { name: "standard via inherit_gem flow form beside a standard.yml", files: { ".rubocop.yml" => "require: standard\ninherit_gem: { standard: config/base.yml }\n",
+                                                                                    ".standard.yml" => "",
+                                                                                    "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.88)\n  standard (~> 1.56)\n" }, profile: :standard, lint: :rubocop },
     { name: "ambiguous", files: { ".standard.yml" => "", ".rubocop.yml" => "require:\n  - rubocop-rails\n" }, profile: :ambiguous, lint: :skip }
+  ].freeze
+
+  # Both scripts detect Standard's rubocop.yml wiring from the config file text alone (review
+  # finding 3): this asserts their two implementations agree, not only that documented fixtures
+  # happen to agree.
+  CONFIGS = [
+    "",
+    "AllCops:\n  NewCops: enable\n",
+    "inherit_gem:\n  standard: config/base.yml\n",
+    "inherit_gem: { standard: config/base.yml }\n",
+    "require: standard\ninherit_gem: { standard: config/base.yml }\n",
+    "plugins:\n  - standard\n",
+    "plugins:\n  - rubocop-performance\n  - standard\n",
+    "require: [standard]\n"
   ].freeze
 
   def git_stub(changed:)
@@ -58,6 +75,18 @@ class StyleGuideParityTest < Minitest::Test
         style_guide = ProjectProfile.new(root).style_guide
         row[:profile].nil? ? assert_nil(style_guide, row[:name]) : assert_equal(row[:profile], style_guide, "#{row[:name]}: ProjectProfile#style_guide")
         assert_equal row[:lint], actual_lint_branch(root, ["lib/refund.rb"]), "#{row[:name]}: verify-change's lint branch"
+      end
+    end
+  end
+
+  def test_the_standard_wiring_regex_agrees_across_both_scripts
+    CONFIGS.each do |config|
+      in_project(".rubocop.yml" => config) do |root|
+        profile_result = ProjectProfile.new(root).send(:rubocop_config_uses_standard?)
+        change = VerifyChange.new(["main"], root: root, out: StringIO.new, err: StringIO.new, git: git_stub(changed: []), run: ->(*) { true })
+        verify_result = change.send(:rubocop_config_uses_standard?)
+
+        assert_equal profile_result, verify_result, config
       end
     end
   end

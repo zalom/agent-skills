@@ -16,7 +16,7 @@ class LinterTest < Minitest::Test
     in_project(PLAIN) do |root|
       code, _out, err = setup_project(root, "--linter", "standard")
 
-      refute_equal 1, code, err
+      assert_equal 0, code, err
     end
   end
 
@@ -97,6 +97,18 @@ class LinterTest < Minitest::Test
       assert_equal 0, code
       assert_includes err, "Two style guides"
       assert_equal "", read(root, ".standard.yml")
+    end
+  end
+
+  def test_linter_on_a_gem_only_style_guide_installs_the_missing_config_file
+    files = PLAIN.merge("Gemfile" => %(source "https://rubygems.org"\n\ngem "rake"\ngem "rubocop"\n))
+    in_project(files) do |root|
+      code, out, = setup_project(root, "--linter", "rubocop")
+
+      assert_equal 0, code
+      assert File.exist?(File.join(root, ".rubocop.yml"))
+      assert_equal 1, read(root, "Gemfile").scan(/gem "rubocop"/).size
+      refute_includes out, "kept    .rubocop.yml"
     end
   end
 
