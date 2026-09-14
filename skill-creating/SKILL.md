@@ -3,12 +3,9 @@ name: skill-creating
 description: >
   Author or revise an Agent Skill, a subagent or agent role file, or a
   lifecycle hook with progressive disclosure. Use when creating or editing a
-  SKILL.md, writing a description or frontmatter, designing the slim body,
-  building references, evals, or scripts, or scaffolding a new skill. Also use
-  when a skill is too big or over its token budget, when prompts are bloated,
-  when an agent keeps missing a step or ignoring instructions, or when the user
-  says "progressive disclosure", "write a skill", "thin router", "split into
-  references", or "make this slim".
+  SKILL.md, writing its description or frontmatter, designing the slim body,
+  or scaffolding a new skill. Also use when a skill is over budget, prompts
+  are bloated, or an agent keeps missing a step or ignoring instructions.
 license: MIT
 metadata:
   author: Zlatko Alomerovic
@@ -52,6 +49,7 @@ routes each authoring task to the reference that holds the depth.
 | Authoring a lifecycle hook | `references/hooks.md` |
 | Deciding script versus prose, or writing a script | `references/scripts.md` |
 | Building evals for a skill | `references/evals.md` |
+| Naming an external skill as a default or dependency | `references/progressive-disclosure.md` (Optional dependencies) |
 
 ## Shrink context, or let a skill self-improve
 

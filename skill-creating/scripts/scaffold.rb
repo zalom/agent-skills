@@ -152,6 +152,9 @@ def skill_body(name)
       Use when the user needs #{name}. State here WHEN this skill should
       trigger, in the third person, so the agent can match it. Replace this
       placeholder with one or two concrete trigger conditions before shipping.
+    license: REPLACE-ME (for example MIT)
+    metadata:
+      author: REPLACE-ME
     ---
 
     # #{name}
@@ -242,7 +245,7 @@ def hook_body(name, event)
     # exits 0 so it never blocks the session.
     #
     # Wire it in settings.json under hooks.#{event}:
-    #   { "type": "command", "command": "ruby /absolute/path/to/#{name}" }
+    #   { "type": "command", "command": "ruby ${CLAUDE_PROJECT_DIR}/path/to/#{name}" }
     #
     # Exit codes:
     #   0  no-op, or success

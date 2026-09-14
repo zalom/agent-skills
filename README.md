@@ -15,6 +15,8 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 ```sh
 claude plugin marketplace add zalom/agent-skills
 claude plugin install writing-style@zalom-skills
+claude plugin install skill-creating@zalom-skills
+claude plugin install skill-evaluating@zalom-skills
 ```
 
 Restart Claude Code after installing. The writing-style hooks are optional and installed by hand, as its own README describes.

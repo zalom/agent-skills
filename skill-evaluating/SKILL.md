@@ -3,11 +3,10 @@ name: skill-evaluating
 description: >
   Evaluate skills for correctness, convention compliance, and progressive
   disclosure. Use when testing whether a skill produces good outputs,
-  verifying convention compliance after changes, running evals against
-  skills or instructions, creating evals for a new or updated skill,
-  checking if a description triggers correctly, or assessing whether a
-  skill is still needed. Also use when the user says "evaluate",
-  "test the skill", "run evals", "check conventions", or "write evals".
+  verifying convention compliance after changes, running evals against a
+  skill, or checking whether a description triggers correctly. Also use
+  when the user says "evaluate", "run evals", or "check conventions", or
+  when unsure whether a skill is still needed.
 license: MIT
 metadata:
   author: Zlatko Alomerovic

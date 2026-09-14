@@ -14,6 +14,7 @@ and before deciding where a file goes (scripts, references, or assets).
 - [One level deep, with a table of contents (C5, C6)](#one-level-deep-with-a-table-of-contents-c5-c6)
 - [Store each fact once (C7)](#store-each-fact-once-c7)
 - [Cross-reference other skills by name (C8)](#cross-reference-other-skills-by-name-c8)
+- [Optional dependencies](#optional-dependencies)
 - [Ship only what does the job (C9)](#ship-only-what-does-the-job-c9)
 - [The thin-router pattern (C10)](#the-thin-router-pattern-c10)
 - [Quarantine worked examples (C11)](#quarantine-worked-examples-c11)
@@ -124,13 +125,22 @@ agent reads as a dependency it loads on its own terms. [C8]
 
 | Form | Effect |
 |------|--------|
-| `REQUIRED BACKGROUND: superpowers:test-driven-development` | Good. Names the dependency; the agent loads it when relevant. |
+| `REQUIRED BACKGROUND: zalom-skills:skill-evaluating` | Good. Names the dependency; the agent loads it when relevant. |
 | `For eval depth, use skill-evaluating.` | Good. Names the skill, leaves loading to the agent. |
 | `@skills/skill-evaluating/SKILL.md` | Bad. `@`-path syntax force-loads the file immediately, defeating disclosure. |
 
 The `@`-path form pulls the target into context the moment the line is read, so it spends
 the budget the level split was built to protect. Name the skill and let the trigger
 decide when it loads.
+
+## Optional dependencies
+
+An external skill stays optional and never load-bearing: a user without that plugin still
+gets the core behavior. Phrase an external skill as an enhancement, never as the only path:
+"Use the native path by default; if `<plugin>:<skill>` is available or the user prefers it,
+delegate to it." An optional CLI or MCP server is detected first and skipped cleanly when
+absent. Hard dependencies of the runtime itself (the language, git, POSIX tools) are exempt
+from this rule.
 
 ## Ship only what does the job (C9)
 

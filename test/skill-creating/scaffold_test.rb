@@ -9,16 +9,16 @@ require "fileutils"
 # the generated SKILL.md is born slim and well formed (frontmatter with name
 # and description, body within the line budget, no em-dashes or en-dashes
 # anywhere).
-class CreatingSkillsScaffoldTest < Minitest::Test
+class SkillCreatingScaffoldTest < Minitest::Test
   SCRIPT = File.expand_path(
     "../../skill-creating/scripts/scaffold.rb", __dir__
   )
   LINE_BUDGET = 500
-  EM_DASH = "—"
-  EN_DASH = "–"
+  EM_DASH = "\u2014"
+  EN_DASH = "\u2013"
 
   def setup
-    @dir = Dir.mktmpdir("creating-skills-scaffold")
+    @dir = Dir.mktmpdir("skill-creating-scaffold")
   end
 
   def teardown
@@ -72,5 +72,20 @@ class CreatingSkillsScaffoldTest < Minitest::Test
     _out, status = run_scaffold("skill", "Bad_Name", "--out", @dir)
     assert_equal 2, status, "an invalid name must exit with the validation code"
     refute File.exist?(File.join(@dir, "Bad_Name")), "no scaffold on a bad name"
+  end
+
+  def test_generated_skill_md_has_license_and_author_placeholders
+    run_scaffold("skill", "pdf-extractor", "--out", @dir)
+    fm = File.read(skill_md_path("pdf-extractor")).split("---\n")[1].to_s
+    assert_match(/^license:/, fm, "frontmatter must carry a license placeholder")
+    assert_match(/^metadata:\s*\n\s+author:/, fm, "frontmatter must carry a metadata.author placeholder")
+  end
+
+  def test_generated_hook_wires_a_project_relative_path
+    out, status = run_scaffold("hook", "my-hook", "--out", @dir)
+    assert_equal 0, status, "expected exit 0, got: #{out}"
+    body = File.read(File.join(@dir, "my-hook"))
+    assert_match(/\$\{CLAUDE_PROJECT_DIR\}/, body, "hook wiring comment must use a project-relative placeholder")
+    refute_match(%r{"command":\s*"ruby /}, body, "hook wiring comment must not hard-code an absolute path")
   end
 end

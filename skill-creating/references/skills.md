@@ -56,8 +56,9 @@ Rules [A5]:
 3. No leading, trailing, or consecutive hyphens.
 4. Must match the parent directory name exactly.
 5. Must not contain `anthropic` or `claude`.
-6. Prefer a gerund. When skills share a group, put the group noun first and the gerund
-   after it (`skill-creating`, `skill-evaluating`, `ruby-verifying`), not `pdf-tool`.
+6. Prefer a gerund (`processing-pdfs`, not `pdf-tool`). When skills share a group, put the
+   group noun first and the gerund after it (`skill-creating`, `skill-evaluating`,
+   `ruby-verifying`).
 
 ## The `description` field (triggering)
 

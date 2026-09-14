@@ -6,6 +6,14 @@ whether to graduate or retire evals.
 Sources: agentskills.io, Anthropic eval engineering, Tessl eval framework,
 Philipp Schmid skill testing guide.
 
+## Contents
+
+- [Three-Tier Grader Taxonomy](#three-tier-grader-taxonomy)
+- [pass@k vs pass^k](#passk-vs-passk)
+- [Capability-to-Regression Graduation](#capability-to-regression-graduation)
+- [Skill Retirement Detection](#skill-retirement-detection)
+- [Tessl three-layer eval taxonomy](#tessl-three-layer-eval-taxonomy)
+
 ## Three-Tier Grader Taxonomy
 
 Layer graders like a Swiss cheese model: no single tier catches everything.

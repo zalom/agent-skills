@@ -28,7 +28,7 @@ strengthen the skill description and instructions so the model keeps preferring 
 if it still drops the step, enforce it deterministically with a hook. [E1]
 
 Test: ask "does this behavior have to hold even when the model forgets the skill?" If yes
-(a gate before a destructive tool, a savepoint before compaction, a format pass after every
+(a gate before a destructive tool, a checkpoint before compaction, a format pass after every
 edit), the runtime must enforce it, not the prompt. If no, leave it in the skill body and
 spend no hook tokens on it. [E1]
 
@@ -61,7 +61,7 @@ then the handler. [E2]
 | Gate or validate before a tool runs | PreToolUse | `Edit\|Write`, `Bash` | yes (exit 2 or `permissionDecision: deny`) | `tool_name`, `tool_input` |
 | Format, lint, or remind after a tool succeeds | PostToolUse | `Edit\|Write` | block before next model call only | `tool_name`, `tool_input`, `tool_output` |
 | Boot or inject context at session start | SessionStart | `startup`, `resume`, `clear`, `compact` | no | `source` |
-| Savepoint before compaction | PreCompact | `manual`, `auto` | no (savepoint; exits 0) | compaction trigger |
+| Checkpoint before compaction | PreCompact | `manual`, `auto` | no (checkpoint; exits 0) | compaction trigger |
 | Erase or augment a prompt before processing | UserPromptSubmit | (none) | yes (exit 2) | `prompt`, `permission_mode` |
 
 Notes that change the choice of event: [E2]
@@ -74,7 +74,7 @@ Notes that change the choice of event: [E2]
   output is unacceptable.
 - SessionStart cannot block. Use it to inject boot context, not to enforce anything. Its
   stdout on exit 0 becomes conversation context (see exit codes).
-- PreCompact fires before the runtime compacts the conversation. Use it to write a savepoint
+- PreCompact fires before the runtime compacts the conversation. Use it to write a checkpoint
   while the full context still exists.
 
 ## Path rules and executability (E3)
@@ -137,7 +137,7 @@ Rules that follow from the table: [E5]
 - Blocking with exit 2 works only on events that support it. PreToolUse is the clear gate
   event; UserPromptSubmit, Stop, SubagentStop, and a few task events also support exit-2
   blocking. SessionStart and SessionEnd cannot block; exit 2 there does not stop anything.
-  PreCompact runs a savepoint, not a gate (see the job table). [E5]
+  PreCompact runs a checkpoint, not a gate (see the job table). [E5]
 
 PreToolUse JSON shape:
 
@@ -146,7 +146,7 @@ PreToolUse JSON shape:
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "deny",
-    "permissionDecisionReason": "Plan not yet written; edits to project code are gated."
+    "permissionDecisionReason": "Required precondition not met."
   }
 }
 ```
@@ -160,10 +160,8 @@ to hold a behavior. [E6]
 
 Verify by observation, not assumption: [E6]
 
-- Trigger the event and confirm the side effect (the gate blocked, the savepoint file appeared,
+- Trigger the event and confirm the side effect (the gate blocked, the checkpoint file appeared,
   the boot context showed). Absence of an error is not proof the hook ran.
-- Check the session-id environment variable is set in the context where the hook must fire;
-  if it is unset, session-scoped hooks no-op.
 - For a gate, attempt the action the gate should block and confirm it is refused. A gate that
   never refuses in testing is a gate that is not engaged.
 
@@ -232,5 +230,4 @@ propose-only. [E8]
 - [ ] Exit codes deliberate: 0 to allow or inject context, 2 to block with the reason on
       stderr; PreToolUse uses `hookSpecificOutput.permissionDecision`, not top-level `decision`
       (E5).
-- [ ] Engagement verified by triggering the event and observing the side effect, including the
-      unset-session-id no-op case (E6).
+- [ ] Engagement verified by triggering the event and observing the side effect (E6).
