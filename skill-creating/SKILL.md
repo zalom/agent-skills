@@ -9,7 +9,6 @@ description: >
 license: MIT
 metadata:
   author: Zlatko Alomerovic
-user-invocable: true
 ---
 
 # Creating Skills

@@ -98,6 +98,8 @@ For hook event selection, exit-code semantics, and path conventions, read
 
 ## Script hard requirements
 
+- Reference a bundled script by its path from the skill directory, the directory that holds `SKILL.md`, as the Agent Skills specification requires. Never use a harness variable such as `${CLAUDE_SKILL_DIR}`, because Codex does not expand it. State that base once in `SKILL.md`, for example `SKILL_DIR/scripts/setup`.
+
 Every script that ships with a skill meets these, because an agent runs it unattended:
 
 1. No interactive prompts. A blocking `gets` or `read -p` hangs the agent forever. Take

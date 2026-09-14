@@ -107,6 +107,8 @@ Use only the documented optionals below. Add nothing beyond them [A6].
 | `context: fork` | Claude Code extension: run the body as a forked task |
 | `paths` | Claude Code extension: scope the skill to matching paths |
 
+The Claude Code extensions work only in Claude Code. Uploads to claude.ai, the Skills API, and `package_skill.py` reject any field outside the specification, and other agents such as Codex ignore them. Leave the extensions out of a skill meant to run anywhere, and never set one to its default value.
+
 ## Body voice
 
 Rules:

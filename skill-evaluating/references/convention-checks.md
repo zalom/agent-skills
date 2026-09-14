@@ -25,7 +25,8 @@ Load when running convention compliance evals on a skill.
 | `description` phrasing | Starts with imperative verb or "Use when" pattern |
 | `description` triggers | Mentions at least one trigger context ("Use when...") |
 | `description` edge cases | Includes at least one indirect trigger (user doesn't name the domain) |
-| No unknown required fields | Only uses fields from the agentskills.io spec (name, description, license, compatibility, metadata, allowed-tools) plus the Claude Code extensions (model, disable-model-invocation, user-invocable, context, paths) |
+| No unknown required fields | Only uses fields from the agentskills.io spec (name, description, license, compatibility, metadata, allowed-tools). A Claude Code extension (model, disable-model-invocation, user-invocable, context, paths) appears only in a skill that ships for Claude Code alone, and never at its default value |
+| Portable paths | Bundled files are referenced from the skill directory, with no harness variable such as `${CLAUDE_SKILL_DIR}` |
 
 ## Progressive Disclosure
 
