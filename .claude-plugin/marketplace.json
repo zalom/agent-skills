@@ -7,6 +7,20 @@
   "description": "Agent skills written by Zlatko Alomerovic.",
   "plugins": [
     {
+      "name": "ruby-verifying",
+      "source": "./ruby-verifying",
+      "strict": false,
+      "description": "Writes and verifies Ruby and Rails tests with Minitest or RSpec, SimpleCov patch coverage, Mutineer mutation testing, and CRAP scores, on the changed code only.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["ruby", "rails", "testing", "minitest", "rspec", "simplecov", "mutation-testing", "mutineer", "crap", "skunk", "dependency-injection"],
+      "category": "development"
+    },
+    {
       "name": "writing-style",
       "source": "./writing-style",
       "strict": false,
