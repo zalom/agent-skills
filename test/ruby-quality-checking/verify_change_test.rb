@@ -155,7 +155,7 @@ class VerifyChangeTest < Minitest::Test
   end
 
   def test_all_operators_matches_the_mutineer_yml_asset
-    operators = YAML.load_file(File.join(SKILL_ROOT, "assets/mutineer.yml")).fetch("operators")
+    operators = YAML.load_file(File.join(QUALITY_SKILL_ROOT, "assets/mutineer.yml")).fetch("operators")
 
     assert_equal operators, VerifyChange::ALL_OPERATORS
   end

@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require_relative "project_profile"
+
+# Skeleton: real reporting lands with the code commit.
+exit 1
