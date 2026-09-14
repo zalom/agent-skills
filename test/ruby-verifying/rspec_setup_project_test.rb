@@ -35,6 +35,8 @@ class RSpecSetupProjectTest < Minitest::Test
     "spec/models/post_spec.rb" => %(require "rails_helper"\n)
   }.freeze
 
+  RAILS_COVERAGE = %(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start "rails" do\n    enable_coverage :branch\n    cover "{app,lib,tools}/**/*.rb"\n  end\nend\n\n).freeze
+
   def setup_project(root, *options)
     out = StringIO.new
     err = StringIO.new
@@ -44,15 +46,15 @@ class RSpecSetupProjectTest < Minitest::Test
 
   def test_rspec_project_gets_the_stack_without_minitest
     in_project(RSPEC) do |root|
-      code, out, = setup_project(root)
+      code, out, err = setup_project(root)
 
       assert_equal 0, code
+      assert_empty err
       gemfile = read(root, "Gemfile")
       refute_match(/gem "minitest"/, gemfile)
       %w[simplecov mutineer skunk rubycritic flog ostruct].each { |name| assert_match(/gem "#{name}"/, gemfile) }
-      helper = read(root, "spec/spec_helper.rb")
-      assert helper.start_with?(%(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start do\n    enable_coverage :branch\n    skip "/spec/"\n))
-      assert helper.end_with?("end\n\n#{SPEC_HELPER}")
+      coverage = %(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start do\n    enable_coverage :branch\n    skip "/spec/"\n    cover "{app,lib,tools}/**/*.rb"\n  end\nend\n\n)
+      assert_equal coverage + SPEC_HELPER, read(root, "spec/spec_helper.rb")
       assert_equal %(require "spec_helper"\nrequire "shop"\n), read(root, "spec/shop_spec.rb")
       assert_equal "--require spec_helper\n", read(root, ".rspec")
       mutineer = read(root, ".mutineer.yml")
@@ -89,7 +91,7 @@ class RSpecSetupProjectTest < Minitest::Test
 
       assert_equal 0, code
       helper = read(root, "spec/spec_helper.rb")
-      assert helper.start_with?(%(if ENV["COVERAGE"]\n))
+      assert helper.start_with?(%(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start do\n    enable_coverage :branch\n    skip "/spec/"\n))
       assert_includes helper, "config.disable_monkey_patching!"
       assert_includes helper, %(config.example_status_persistence_file_path = "spec/examples.txt")
       assert_equal "--require spec_helper\n", read(root, ".rspec")
@@ -109,13 +111,34 @@ class RSpecSetupProjectTest < Minitest::Test
     end
   end
 
+  def test_a_direct_rspec_expectations_dependency_keeps_minitest
+    lockfile = "GEM\n  specs:\n    rspec-expectations (3.13.5)\n\nDEPENDENCIES\n  minitest (~> 6.0)\n  rspec-expectations (~> 3.13)\n  rspec-mocks\n"
+    in_project("Gemfile" => %(source "https://rubygems.org"\n), "Gemfile.lock" => lockfile) do |root|
+      setup_project(root, "--no-ci")
+
+      assert_match(/gem "minitest"/, read(root, "Gemfile"))
+      assert File.exist?(File.join(root, "test/tools/crap_test.rb"))
+      refute File.exist?(File.join(root, "spec"))
+    end
+  end
+
+  def test_both_test_and_spec_folders_are_reported
+    in_project(RSPEC.merge("test/legacy_test.rb" => %(require "test_helper"\n))) do |root|
+      code, _out, err = setup_project(root, "--no-ci")
+
+      assert_equal 0, code
+      assert_includes err, "Both test/ and spec/ exist. Setting up RSpec only: test/ gets no coverage block, and bin/verify-change does not run it."
+      assert_equal %(require "test_helper"\n), read(root, "test/legacy_test.rb")
+    end
+  end
+
   def test_rails_rspec_app_gets_rails_coverage_in_the_spec_helper
     in_project(RAILS_RSPEC) do |root|
       code, _out, err = setup_project(root)
 
       assert_equal 0, code
       assert_empty err
-      assert read(root, "spec/spec_helper.rb").start_with?(%(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start "rails" do))
+      assert_equal RAILS_COVERAGE + SPEC_HELPER, read(root, "spec/spec_helper.rb")
       assert_equal RAILS_HELPER, read(root, "spec/rails_helper.rb")
       refute File.exist?(File.join(root, "test/test_helper.rb"))
       assert_includes read(root, ".github/workflows/ci.yml"), "run: bin/rails db:test:prepare && COVERAGE=1 bundle exec rspec\n"
@@ -126,17 +149,22 @@ class RSpecSetupProjectTest < Minitest::Test
     in_project(RAILS_RSPEC.except("spec/spec_helper.rb")) do |root|
       setup_project(root, "--no-ci")
 
-      assert_equal read(root, "spec/rails_helper.rb"), "#{File.read(File.join(SKILL_ROOT, "assets/coverage/rails.rb"))}#{RAILS_HELPER}"
+      assert_equal RAILS_COVERAGE + RAILS_HELPER, read(root, "spec/rails_helper.rb")
       refute File.exist?(File.join(root, "spec/spec_helper.rb"))
     end
   end
 
-  def test_rails_rspec_app_without_helpers_asks_for_the_rspec_install
+  def test_rails_rspec_app_without_a_spec_helper_stops_with_exit_four
     in_project(RAILS_RSPEC.except("spec/spec_helper.rb", "spec/rails_helper.rb")) do |root|
-      code, _out, err = setup_project(root, "--no-ci")
+      code, out, err = setup_project(root)
 
-      assert_equal 0, code
-      assert_includes err, "Run bin/rails generate rspec:install first"
+      assert_equal 4, code
+      assert_includes err, "RSpec detected but no spec helper: run `bin/rails generate rspec:install` first"
+      assert_empty out
+      assert_equal RAILS_RSPEC["Gemfile"], read(root, "Gemfile")
+      refute File.exist?(File.join(root, "spec/tools/crap_spec.rb"))
+      refute File.exist?(File.join(root, "bin/verify-change"))
+      refute File.exist?(File.join(root, ".mutineer.yml"))
     end
   end
 end

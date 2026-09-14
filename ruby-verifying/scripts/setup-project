@@ -8,7 +8,8 @@ class SetupProject
 
     Adds the Ruby verification stack to a plain Ruby project or a Rails app
     (a Rails app is one with config/application.rb), tested with Minitest or
-    RSpec (an RSpec project has spec/ and .rspec, or rspec in Gemfile.lock):
+    RSpec (an RSpec project has spec/ and .rspec, or rspec, rspec-core, or
+    rspec-rails under DEPENDENCIES in Gemfile.lock):
 
       Gemfile                 simplecov, mutineer, skunk, rubycritic, flog, ostruct (and minitest in plain Ruby with Minitest)
       test/test_helper.rb     Minitest: coverage when COVERAGE=1, parallel worker hooks in Rails
@@ -22,13 +23,15 @@ class SetupProject
       .gitignore              coverage/ and .mutineer/, and spec/examples.txt for RSpec
       .github/workflows       ci.yml when there is no workflow, otherwise verify-change.yml
 
-    Existing files are kept, and running it twice changes nothing.
+    Existing files are kept, and running it twice changes nothing. When both
+    test/ and spec/ exist, it warns and sets up only one of them.
 
     Options:
       --dry-run   Print what would change, write nothing
       --no-ci     Skip the GitHub Actions workflow
 
-    Exit codes: 0 done, 1 usage error, 2 not a Ruby project (no Gemfile), 3 filesystem error.
+    Exit codes: 0 done, 1 usage error, 2 not a Ruby project (no Gemfile), 3 filesystem error,
+    4 RSpec detected in a Rails app without spec/spec_helper.rb or spec/rails_helper.rb.
   TEXT
 
   ASSETS = File.expand_path("../assets", __dir__)
@@ -40,6 +43,7 @@ class SetupProject
   MINITEST_ASSETS = { "test/tools/crap_test.rb" => "test/tools/crap_test.rb" }.freeze
   RSPEC_ASSETS = { "spec/tools/crap_spec.rb" => "spec/tools/crap_spec.rb", "rspec" => ".rspec" }.freeze
   SPEC_HELPERS = %w[spec/spec_helper.rb spec/rails_helper.rb].freeze
+  RSPEC_DEPENDENCY = /^  rspec(-core|-rails)?(\s|!|$)/
   EXECUTABLES = %w[bin/crap bin/verify-change].freeze
 
   def self.run(argv, out: $stdout, err: $stderr)
@@ -74,6 +78,9 @@ class SetupProject
   end
 
   def call
+    return stop_without_spec_helper if rspec? && rails? && SPEC_HELPERS.none? { |helper| exist?(helper) }
+
+    warn_about_both_suites
     warn_about_old_ruby
     add_gems
     rspec? ? add_spec_coverage : add_coverage
@@ -92,7 +99,7 @@ class SetupProject
   end
 
   def rspec?
-    (exist?(".rspec") && File.directory?(path("spec"))) || read("Gemfile.lock").to_s.match?(/^  rspec\b/)
+    (exist?(".rspec") && File.directory?(path("spec"))) || read("Gemfile.lock").to_s.match?(RSPEC_DEPENDENCY)
   end
 
   def ruby_version
@@ -104,6 +111,18 @@ class SetupProject
   end
 
   private
+
+  def stop_without_spec_helper
+    @err.puts "RSpec detected but no spec helper: run `bin/rails generate rspec:install` first, then run this again."
+    4
+  end
+
+  def warn_about_both_suites
+    return unless File.directory?(path("test")) && File.directory?(path("spec"))
+
+    chosen, skipped = rspec? ? %w[RSpec test/] : %w[Minitest spec/]
+    @err.puts "Both test/ and spec/ exist. Setting up #{chosen} only: #{skipped} gets no coverage block, and bin/verify-change does not run it."
+  end
 
   def warn_about_old_ruby
     version = ruby_version
@@ -148,18 +167,12 @@ class SetupProject
 
   def add_spec_coverage
     helper_path = SPEC_HELPERS.find { |candidate| exist?(candidate) }
-    return create_spec_helper unless helper_path
+    return write("spec/spec_helper.rb", asset("spec/spec_helper.rb"), "created") unless helper_path
 
     helper = read(helper_path)
     return record("kept", helper_path) if helper.include?("SimpleCov")
 
     write(helper_path, asset(rails? ? "coverage/rails.rb" : "coverage/rspec.rb") + helper, "updated")
-  end
-
-  def create_spec_helper
-    return @err.puts("spec/spec_helper.rb is missing. Run bin/rails generate rspec:install first, then run this again.") if rails?
-
-    write("spec/spec_helper.rb", asset("spec/spec_helper.rb"), "created")
   end
 
   def use_require_relative

@@ -48,7 +48,8 @@ Minitest runs tests in random order by default, and RSpec does once `spec_helper
 |---|---|---|
 | Repeat a failing order | `--seed 1234` | `--seed 1234` |
 | Find the test that leaks | `bundle exec minitest --bisect` | `bundle exec rspec --bisect` |
-| Rerun only the last failures | `rake test:fu` | `--only-failures`, with `example_status_persistence_file_path` set |
+
+Minitest has no built-in rerun of the last failures: repeat the order with `--seed`, then find the leak with `--bisect`. RSpec reruns the last failures with `--only-failures` once `example_status_persistence_file_path` is set.
 
 On two spec files where the first leaked a global, `rspec --bisect` printed the minimal reproduction:
 
@@ -69,7 +70,7 @@ The minimal reproduction command is:
 - Rails forks workers with `parallelize(workers: :number_of_processors)` and gives each worker its own test database. SimpleCov needs a `command_name` per worker, as `setup.md` shows.
 - In plain Ruby with Minitest, `minitest-parallel_fork` forks workers: `bundle exec ruby -rminitest/parallel_fork test/refund_test.rb`. Version 2.1.1 ran green on Minitest 6.0.6 and Ruby 4.0.3. Give each worker its own temporary folders and ports.
 - `MT_CPU` sets the number of workers for Minitest's own parallel executor. `N` no longer does.
-- RSpec 3.13 runs examples in one process. This skill verified no parallel runner for RSpec on Ruby 4.0.
+- RSpec 3.13 runs examples in one process. No RSpec parallel runner was tested on Ruby 4.0 for this skill; `parallel_tests` and `turbo_tests` exist.
 - A parallel run exposes coupling as well as saving time: tests that share state start to fail.
 
 ## Sources

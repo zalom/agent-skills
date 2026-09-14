@@ -70,5 +70,5 @@ Verifying a change:
 
 ## Scripts and assets
 
-- `scripts/setup-project [--dry-run] [--no-ci] PROJECT_DIR`: execute it, do not read it. It detects Rails and RSpec, and a second run changes nothing. Exit 0 means done, 1 a usage error, 2 no Gemfile, 3 a filesystem error.
+- `scripts/setup-project [--dry-run] [--no-ci] PROJECT_DIR`: execute it, do not read it. It detects Rails and RSpec, and a second run changes nothing. Exit 0 means done, 1 a usage error, 2 no Gemfile, 3 a filesystem error, 4 an RSpec Rails app without a spec helper.
 - `assets/` holds the files the script copies into a project: `bin/verify-change`, `bin/crap`, `tools/crap.rb` with its Minitest test and its RSpec spec, `mutineer.yml`, `rspec`, `spec/spec_helper.rb`, the coverage blocks in `coverage/`, and the CI templates in `github/`.

@@ -101,7 +101,7 @@ module Crap
       lib/, app/, and tools/. With --since REF it scores only the methods whose
       lines changed since REF.
     
-      Exit codes: 0 no method above the threshold (default 30), 1 at least one above it.
+      Exit codes: 0 no method above the threshold (default 30), 1 at least one above it, 2 an unknown option.
     TEXT
     
     def initialize(argv, root:, out: $stdout, git: ->(*args) { Open3.capture2("git", "-C", root, *args).first })
@@ -117,6 +117,8 @@ module Crap
       threshold = option("--threshold", "30").to_f
       since = option("--since", nil)
       resultset = File.join(@root, option("--coverage", "coverage/.resultset.json"))
+      return usage(2) if @argv.any? { |argument| argument.start_with?("-") }
+
       paths = @argv.empty? ? Dir.glob(%w[lib/**/*.rb app/**/*.rb tools/**/*.rb], base: @root) : @argv
       coverage = File.exist?(resultset) ? Crap.line_coverage(File.read(resultset)) : {}
       changed = since ? Crap.changed_lines(@git.call("diff", "--unified=0", since, "--", "*.rb")) : nil
@@ -127,9 +129,9 @@ module Crap
 
     private
 
-    def usage
+    def usage(code = 0)
       @out.puts USAGE
-      0
+      code
     end
 
     def option(flag, default)

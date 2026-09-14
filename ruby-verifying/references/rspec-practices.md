@@ -30,7 +30,7 @@ Every claim marked measured ran on Ruby 4.0.3 with rspec-core 3.13.6, rspec-expe
 | Gem | Pin | Measured | Note |
 |---|---|---|---|
 | rspec | `~> 3.13` | 3.13.2 | The whole suite ran with `config.warnings = true` and Ruby printed no warnings. |
-| rspec-rails | `~> 8.0` | not run | 8.0 needs Rails 7.2 or later. 8.0.4 is the latest. |
+| rspec-rails | `~> 8.0` | not run | Needs Rails 7.2 or later, from the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md). |
 | rubocop-rspec | `~> 3.10` | 3.10.2 | Ran with RuboCop 1.91.0. |
 
 - RSpec 4 is not released. `4.0.0.beta1` is a prerelease that drops the `should` syntax and the global DSL. Stay on 3.13.
@@ -158,7 +158,7 @@ Measured on one spec with common problems, `rubocop --only RSpec` reported these
 
 ## Coverage and mutation testing
 
-- `scripts/setup-project` treats a project with `spec/` and `.rspec`, or with rspec in `Gemfile.lock`, as an RSpec project. It adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper, writes `framework: rspec` to `.mutineer.yml`, adds no minitest gem, and leaves every `require` line alone.
+- `scripts/setup-project` treats a project with `spec/` and `.rspec`, or with `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock`, as an RSpec project, and stops with exit 4 in a Rails app that has neither spec helper. It adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper, writes `framework: rspec` to `.mutineer.yml`, adds no minitest gem, and leaves every `require` line alone.
 - `bin/verify-change` runs `bundle exec rspec` on the specs it maps from the changed files, then `mutineer run ... --framework rspec`.
 - Mutineer 1.0.0 runs RSpec in its default forked mode. `--daemon` supports Minitest only and exits 2 with RSpec.
 - Measured end to end on a plain Ruby project: see "RSpec projects" in `manual-workflow.md`.

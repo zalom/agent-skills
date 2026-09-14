@@ -47,14 +47,14 @@ Additions worth using:
 
 - `bundle exec minitest test/refund_test.rb:13` runs the test on that line.
 - `bundle exec minitest --bisect` finds the test that makes another test fail when they run in order.
-- `rake test:fu` runs only tests with `fu` in their name (6.0.1).
+- `rake test:fu` runs only tests with uppercase `FU` in their name, since 6.0.1.
 
 Writing idioms and assertions that kill mutants: `minitest-idioms.md`.
 
 ## RSpec 3.13
 
 - RSpec 3.13 is the current line. RSpec 4 exists only as the `4.0.0.beta1` prerelease.
-- rspec-rails 8.0 needs Rails 7.2 or later.
+- rspec-rails 8.0 needs Rails 7.2 or later, according to the [rspec-rails changelog](https://github.com/rspec/rspec-rails/blob/main/Changelog.md). This skill did not run rspec-rails.
 - Configuration, `let`, doubles, and the command line options: `rspec-practices.md`.
 
 ## SimpleCov 1.3

@@ -33,13 +33,13 @@ The script reads the project's files to decide what kind of project it is:
 | It finds | It treats the project as |
 |---|---|
 | `config/application.rb` | A Rails app |
-| `spec/` and `.rspec`, or `rspec` under `DEPENDENCIES` in `Gemfile.lock` | An RSpec project |
+| `spec/` and `.rspec`, or `rspec`, `rspec-core`, or `rspec-rails` under `DEPENDENCIES` in `Gemfile.lock` | An RSpec project |
 
-A gem that `Gemfile.lock` lists only as another gem's dependency does not make a project an RSpec project.
+A direct `rspec-expectations` or `rspec-mocks` dependency, or rspec listed only as another gem's dependency, does not make a project an RSpec project. When both `test/` and `spec/` exist, the script warns that it sets up only one of them, and `bin/verify-change` warns that it runs only one.
 
 In an RSpec project, the script:
 
-- Adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper. A plain Ruby project without either helper gets a new `spec/spec_helper.rb`.
+- Adds the coverage block to the top of `spec/spec_helper.rb`, or of `spec/rails_helper.rb` when that is the only helper. A plain Ruby project without either helper gets a new `spec/spec_helper.rb`. A Rails app without either helper stops with exit 4 and changes nothing: run `bin/rails generate rspec:install` first.
 - Creates `.rspec` with `--require spec_helper` when it is missing.
 - Writes `framework: rspec` into a new `.mutineer.yml`.
 - Copies `spec/tools/crap_spec.rb` in place of `test/tools/crap_test.rb`.

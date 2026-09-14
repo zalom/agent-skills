@@ -35,12 +35,23 @@ class RSpecVerifyChangeTest < Minitest::Test
     assert_empty VerifyChange.test_candidates("config/routes.rb", VerifyChange::RSPEC)
   end
 
+  def test_both_scripts_share_one_rspec_dependency_pattern
+    assert_equal SetupProject::RSPEC_DEPENDENCY, VerifyChange::RSPEC_DEPENDENCY
+    ["  rspec (~> 3.13)", "  rspec!", "  rspec", "  rspec-core (~> 3.13)", "  rspec-rails (~> 8.0)"].each do |line|
+      assert_match VerifyChange::RSPEC_DEPENDENCY, line
+    end
+    ["  rspec-expectations (~> 3.13)", "  rspec-mocks", "  rspec-support", "    rspec-core (3.13.6)", "  rspecial"].each do |line|
+      refute_match VerifyChange::RSPEC_DEPENDENCY, line
+    end
+  end
+
   def test_rspec_project_runs_the_specs_and_names_the_framework
     files = { ".rspec" => "--require spec_helper\n", "lib/refund.rb" => "", "spec/refund_spec.rb" => "", ".mutineer.yml" => "" }
     in_project(files) do |root|
-      code, out, _err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+      code, out, err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
 
       assert_equal 0, code
+      assert_empty err
       assert_includes out, "Change verified"
       tests, patch, mutation, crap = commands
       assert_equal [{ "COVERAGE" => "1" }, %w[bundle exec rspec spec/refund_spec.rb]], tests
@@ -67,6 +78,27 @@ class RSpecVerifyChangeTest < Minitest::Test
 
       assert_equal %w[bundle exec ruby], commands.first.last.first(3)
       refute_includes commands[2].last, "--framework"
+    end
+  end
+
+  def test_a_direct_rspec_expectations_dependency_keeps_minitest
+    files = { "Gemfile.lock" => "GEM\n  specs:\n    rspec-expectations (3.13.5)\n\nDEPENDENCIES\n  minitest (~> 6.0)\n  rspec-expectations (~> 3.13)\n",
+              "lib/refund.rb" => "", "test/refund_test.rb" => "", ".mutineer.yml" => "" }
+    in_project(files) do |root|
+      _code, _out, _err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+
+      assert_equal "test/refund_test.rb", commands.first.last.last
+      refute_includes commands[2].last, "--framework"
+    end
+  end
+
+  def test_both_test_and_spec_folders_are_reported
+    files = { ".rspec" => "", "lib/refund.rb" => "", "spec/refund_spec.rb" => "", "test/legacy_test.rb" => "", ".mutineer.yml" => "" }
+    in_project(files) do |root|
+      _code, _out, err, commands = verify(root, ["main"], changed: ["lib/refund.rb", "test/legacy_test.rb"])
+
+      assert_includes err, "Both test/ and spec/ exist. Checking with RSpec only, so changed files under test/ do not run."
+      assert_equal %w[bundle exec rspec spec/refund_spec.rb], commands.first.last
     end
   end
 

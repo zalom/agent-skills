@@ -154,4 +154,13 @@ class SetupProjectTest < Minitest::Test
     assert_equal 1, SetupProject.run(["--force", "."], out: StringIO.new, err: StringIO.new)
     assert_equal 0, SetupProject.run(["--help"], out: StringIO.new, err: StringIO.new)
   end
+
+  def test_an_existing_minitest_helper_gets_the_plain_coverage_block
+    in_project(PLAIN.merge("test/test_helper.rb" => %(require "minitest/autorun"\n))) do |root|
+      setup_project(root, "--no-ci")
+
+      coverage = %(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start do\n    enable_coverage :branch\n    skip "/test/"\n    cover "{app,lib,tools}/**/*.rb"\n  end\nend\n\n)
+      assert_equal %(#{coverage}require "minitest/autorun"\n), read(root, "test/test_helper.rb")
+    end
+  end
 end

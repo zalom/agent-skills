@@ -117,4 +117,10 @@ class CrapTest < Minitest::Test
     assert_equal 0, Crap::CLI.new(["--help"], root: Dir.pwd, out: out).run
     assert_includes out.string, "Exit codes: 0 no method above the threshold"
   end
+
+  def test_cli_rejects_an_unknown_option_with_usage
+    out = StringIO.new
+    assert_equal 2, Crap::CLI.new(["--bogus"], root: Dir.pwd, out: out).run
+    assert_includes out.string, "Usage: bin/crap"
+  end
 end

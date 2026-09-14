@@ -15,11 +15,6 @@ All notable changes to the skills in this repository, one section per skill. The
 - RSpec support in both scripts: detection from `spec/` with `.rspec` or from `Gemfile.lock`, the coverage block in `spec/spec_helper.rb`, `framework: rspec` in `.mutineer.yml`, specs mapped from changed sources, and `bundle exec rspec` in CI.
 - `references/rspec-practices.md`, with RSpec 3.13 practice measured on Ruby 4.0.3.
 
-#### Changed
-
-- Merged the `ruby-testing` skill into `verifying-ruby-changes` and renamed the result `ruby-verifying`, at the repository root.
-- Brought the `ruby-testing` guidance up to Minitest 6: `Minitest::Mock` and `stub` need the `minitest-mock` gem, `assert_nil` replaces `assert_equal nil`, spec expectations need `_()`, and `MT_CPU` replaces `N`.
-
 ## writing-style
 
 ### [0.1.0] - 2026-09-14

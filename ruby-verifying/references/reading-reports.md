@@ -19,6 +19,7 @@ What each line of each tool's output means. Open the section for the tool whose 
 - The last line is `Change verified`, or `Failed:` with the names of the failed checks.
 - `No test file found for:` means a changed source file has no matching test or spec file and the change touched none. Write the test, or pass `--test FILE`.
 - `Not checked, because git does not track them yet` lists new files to `git add`.
+- `Both test/ and spec/ exist` means the project has both folders, and only the tests of the named framework run.
 
 ## Minitest
 
@@ -73,7 +74,7 @@ lib/checkout.rb
 ## bin/crap
 
 - One row per method, worst first: the CRAP score, the complexity, the method's line coverage, the method name, and its file and line.
-- The last line counts the methods above the threshold. The command exits 1 when any method is above it.
+- The last line counts the methods above the threshold. The command exits 1 when any method is above it, and 2 on an unknown option.
 - With `--since REF`, it scores only the methods whose lines changed.
 - Without `coverage/.resultset.json`, every method reads 0% coverage.
 

@@ -14,8 +14,9 @@ class VerifyChange
       3. mutation testing of the changed lines (mutineer, operators from .mutineer.yml)
       4. CRAP scores of the changed methods (bin/crap)
 
-    Runs RSpec specs in a project with spec/ and .rspec, or with rspec in
-    Gemfile.lock, and Minitest tests otherwise.
+    Runs RSpec specs in a project with spec/ and .rspec, or with rspec,
+    rspec-core, or rspec-rails under DEPENDENCIES in Gemfile.lock, and
+    Minitest tests otherwise. Warns when both test/ and spec/ exist.
     Pass --test for the integration or system tests of a feature the change touches.
 
     Exit codes: 0 verified, 1 a check failed, 2 usage or git error.
@@ -27,11 +28,12 @@ class VerifyChange
   TESTS_STEP = "Tests with coverage"
   DEFAULT_BASES = %w[origin/main main master].freeze
   SOURCE_PATH = %r{\A(app|lib|tools)/.+\.rb\z}
+  RSPEC_DEPENDENCY = /^  rspec(-core|-rails)?(\s|!|$)/
 
-  Suite = Data.define(:test_path, :locations, :suffix)
-  MINITEST = Suite.new(test_path: %r{\Atest/.+_test\.rb\z}, suffix: "_test.rb",
+  Suite = Data.define(:name, :folder, :test_path, :locations, :suffix)
+  MINITEST = Suite.new(name: "Minitest", folder: "test/", test_path: %r{\Atest/.+_test\.rb\z}, suffix: "_test.rb",
                        locations: { %r{\Aapp/} => ["test/"], %r{\Alib/} => ["test/", "test/lib/"], %r{\Atools/} => ["test/tools/"] })
-  RSPEC = Suite.new(test_path: %r{\Aspec/.+_spec\.rb\z}, suffix: "_spec.rb",
+  RSPEC = Suite.new(name: "RSpec", folder: "spec/", test_path: %r{\Aspec/.+_spec\.rb\z}, suffix: "_spec.rb",
                     locations: { %r{\Aapp/} => ["spec/"], %r{\Alib/} => ["spec/", "spec/lib/"], %r{\Atools/} => ["spec/tools/"] })
 
   Step = Struct.new(:title, :env, :command)
@@ -62,7 +64,9 @@ class VerifyChange
     return 2 unless base
 
     report_untracked
-    plan = plan(changed: changed_files(base), extra_tests: extra_tests, base: base, rails: rails?, suite: suite)
+    chosen = suite
+    report_both_suites(chosen)
+    plan = plan(changed: changed_files(base), extra_tests: extra_tests, base: base, rails: rails?, suite: chosen)
     execute(plan, requested_base)
   end
 
@@ -119,6 +123,13 @@ class VerifyChange
     return if untracked.empty?
 
     @err.puts "Not checked, because git does not track them yet (run git add first): #{untracked.join(", ")}"
+  end
+
+  def report_both_suites(chosen)
+    return unless File.directory?(File.join(@root, "test")) && File.directory?(File.join(@root, "spec"))
+
+    skipped = chosen == RSPEC ? MINITEST : RSPEC
+    @err.puts "Both test/ and spec/ exist. Checking with #{chosen.name} only, so changed files under #{skipped.folder} do not run."
   end
 
   def steps(sources, tests, base, rails, suite)
@@ -182,7 +193,7 @@ class VerifyChange
 
   def suite
     lockfile = File.join(@root, "Gemfile.lock")
-    listed = File.file?(lockfile) && File.read(lockfile).match?(/^  rspec\b/)
+    listed = File.file?(lockfile) && File.read(lockfile).match?(RSPEC_DEPENDENCY)
     (exist?(".rspec") && File.directory?(File.join(@root, "spec"))) || listed ? RSPEC : MINITEST
   end
 

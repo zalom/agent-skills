@@ -125,4 +125,11 @@ RSpec.describe Crap do
     expect(Crap::CLI.new(["--help"], root: Dir.pwd, out: out).run).to eq(0)
     expect(out.string).to include("Exit codes: 0 no method above the threshold")
   end
+
+  it "rejects an unknown option with the usage", :aggregate_failures do
+    out = StringIO.new
+
+    expect(Crap::CLI.new(["--bogus"], root: Dir.pwd, out: out).run).to eq(2)
+    expect(out.string).to include("Usage: bin/crap")
+  end
 end
