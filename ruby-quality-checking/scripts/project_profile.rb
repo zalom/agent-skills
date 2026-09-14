@@ -3,9 +3,6 @@
 # ruby-quality-checking/scripts/project_profile.rb; test/skills_sync_test.rb enforces it.
 class ProjectProfile
   RSPEC_DEPENDENCY = /^  rspec(-core|-rails)?(\s|!|$)/
-  MINITEST_MOCK_DEPENDENCY = /^  minitest-mock(\s|!|$)/
-  MOCHA_DEPENDENCY = /^  mocha(\s|!|$)/
-  FACTORY_BOT_DEPENDENCY = /^  factory_bot(-rails)?(\s|!|$)/
   MUTATION_TOOLS = { mutineer: "mutineer", mutant: "mutant", evilution: "evilution", henitai: "henitai" }.freeze
   MINITEST_SIX = Gem::Version.new("6.0")
   SIMPLECOV_PATCH_MINIMUM = Gem::Version.new("1.3")
@@ -54,14 +51,14 @@ class ProjectProfile
   def test_data
     found = []
     found << :fixtures unless Dir.glob(File.join(@root, "{test,spec}/fixtures/**/*.yml")).empty?
-    found << :factories if dependencies_section.match?(FACTORY_BOT_DEPENDENCY) || exist?("test/factories") || exist?("spec/factories")
+    found << :factories if declared?("factory_bot") || declared?("factory_bot_rails") || exist?("test/factories") || exist?("spec/factories")
     found
   end
 
   def mocking
     found = []
-    found << :minitest_mock if dependencies_section.match?(MINITEST_MOCK_DEPENDENCY) || minitest_mock_builtin?
-    found << :mocha if dependencies_section.match?(MOCHA_DEPENDENCY)
+    found << :minitest_mock if declared?("minitest-mock") || minitest_mock_builtin?
+    found << :mocha if declared?("mocha")
     found << :rspec_mocks if frameworks.include?(:rspec)
     found.uniq
   end
@@ -156,7 +153,7 @@ class ProjectProfile
   def minitest_mock_gap?
     return false unless frameworks.include?(:minitest) && minitest_version
 
-    Gem::Version.new(minitest_version) >= MINITEST_SIX && !mocking.include?(:minitest_mock)
+    Gem::Version.new(minitest_version) >= MINITEST_SIX && (mocking & %i[minitest_mock mocha]).empty?
   end
 
   def coverage_gap?
@@ -177,11 +174,11 @@ class ProjectProfile
   end
 
   def omakase?
-    declared?("rubocop-rails-omakase") || rubocop_config.match?(/inherit_gem:\s*\n?\s*rubocop-rails-omakase:/m)
+    declared?("rubocop-rails-omakase") || rubocop_config.match?(/inherit_gem:\s*\{?\s*rubocop-rails-omakase:/m)
   end
 
   def standard?
-    declared?("standard") || exist?(".standard.yml") || rubocop_config_uses_standard?
+    (declared?("standard") && !exist?(".rubocop.yml")) || exist?(".standard.yml") || rubocop_config_uses_standard?
   end
 
   def rubocop?
@@ -193,7 +190,7 @@ class ProjectProfile
     return false if config.empty?
 
     config.match?(/inherit_gem:\s*\{?\s*standard:/m) ||
-      config.match?(/^(plugins|require):\s*\n(\s*-\s*standard\s*\n)+/m) ||
+      config.match?(/^(plugins|require):\s*\n(?:[ \t]*-[ \t]*\S+[ \t]*\n)*?[ \t]*-[ \t]*standard[ \t]*$/m) ||
       config.match?(/^(plugins|require):\s*\[[^\]]*\bstandard\b[^\]]*\]/m)
   end
 

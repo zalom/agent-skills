@@ -103,7 +103,7 @@ class DetectTools
 
     @out.puts ""
     @out.puts "Missing:"
-    items.each { |item| @out.puts "- #{item.goal}: #{item.why} #{fix_for(item)}" }
+    items.each { |item| @out.puts "- #{item.goal}: #{item.why}. #{fix_for(item)}" }
   end
 
   def fix_for(item)

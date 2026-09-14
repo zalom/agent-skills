@@ -9,8 +9,9 @@ class SetupProject
 
     Adds the Ruby verification stack to a plain Ruby project or a Rails app
     (a Rails app is one with config/application.rb), tested with Minitest or
-    RSpec (an RSpec project has spec/ and .rspec, or rspec, rspec-core, or
-    rspec-rails under DEPENDENCIES in Gemfile.lock):
+    RSpec (an RSpec project has spec/ with .rspec, spec/spec_helper.rb, or
+    spec/rails_helper.rb, or rspec, rspec-core, or rspec-rails under
+    DEPENDENCIES in Gemfile.lock):
 
       Gemfile                 simplecov, mutineer (and minitest in plain Ruby with Minitest; prism only below Ruby 3.3, where it is not a default gem)
       test/test_helper.rb     Minitest: coverage when COVERAGE=1, parallel worker hooks in Rails
@@ -338,7 +339,9 @@ class SetupProject
     end
 
     if guide
-      return record("kept", style_guide_file(guide)) if guide.to_s == @linter
+      if guide.to_s == @linter
+        return exist?(style_guide_file(guide)) ? record("kept", style_guide_file(guide)) : install_linter(@linter)
+      end
 
       @err.puts "#{guide} is already set up: keeping it instead of #{@linter}."
       return

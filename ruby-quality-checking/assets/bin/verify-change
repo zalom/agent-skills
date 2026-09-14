@@ -196,8 +196,8 @@ class VerifyChange
     config = rubocop_config
     return false if config.empty?
 
-    config.match?(/inherit_gem:\s*\n?\s*standard:/m) ||
-      config.match?(/^(plugins|require):\s*\n(\s*-\s*standard\s*\n)+/m) ||
+    config.match?(/inherit_gem:\s*\{?\s*standard:/m) ||
+      config.match?(/^(plugins|require):\s*\n(?:[ \t]*-[ \t]*\S+[ \t]*\n)*?[ \t]*-[ \t]*standard[ \t]*$/m) ||
       config.match?(/^(plugins|require):\s*\[[^\]]*\bstandard\b[^\]]*\]/m)
   end
 
@@ -287,7 +287,8 @@ class VerifyChange
 
   def suite
     listed = dependencies_section.match?(RSPEC_DEPENDENCY)
-    (exist?(".rspec") && File.directory?(File.join(@root, "spec"))) || listed ? RSPEC : MINITEST
+    spec = File.directory?(File.join(@root, "spec")) && (exist?(".rspec") || exist?("spec/spec_helper.rb") || exist?("spec/rails_helper.rb"))
+    spec || listed ? RSPEC : MINITEST
   end
 
   def exist?(path)
