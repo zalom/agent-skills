@@ -125,7 +125,7 @@ agent reads as a dependency it loads on its own terms. [C8]
 
 | Form | Effect |
 |------|--------|
-| `REQUIRED BACKGROUND: zalom-skills:skill-evaluating` | Good. Names the dependency; the agent loads it when relevant. |
+| `REQUIRED BACKGROUND: skill-evaluating` | Good. Names the dependency; the agent loads it when relevant. |
 | `For eval depth, use skill-evaluating.` | Good. Names the skill, leaves loading to the agent. |
 | `@skills/skill-evaluating/SKILL.md` | Bad. `@`-path syntax force-loads the file immediately, defeating disclosure. |
 
