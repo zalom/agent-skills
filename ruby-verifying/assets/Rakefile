@@ -1,0 +1,8 @@
+require "minitest/test_task"
+
+Minitest::TestTask.create(:test) do |task|
+  task.libs << "lib" << "tools"
+  task.test_globs = ["test/**/*_test.rb"]
+end
+
+task default: :test

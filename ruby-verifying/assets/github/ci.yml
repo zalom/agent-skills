@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  push:
+    branches: [__DEFAULT_BRANCH__]
+  pull_request:
+
+jobs:
+  full-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "__RUBY_VERSION__"
+          bundler-cache: true
+      - name: Full test suite with coverage
+        run: __SUITE_COMMAND__
+
+__VERIFY_JOB__
