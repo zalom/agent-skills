@@ -165,6 +165,22 @@ class ProjectProfileTest < Minitest::Test
     end
   end
 
+  def test_inherit_gem_flow_form_standard_reads_as_standard
+    config = "require: standard\ninherit_gem: { standard: config/base.yml }\n"
+    lockfile = "DEPENDENCIES\n  rubocop (~> 1.88)\n"
+    in_project(".rubocop.yml" => config, "Gemfile.lock" => lockfile) do |root|
+      assert_equal :standard, profile(root).style_guide
+    end
+  end
+
+  def test_require_flow_list_standard_reads_as_standard
+    config = "require: [standard]\n"
+    lockfile = "DEPENDENCIES\n  rubocop (~> 1.88)\n"
+    in_project(".rubocop.yml" => config, "Gemfile.lock" => lockfile) do |root|
+      assert_equal :standard, profile(root).style_guide
+    end
+  end
+
   def test_standard_yml_beside_an_unrelated_rubocop_yml_is_ambiguous
     files = { ".standard.yml" => "", ".rubocop.yml" => "require:\n  - rubocop-rails\n" }
     in_project(files) do |root|

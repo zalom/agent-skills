@@ -49,8 +49,8 @@ class SetupProjectTest < Minitest::Test
 
       assert_equal 0, code
       gemfile = read(root, "Gemfile")
-      %w[minitest simplecov mutineer skunk rubycritic flog ostruct].each { |name| assert_match(/gem "#{name}"/, gemfile) }
-      assert_includes gemfile, %(gem "rubycritic", "~> 4.12", require: false)
+      %w[minitest simplecov mutineer].each { |name| assert_match(/gem "#{name}"/, gemfile) }
+      %w[skunk rubycritic flog ostruct].each { |name| refute_match(/gem "#{name}"/, gemfile) }
       assert_includes read(root, "test/test_helper.rb"), %(cover "{app,lib,tools}/**/*.rb")
       assert_equal %(require_relative "test_helper"\nrequire "shop"\n), read(root, "test/shop_test.rb")
       assert_equal %(require_relative "../test_helper"\n), read(root, "test/models/cart_test.rb")
@@ -140,6 +140,72 @@ class SetupProjectTest < Minitest::Test
 
       assert_equal 0, code
       assert_includes err, "Ruby 3.3.5: Mutineer needs Ruby 3.4 or later"
+      assert_includes err, "--test-command"
+    end
+  end
+
+  def test_old_ruby_gets_prism_added
+    in_project(PLAIN.merge(".ruby-version" => "3.2.4\n")) do |root|
+      setup_project(root)
+
+      assert_match(/gem "prism"/, read(root, "Gemfile"))
+    end
+  end
+
+  def test_ruby_3_3_or_later_gets_no_explicit_prism
+    in_project(PLAIN.merge(".ruby-version" => "3.3.5\n")) do |root|
+      setup_project(root)
+
+      refute_match(/gem "prism"/, read(root, "Gemfile"))
+    end
+  end
+
+  def test_a_postgresql_test_database_gets_a_serial_mutation_notice
+    files = PLAIN.merge("config/database.yml" => "test:\n  adapter: postgresql\n")
+    in_project(files) do |root|
+      _code, out, = setup_project(root)
+
+      assert_includes out, "postgresql"
+      assert_includes out, "serially"
+    end
+  end
+
+  def test_a_sqlite_test_database_gets_no_serial_mutation_notice
+    files = PLAIN.merge("config/database.yml" => "test:\n  adapter: sqlite3\n")
+    in_project(files) do |root|
+      _code, out, = setup_project(root)
+
+      refute_includes out, "serially"
+    end
+  end
+
+  def test_gitlab_ci_with_no_github_workflow_writes_no_workflow_file
+    files = PLAIN.merge(".gitlab-ci.yml" => "test:\n  script: bundle exec rake test\n")
+    in_project(files) do |root|
+      code, out, = setup_project(root)
+
+      assert_equal 0, code
+      refute File.exist?(File.join(root, ".github/workflows/ci.yml"))
+      assert_includes out, "GitLab"
+      assert_includes out, "ci.md"
+    end
+  end
+
+  def test_circleci_with_no_github_workflow_writes_no_workflow_file
+    files = PLAIN.merge(".circleci/config.yml" => "version: 2.1\n")
+    in_project(files) do |root|
+      setup_project(root)
+
+      refute File.exist?(File.join(root, ".github/workflows/ci.yml"))
+    end
+  end
+
+  def test_gitlab_ci_alongside_an_existing_github_workflow_still_gets_the_verify_job
+    files = PLAIN.merge(".gitlab-ci.yml" => "test:\n  script: bundle exec rake test\n", ".github/workflows/ci.yml" => "name: CI\n")
+    in_project(files) do |root|
+      setup_project(root)
+
+      assert File.exist?(File.join(root, ".github/workflows/verify-change.yml"))
     end
   end
 

@@ -5,8 +5,12 @@ require_relative "support/project_fixtures"
 class SkillComplianceTest < Minitest::Test
   ALLOWED_FRONTMATTER_KEYS = %w[name description license compatibility metadata allowed-tools].freeze
   SKILL_DIR_SENTENCE = "Paths in this file start at the skill directory, the directory that holds this `SKILL.md`. " \
-                       "Run a script by its full path, `SKILL_DIR/scripts/...`, where `SKILL_DIR` is that directory."
+                       "`SKILL_DIR` is the absolute path of the directory this file was loaded from; find it before " \
+                       "running a script. Run a script by its full path, `SKILL_DIR/scripts/...`. Actually execute " \
+                       "the script with a Bash tool call and read its real output; never predict, summarize, or " \
+                       "invent what it would print instead of running it."
   SKILLS = { "ruby-testing" => TESTING_SKILL_ROOT, "ruby-quality-checking" => QUALITY_SKILL_ROOT }.freeze
+  QUALITY_STACK_NAMES = %w[setup-project bin/verify-change .mutineer.yml bin/crap].freeze
 
   MOCK_BAN_PATTERN = /stub only at|only at (a |true )?boundar(y|ies)|(pass|prefer) real objects|couples the test|fixtures over factories/i
 
@@ -66,6 +70,11 @@ class SkillComplianceTest < Minitest::Test
       offending = content.each_line.select { |line| line.match?(MOCK_BAN_PATTERN) && !line.include?("Integration tests run real objects") }
       assert_empty offending, "#{file}: #{offending.join}"
     end
+  end
+
+  def test_ruby_testing_has_no_route_to_the_quality_stack
+    content = File.read(File.join(TESTING_SKILL_ROOT, "SKILL.md"))
+    QUALITY_STACK_NAMES.each { |name| refute_includes content, name, "ruby-testing/SKILL.md names #{name}" }
   end
 
   def test_every_sibling_path_in_a_skill_resolves_inside_that_skill

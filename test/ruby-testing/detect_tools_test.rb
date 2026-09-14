@@ -41,6 +41,29 @@ class DetectToolsTest < Minitest::Test
     end
   end
 
+  def test_minitest_six_without_minitest_mock_is_reported_as_missing
+    lockfile = "GEM\n  specs:\n    minitest (6.0.6)\n\nDEPENDENCIES\n  minitest (~> 6.0)\n"
+    files = { "Gemfile.lock" => lockfile, "test/test_helper.rb" => "" }
+    in_project(files) do |root|
+      out, _err, status = run_detect(root)
+
+      assert status.success?
+      assert_includes out, "minitest-mock"
+      assert_includes out, "Add the minitest-mock gem."
+    end
+  end
+
+  def test_minitest_five_without_minitest_mock_reports_no_gap
+    lockfile = "GEM\n  specs:\n    minitest (5.25.4)\n\nDEPENDENCIES\n  minitest (~> 5.25)\n"
+    files = { "Gemfile.lock" => lockfile, "test/test_helper.rb" => "" }
+    in_project(files) do |root|
+      out, _err, status = run_detect(root)
+
+      assert status.success?
+      refute_includes out, "minitest-mock"
+    end
+  end
+
   def test_json_output_parses
     in_project("test/test_helper.rb" => "") do |root|
       out, _err, status = run_detect(root, "--json")

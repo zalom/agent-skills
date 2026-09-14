@@ -52,7 +52,8 @@ class RSpecSetupProjectTest < Minitest::Test
       assert_empty err
       gemfile = read(root, "Gemfile")
       refute_match(/gem "minitest"/, gemfile)
-      %w[simplecov mutineer skunk rubycritic flog ostruct].each { |name| assert_match(/gem "#{name}"/, gemfile) }
+      %w[simplecov mutineer].each { |name| assert_match(/gem "#{name}"/, gemfile) }
+      %w[skunk rubycritic flog ostruct].each { |name| refute_match(/gem "#{name}"/, gemfile) }
       coverage = %(if ENV["COVERAGE"]\n  require "simplecov"\n  SimpleCov.start do\n    enable_coverage :branch\n    skip "/spec/"\n    cover "{app,lib,tools}/**/*.rb"\n  end\nend\n\n)
       assert_equal coverage + SPEC_HELPER, read(root, "spec/spec_helper.rb")
       assert_equal %(require "spec_helper"\nrequire "shop"\n), read(root, "spec/shop_spec.rb")

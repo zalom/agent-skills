@@ -160,6 +160,35 @@ class VerifyChangeTest < Minitest::Test
     assert_equal operators, VerifyChange::ALL_OPERATORS
   end
 
+  def test_checksums_transitive_rspec_core_does_not_pick_rspec
+    lockfile = "GEM\n  specs:\n    minitest (6.0.6)\n\nDEPENDENCIES\n  minitest (~> 6.0)\n\n" \
+               "CHECKSUMS\n  rspec-core (3.13.6) sha256=aaa\n  minitest (6.0.6) sha256=bbb\n"
+    files = { "Gemfile.lock" => lockfile, "lib/refund.rb" => "", "test/refund_test.rb" => "" }
+    in_project(files) do |root|
+      code, _out, err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+
+      assert_equal 0, code, err
+      assert_equal(%w[bundle exec ruby -Ilib -Itools -Itest -e] + ["ARGV.each { |file| require File.expand_path(file) }", "test/refund_test.rb"], commands.first&.last)
+    end
+  end
+
+  def test_a_mutation_run_where_every_mutant_errors_fails_the_gate
+    # Mutineer 1.0.0's reporter (lib/mutineer/reporter.rb#exit_code) exits 1 whenever every
+    # attempted mutant errored and --threshold was given: mutation_command always passes
+    # --threshold 75, so the tool's own exit code already fails a broken run. bin/verify-change
+    # relies on that through the injected run lambda, which mirrors what `system` returns for a
+    # non-zero exit.
+    files = { "lib/refund.rb" => "", "test/refund_test.rb" => "", ".mutineer.yml" => "" }
+    in_project(files) do |root|
+      out = StringIO.new
+      runner = ->(_env, command) { !command.include?("mutineer") }
+      code = VerifyChange.new(["main"], root: root, out: out, err: StringIO.new, git: git_stub(changed: ["lib/refund.rb"]), run: runner).call
+
+      assert_equal 1, code
+      assert_includes out.string, "Failed: Mutation testing"
+    end
+  end
+
   def test_an_unknown_base_exits_two
     in_project({}) do |root|
       code, _out, err, = verify(root, ["nope"], merge_base: nil)

@@ -71,6 +71,21 @@ class LintStepTest < Minitest::Test
     end
   end
 
+  def test_two_style_guides_skips_lint_with_a_line_naming_them
+    files = { ".standard.yml" => "", ".rubocop.yml" => "require:\n  - rubocop-rails\n",
+              "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.0)\n  standard (~> 1.0)\n",
+              "lib/refund.rb" => "", "test/refund_test.rb" => "" }
+    in_project(files) do |root|
+      code, out, _err, commands = verify(root, ["main"], changed: ["lib/refund.rb"])
+
+      refute_equal %w[bundle exec rubocop --force-exclusion lib/refund.rb], commands.first&.last
+      refute_equal %w[bundle exec standardrb --force-exclusion lib/refund.rb], commands.first&.last
+      assert_includes out, "Lint skipped"
+      assert_includes out, "two style guides"
+      assert_equal 0, code
+    end
+  end
+
   def test_a_lint_failure_is_reported_but_does_not_stop_later_steps
     files = { ".rubocop.yml" => "", "Gemfile.lock" => "DEPENDENCIES\n  rubocop (~> 1.0)\n",
               "lib/refund.rb" => "", "test/refund_test.rb" => "", ".mutineer.yml" => "" }
