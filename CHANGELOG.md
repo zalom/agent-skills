@@ -2,17 +2,6 @@
 
 All notable changes to the skills in this repository, one section per skill. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## ruby-testing
-
-### [0.1.0] - 2026-09-14
-
-#### Added
-
-- Split from `ruby-verifying`: a router over references for writing Minitest tests and RSpec specs, collaboration tests, test data, testable design, isolation and scale, test libraries, and sources.
-- `scripts/detect-tools`, a read-only report of a project's test and quality tooling, the test command, and what needs to start first. Exits 0 without a Gemfile.
-- `scripts/project_profile.rb`, the detection library, kept byte-identical with the copy in `ruby-quality-checking`.
-- `references/collaboration-tests.md` and `references/test-data.md`, replacing the boundary-only stubbing rule and the fixtures-over-factories preference: a project's collaboration tests and its choice of fixtures or factories are both first-class now.
-
 ## ruby-quality-checking
 
 ### [0.1.0] - 2026-09-14
@@ -29,6 +18,33 @@ All notable changes to the skills in this repository, one section per skill. The
 #### Fixed
 
 - Lockfile parsing now reads dependency gems only from the `DEPENDENCIES` section and gem versions only from four-space `GEM specs:` lines, so a Bundler 4 `CHECKSUMS` section or a transitive dependency no longer misreads the test framework or a tool's version.
+
+## ruby-testing
+
+### [0.1.0] - 2026-09-14
+
+#### Added
+
+- Split from `ruby-verifying`: a router over references for writing Minitest tests and RSpec specs, collaboration tests, test data, testable design, isolation and scale, test libraries, and sources.
+- `scripts/detect-tools`, a read-only report of a project's test and quality tooling, the test command, and what needs to start first. Exits 0 without a Gemfile.
+- `scripts/project_profile.rb`, the detection library, kept byte-identical with the copy in `ruby-quality-checking`.
+- `references/collaboration-tests.md` and `references/test-data.md`, replacing the boundary-only stubbing rule and the fixtures-over-factories preference: a project's collaboration tests and its choice of fixtures or factories are both first-class now.
+
+## skill-creating
+
+### [0.1.0] - 2026-09-14
+
+#### Added
+
+- Moved from Plastic's `docs/skill-authoring/` at commit fe1f9d2, with the Plastic-only rules left in Plastic.
+
+## skill-evaluating
+
+### [0.1.0] - 2026-09-14
+
+#### Added
+
+- Moved from Plastic's `docs/skill-authoring/` at commit fe1f9d2, with the Plastic-only rules left in Plastic.
 
 ## writing-style
 

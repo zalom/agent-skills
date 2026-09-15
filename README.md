@@ -9,6 +9,8 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 | `ruby-testing` | Writes and refactors Ruby and Rails tests in the project's own framework, Minitest or RSpec, with its fixtures or factories and its mocking library. Ships a read-only `detect-tools` report. |
 | `ruby-quality-checking` | Checks a Ruby or Rails change on the changed code only: lint in the project's style guide, green tests, SimpleCov patch coverage, Mutineer mutation testing, and CRAP scores. Ships a setup script and `bin/verify-change`. |
 | `writing-style` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
+| `skill-creating` | Authors or revises an Agent Skill, a subagent or agent role file, or a lifecycle hook with progressive disclosure. |
+| `skill-evaluating` | Evaluates skills for correctness, convention compliance, and progressive disclosure. |
 
 ## Install
 
@@ -17,6 +19,8 @@ claude plugin marketplace add zalom/agent-skills
 claude plugin install ruby-testing@zalom-skills
 claude plugin install ruby-quality-checking@zalom-skills
 claude plugin install writing-style@zalom-skills
+claude plugin install skill-creating@zalom-skills
+claude plugin install skill-evaluating@zalom-skills
 ```
 
 Restart Claude Code after installing. The writing-style hooks are optional and installed by hand, as its own README describes.
