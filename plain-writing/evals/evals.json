@@ -1,5 +1,5 @@
 {
-  "skill_name": "writing-style",
+  "skill_name": "plain-writing",
   "notes": "Intent 32a. Five cases: three that must trigger the skill and two near misses that share keywords with the trigger surface but need a different skill. Case 1 assumes the optional personal layer exists at references/overrides.md carrying the owner's dash rule, and declares that in its files list. Dash characters inside prompts are JSON unicode escapes, so the raw file carries no em dash or en dash codepoint. Assertions are written to be checked against real output, not pre-filled.",
   "evals": [
     {
@@ -63,7 +63,7 @@
       "scope": "should-not-trigger",
       "set": "near-miss",
       "prompt": "My commit-msg hook rejects every commit with exit code 1, even on a one-word message. Debug the hook and fix it.",
-      "expected_output": "No style rewrite and no routing into the guide. This near miss shares the words \"commit\" and \"message\" with the skill's trigger surface, but the task is shell script debugging in .git/hooks and needs a shell or git tooling skill, not a writing-style skill. If the writing-style skill loads at all, it governs only the wording of the reply, and it must not propose rewriting the hook or the commit messages.",
+      "expected_output": "No style rewrite and no routing into the guide. This near miss shares the words \"commit\" and \"message\" with the skill's trigger surface, but the task is shell script debugging in .git/hooks and needs a shell or git tooling skill, not a plain-writing skill. If the plain-writing skill loads at all, it governs only the wording of the reply, and it must not propose rewriting the hook or the commit messages.",
       "files": [],
       "assertions": [
         {

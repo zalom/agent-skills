@@ -12,7 +12,7 @@ class GateTest < Minitest::Test
 
   def setup
     @home = Dir.mktmpdir
-    refs = File.join(@home, ".claude", "skills", "writing-style", "references", "google")
+    refs = File.join(@home, ".claude", "skills", "plain-writing", "references", "google")
     FileUtils.mkdir_p(refs)
     %w[highlights active-voice headings].each { |page| File.write(File.join(refs, "#{page}.md"), PAGE_BODY) }
     @doc = File.join(@home, "doc.md")

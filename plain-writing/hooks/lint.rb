@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Deterministic checker for the mechanically checkable rules in the writing-style skill.
+# Deterministic checker for the mechanically checkable rules in the plain-writing skill.
 #
 # Reading reference pages makes an author *able* to comply. Only a checker makes compliance
 # *verifiable*. Every rule below is one that can be decided from the text alone, with no
@@ -10,7 +10,7 @@
 # Judgement rules (voice, tone, jargon, whether a sentence is true) are deliberately absent.
 # Those still need the routed pages; this tool does not pretend to cover them.
 #
-# Usage:  writing-style-lint.rb FILE [FILE...]
+# Usage:  plain-writing-lint.rb FILE [FILE...]
 # Exit:   0 clean, 1 violations found, 2 usage error.
 
 require "set"
@@ -265,7 +265,7 @@ class Linter
 end
 
 if ARGV.empty?
-  warn "usage: writing-style-lint.rb FILE [FILE...]"
+  warn "usage: plain-writing-lint.rb FILE [FILE...]"
   exit 2
 end
 
@@ -281,12 +281,12 @@ rescue StandardError => e
 end
 
 if all.empty?
-  puts "writing-style-lint: clean (#{ARGV.length} file#{'s' if ARGV.length != 1})"
+  puts "plain-writing-lint: clean (#{ARGV.length} file#{'s' if ARGV.length != 1})"
   exit 0
 end
 
 by_rule = all.group_by(&:rule)
-puts "writing-style-lint: #{all.length} violation#{'s' if all.length != 1} in #{by_rule.keys.length} rule#{'s' if by_rule.keys.length != 1}"
+puts "plain-writing-lint: #{all.length} violation#{'s' if all.length != 1} in #{by_rule.keys.length} rule#{'s' if by_rule.keys.length != 1}"
 puts
 by_rule.sort_by { |r, f| [-f.length, r] }.each do |rule, findings|
   puts "#{rule} (#{findings.length})"

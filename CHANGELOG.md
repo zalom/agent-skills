@@ -46,7 +46,13 @@ All notable changes to the skills in this repository, one section per skill. The
 
 - Moved from Plastic's `docs/skill-authoring/` at commit fe1f9d2, with the Plastic-only rules left in Plastic.
 
-## writing-style
+## plain-writing
+
+### [0.2.0] - 2026-09-15
+
+#### Changed
+
+- Renamed from `writing-style` to `plain-writing`: the skill directory, the `name` field, the marketplace entry, the hook file names, and the gate's cache directory. Install it again as `plain-writing@zalom-skills`, or rename a symlink install to `plain-writing`.
 
 ### [0.1.0] - 2026-09-14
 

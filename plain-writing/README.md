@@ -1,4 +1,4 @@
-# writing-style
+# plain-writing
 
 An Agent Skill that keeps AI-written text in one consistent style: a documented base layer, plus your own rules on top when you want them. Point an agent at it, and prose, documentation, commit messages, and chat replies stop drifting back to filler words, borrowed jargon, and AI-sounding phrasing.
 
@@ -16,16 +16,16 @@ As a Claude Code plugin, from the `zalom-skills` marketplace:
 
 ```sh
 claude plugin marketplace add zalom/agent-skills
-claude plugin install writing-style@zalom-skills
+claude plugin install plain-writing@zalom-skills
 ```
 
 Or, from a clone of [zalom/agent-skills](https://github.com/zalom/agent-skills), link the skill directory where your agent looks for skills:
 
 ```sh
-ln -s /path/to/agent-skills/writing-style ~/.claude/skills/writing-style
+ln -s /path/to/agent-skills/plain-writing ~/.claude/skills/plain-writing
 ```
 
-Restart the agent session so it picks up the new skill. The harness requires a skill's directory name to match the `name` field in its `SKILL.md` frontmatter, so keep the link named `writing-style`.
+Restart the agent session so it picks up the new skill. The harness requires a skill's directory name to match the `name` field in its `SKILL.md` frontmatter, so keep the link named `plain-writing`.
 
 ## Make it yours
 
@@ -37,7 +37,7 @@ Then replace the instructions in it with your own rules, one rule per line, in y
 
 `references/overrides.md` is listed in `.gitignore`, so it is never committed and pulling an update to this repository never overwrites it. `references/overrides.example.md` is the shipped template and carries no rules.
 
-The plugin install keeps each version in its own cache directory, such as `~/.claude/plugins/cache/zalom-skills/writing-style/0.1.0/`, so an overrides file created there stays behind when the plugin updates. To keep your rules across updates, use the symlink install from a clone and create the file there.
+The plugin install keeps each version in its own cache directory, such as `~/.claude/plugins/cache/zalom-skills/plain-writing/0.1.0/`, so an overrides file created there stays behind when the plugin updates. To keep your rules across updates, use the symlink install from a clone and create the file there.
 
 ## The layer model
 
@@ -86,7 +86,7 @@ To install both, symlink them where your agent looks for hooks and register `gat
 
 ```json
 { "hooks": { "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
-  "hooks": [ { "type": "command", "command": "~/.claude/hooks/writing-style-gate.rb" } ] } ] } }
+  "hooks": [ { "type": "command", "command": "~/.claude/hooks/plain-writing-gate.rb" } ] } ] } }
 ```
 
 Three properties are deliberate. Findings are advisory, so nothing is ever blocked; `BLOCKING_TOOLS` in `gate.rb` is the switch that makes a listed tool refuse instead, and it ships empty. A rule the guide genuinely permits in context is silenced by writing `lint-ok: <rule>` on that line, so an exception is recorded rather than taken quietly. And every failure path fails open: bad input, a missing checker, or a broken cache lets the tool call proceed untouched.

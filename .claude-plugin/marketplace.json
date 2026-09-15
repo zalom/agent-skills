@@ -35,11 +35,11 @@
       "category": "development"
     },
     {
-      "name": "writing-style",
-      "source": "./writing-style",
+      "name": "plain-writing",
+      "source": "./plain-writing",
       "strict": false,
       "description": "Keeps AI-written prose, docs, commit messages, and replies in one style: the Google developer documentation style guide plus optional personal overrides.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Zlatko Alomerovic",
         "url": "https://github.com/zalom"

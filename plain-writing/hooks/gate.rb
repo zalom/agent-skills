@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# PreToolUse gate for the writing-style skill.
+# PreToolUse gate for the plain-writing skill.
 #
 # Two jobs, deliberately separate:
 #
@@ -22,7 +22,7 @@
 require "json"
 require "digest"
 
-SKILL_DIR = File.join(Dir.home, ".claude", "skills", "writing-style")
+SKILL_DIR = File.join(Dir.home, ".claude", "skills", "plain-writing")
 REF_DIR   = File.join(SKILL_DIR, "references", "google")
 LINTER    = File.expand_path("lint.rb", __dir__)
 
@@ -111,7 +111,7 @@ def delivered_before?(data, path, pages)
   key = [session, path, pages.sort.join(",")].join("|")
   digest = Digest::SHA256.hexdigest(key)[0, 32]
 
-  dir = File.join(Dir.home, ".claude", ".writing-style-cache")
+  dir = File.join(Dir.home, ".claude", ".plain-writing-cache")
   Dir.mkdir(dir) unless Dir.exist?(dir)
 
   stamp = File.join(dir, "#{digest}.seen")
@@ -160,7 +160,7 @@ clean, findings = lint(path)
 
 if blocking && !clean && !findings.empty?
   block(<<~MSG)
-    BLOCKED by the writing-style gate. This document is not publishable as written.
+    BLOCKED by the plain-writing gate. This document is not publishable as written.
 
     #{findings}
 
@@ -189,4 +189,4 @@ pointer = <<~POINTER
 POINTER
 note = clean ? "" : "The deterministic checker reports:\n\n#{findings}\n"
 
-emit_allow("WRITING-STYLE for #{label}\n\n#{fresh ? pointer : ''}#{fresh && !clean ? "\n" : ''}#{note}")
+emit_allow("PLAIN-WRITING for #{label}\n\n#{fresh ? pointer : ''}#{fresh && !clean ? "\n" : ''}#{note}")

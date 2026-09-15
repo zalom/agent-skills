@@ -1,5 +1,5 @@
 ---
-name: writing-style
+name: plain-writing
 description: >
   Governs writing style and communication quality. Use when writing or editing
   any prose, documentation, README, code comment, commit message, release
