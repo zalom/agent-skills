@@ -1,0 +1,7 @@
+name: verify-change
+
+on:
+  pull_request:
+
+jobs:
+__VERIFY_JOB__

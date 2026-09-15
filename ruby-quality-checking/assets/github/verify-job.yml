@@ -1,0 +1,15 @@
+  verify-change:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "__RUBY_VERSION__"
+          bundler-cache: true
+      - name: Tests, patch coverage, mutation and CRAP on the changed code
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: __VERIFY_COMMAND__

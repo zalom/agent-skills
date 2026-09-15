@@ -1,5 +1,6 @@
-coverage/
+/coverage/
 tmp/
+.mutineer/
 writing-style/references/overrides.md
 *.bak
 *.bak-*

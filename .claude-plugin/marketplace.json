@@ -7,6 +7,34 @@
   "description": "Agent skills written by Zlatko Alomerovic.",
   "plugins": [
     {
+      "name": "ruby-testing",
+      "source": "./ruby-testing",
+      "strict": false,
+      "description": "Writes and refactors Ruby and Rails tests in the project's own framework, Minitest or RSpec, with its fixtures or factories and its mocking library.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["ruby", "rails", "testing", "minitest", "rspec", "collaboration-tests", "dependency-injection", "fixtures", "factories"],
+      "category": "development"
+    },
+    {
+      "name": "ruby-quality-checking",
+      "source": "./ruby-quality-checking",
+      "strict": false,
+      "description": "Checks a Ruby or Rails change on the changed code only: lint in the project's style guide, green tests, patch coverage, mutation score, and CRAP scores.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["ruby", "rails", "lint", "rubocop", "standard", "simplecov", "mutation-testing", "mutineer", "crap", "skunk"],
+      "category": "development"
+    },
+    {
       "name": "writing-style",
       "source": "./writing-style",
       "strict": false,

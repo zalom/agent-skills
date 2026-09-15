@@ -1,0 +1,414 @@
+#!/usr/bin/env ruby
+require "fileutils"
+require "pathname"
+require_relative "project_profile"
+
+class SetupProject
+  USAGE = <<~TEXT
+    Usage: setup-project [--dry-run] [--no-ci] [--linter omakase|standard|rubocop] PROJECT_DIR
+
+    Adds the Ruby verification stack to a plain Ruby project or a Rails app
+    (a Rails app is one with config/application.rb), tested with Minitest or
+    RSpec (an RSpec project has spec/ with .rspec, spec/spec_helper.rb, or
+    spec/rails_helper.rb, or rspec, rspec-core, or rspec-rails under
+    DEPENDENCIES in Gemfile.lock):
+
+      Gemfile                 simplecov, mutineer (and minitest in plain Ruby with Minitest; prism only below Ruby 3.3, where it is not a default gem)
+      test/test_helper.rb     Minitest: coverage when COVERAGE=1, parallel worker hooks in Rails
+      spec/spec_helper.rb     RSpec: coverage when COVERAGE=1 (spec/rails_helper.rb when it is the only helper)
+      .rspec                  RSpec: --require spec_helper, only when missing
+      test/**/*_test.rb       require_relative for the test helper (plain Ruby with Minitest only)
+      .mutineer.yml           all 11 mutation operators, threshold 75, and framework: rspec for RSpec
+      bin/crap, tools/crap.rb, with test/tools/crap_test.rb or spec/tools/crap_spec.rb
+      bin/verify-change
+      Rakefile                a Minitest task (plain Ruby with Minitest, only when missing)
+      .gitignore              coverage/ and .mutineer/, and spec/examples.txt for RSpec
+      .github/workflows       ci.yml when there is no workflow, otherwise verify-change.yml
+
+    Existing files are kept, and running it twice changes nothing. When both
+    test/ and spec/ exist, it warns and sets up only one of them. With no
+    style guide, it prints the choices and installs nothing unless asked.
+
+    Options:
+      --dry-run          Print what would change, write nothing
+      --no-ci            Skip the GitHub Actions workflow
+      --linter VALUE     Install omakase, standard, or rubocop when none is set up
+
+    Exit codes: 0 done, 1 usage error, 2 not a Ruby project (no Gemfile), 3 filesystem error,
+    4 RSpec detected in a Rails app without spec/spec_helper.rb or spec/rails_helper.rb,
+    5 Minitest detected in a Rails app without test/test_helper.rb.
+  TEXT
+
+  ASSETS = File.expand_path("../assets", __dir__)
+  MUTINEER_MINIMUM_RUBY = Gem::Version.new("3.4")
+  PRISM_MINIMUM_RUBY = Gem::Version.new("3.3")
+  TOOL_GEMS = [["simplecov", "~> 1.3"], ["mutineer", "~> 1.0"]].freeze
+  MINITEST_GEM = ["minitest", "~> 6.0"].freeze
+  PRISM_GEM = ["prism", "~> 1.0"].freeze
+  COPIED_ASSETS = { "bin/crap" => "bin/crap", "bin/verify-change" => "bin/verify-change", "tools/crap.rb" => "tools/crap.rb" }.freeze
+  MINITEST_ASSETS = { "test/tools/crap_test.rb" => "test/tools/crap_test.rb" }.freeze
+  RSPEC_ASSETS = { "spec/tools/crap_spec.rb" => "spec/tools/crap_spec.rb", "rspec" => ".rspec" }.freeze
+  SPEC_HELPERS = %w[spec/spec_helper.rb spec/rails_helper.rb].freeze
+  RSPEC_DEPENDENCY = ProjectProfile::RSPEC_DEPENDENCY
+  EXECUTABLES = %w[bin/crap bin/verify-change].freeze
+  LINTER_CHOICES = %w[omakase standard rubocop].freeze
+
+  def self.run(argv, out: $stdout, err: $stderr)
+    return print_usage(out, 0) if argv.include?("--help") || argv.include?("-h")
+
+    args, linter = extract_linter(argv)
+    return print_usage(err, 1) if args.nil?
+
+    options = args.select { |argument| argument.start_with?("-") }
+    paths = args - options
+    return print_usage(err, 1) unless paths.size == 1 && (options - %w[--dry-run --no-ci]).empty?
+
+    root = File.expand_path(paths.first)
+    unless File.file?(File.join(root, "Gemfile"))
+      err.puts "#{root} has no Gemfile. Run bundle init there first."
+      return 2
+    end
+    new(root, dry_run: options.include?("--dry-run"), ci: !options.include?("--no-ci"), linter: linter, out: out, err: err).call
+  rescue SystemCallError => error
+    err.puts "Setup stopped: #{error.message}"
+    3
+  end
+
+  # Returns [remaining_args, linter_value], or [nil, nil] on a bad --linter.
+  def self.extract_linter(argv)
+    args = argv.dup
+    index = args.index { |argument| argument == "--linter" || argument.start_with?("--linter=") }
+    return [args, nil] unless index
+
+    flag = args[index]
+    if flag == "--linter"
+      value = args[index + 1]
+      return [nil, nil] unless value && LINTER_CHOICES.include?(value)
+
+      args.slice!(index, 2)
+    else
+      value = flag.split("=", 2).last
+      return [nil, nil] unless LINTER_CHOICES.include?(value)
+
+      args.delete_at(index)
+    end
+    [args, value]
+  end
+
+  def self.print_usage(stream, code)
+    stream.puts USAGE
+    code
+  end
+
+  def initialize(root, dry_run: false, ci: true, linter: nil, out: $stdout, err: $stderr)
+    @root = root
+    @dry_run = dry_run
+    @ci = ci
+    @linter = linter
+    @out = out
+    @err = err
+    @profile = ProjectProfile.new(root)
+  end
+
+  def call
+    return stop_without_spec_helper if rspec? && rails? && SPEC_HELPERS.none? { |helper| exist?(helper) }
+    return stop_without_test_helper if rails? && !rspec? && !exist?("test/test_helper.rb")
+
+    warn_about_both_suites
+    warn_about_old_ruby
+    warn_about_ambiguous_style_guide
+    print_profile
+    add_gems
+    rspec? ? add_spec_coverage : add_coverage
+    use_require_relative unless rails? || rspec?
+    copy_assets
+    add_mutineer_config
+    add_rakefile unless rails? || rspec?
+    ignore_reports
+    add_workflow if @ci
+    handle_linter
+    print_next_steps
+    0
+  end
+
+  def rails?
+    @profile.rails?
+  end
+
+  def rspec?
+    @profile.frameworks.include?(:rspec)
+  end
+
+  def ruby_version
+    @profile.ruby_version
+  end
+
+  private
+
+  def stop_without_spec_helper
+    @err.puts "RSpec detected but no spec helper: run `bin/rails generate rspec:install` first, then run this again."
+    4
+  end
+
+  def stop_without_test_helper
+    @err.puts "No test/test_helper.rb in this Rails app: set up the Rails test directory first, then run this again."
+    5
+  end
+
+  def warn_about_both_suites
+    return unless File.directory?(path("test")) && File.directory?(path("spec"))
+
+    chosen, skipped = rspec? ? %w[RSpec test/] : %w[Minitest spec/]
+    @err.puts "Both test/ and spec/ exist. Setting up #{chosen} only: #{skipped} gets no coverage block, and bin/verify-change does not run it."
+  end
+
+  def warn_about_old_ruby
+    version = ruby_version
+    return unless version && Gem::Version.correct?(version) && Gem::Version.new(version) < MUTINEER_MINIMUM_RUBY
+
+    @err.puts "Ruby #{version}: Mutineer needs Ruby 3.4 or later. Upgrade the project, or run Mutineer from a newer Ruby " \
+              "with --test-command, which runs every --test file for every mutant, ignores --jobs, and reports the " \
+              "score as an upper bound, not comparable to an in-process run. See references/setup.md, \"Ruby older " \
+              "than 3.4\", for the mise wrapper script; henitai 0.5.3 declares Ruby 3.3.6 or later, but it was " \
+              "measured only on Ruby 4.0.3 and never run on 3.3.x."
+  end
+
+  def warn_about_ambiguous_style_guide
+    return unless @profile.style_guide == :ambiguous
+
+    @err.puts "Two style guides found: .standard.yml and .rubocop.yml. Choose one by hand; setup continues without touching either."
+  end
+
+  def print_profile
+    @out.puts "Ruby: #{ruby_version || "not pinned"}  Rails: #{rails? ? "yes" : "no"}  Frameworks: #{@profile.frameworks.empty? ? "none" : @profile.frameworks.join(", ")}"
+    @out.puts "Style guide: #{@profile.style_guide || "none"}"
+    missing = @profile.missing
+    unless missing.empty?
+      @out.puts "Missing:"
+      missing.each { |item| @out.puts "  #{item.goal}: #{item.why}" }
+    end
+    print_linter_choices if @profile.style_guide.nil?
+    print_serial_mutation_notice
+    @out.puts ""
+  end
+
+  def print_linter_choices
+    @out.puts "Choose a style guide: rubocop-rails-omakase (the Rails default), standard, or rubocop with the community Ruby Style Guide."
+    @out.puts "Pass --linter omakase|standard|rubocop to install one."
+  end
+
+  def print_serial_mutation_notice
+    adapter = @profile.database_adapter
+    return unless %w[postgresql mysql2].include?(adapter)
+
+    @out.puts "Test database: #{adapter}. Mutineer's --daemon per-worker database isolation is SQLite only, so " \
+              "mutation testing runs serially here (--rails without --daemon). Never add --daemon; keep runs small " \
+              "with --since on changed lines."
+  end
+
+  def needs_explicit_prism?
+    version = ruby_version
+    version && Gem::Version.correct?(version) && Gem::Version.new(version) < PRISM_MINIMUM_RUBY
+  end
+
+  def add_gems
+    gemfile = read("Gemfile")
+    wanted = rails? || rspec? ? TOOL_GEMS : [MINITEST_GEM] + TOOL_GEMS
+    wanted += [PRISM_GEM] if needs_explicit_prism?
+    missing = wanted.reject { |name, _| gemfile.match?(/^\s*gem\s+["']#{Regexp.escape(name)}["']/) }
+    return record("kept", "Gemfile") if missing.empty?
+
+    lines = missing.map { |name, requirement| %(  gem "#{name}", "#{requirement}", require: false) }
+    write("Gemfile", "#{gemfile.chomp}\n\ngroup :development, :test do\n#{lines.join("\n")}\nend\n", "updated")
+  end
+
+  def add_coverage
+    helper = read("test/test_helper.rb")
+    return write("test/test_helper.rb", asset("test/test_helper.rb"), "created") if helper.nil?
+
+    updated = helper.include?("SimpleCov") ? helper : asset(rails? ? "coverage/rails.rb" : "coverage/plain.rb") + helper
+    updated = add_parallel_coverage(updated) if rails?
+    updated == helper ? record("kept", "test/test_helper.rb") : write("test/test_helper.rb", updated, "updated")
+  end
+
+  def add_parallel_coverage(helper)
+    return helper if helper.include?("parallelize_setup")
+
+    line = helper.lines.find { |candidate| candidate.match?(/^\s*parallelize\(/) }
+    return helper unless line
+
+    indent = line[/^\s*/]
+    hooks = asset("coverage/rails_parallel.rb").lines.map { |hook| hook.strip.empty? ? hook : indent + hook }.join
+    helper.sub(line, line + hooks)
+  end
+
+  def add_spec_coverage
+    helper_path = SPEC_HELPERS.find { |candidate| exist?(candidate) }
+    return write("spec/spec_helper.rb", asset("spec/spec_helper.rb"), "created") unless helper_path
+
+    helper = read(helper_path)
+    return record("kept", helper_path) if helper.include?("SimpleCov")
+
+    write(helper_path, asset(rails? ? "coverage/rails.rb" : "coverage/rspec.rb") + helper, "updated")
+  end
+
+  def use_require_relative
+    Dir.glob("test/**/*_test.rb", base: @root).sort.each do |test|
+      source = read(test)
+      helper = Pathname("test/test_helper").relative_path_from(Pathname(test).dirname).to_s
+      updated = source.gsub(/^require[ \t]+["']test_helper["'][ \t]*$/, %(require_relative "#{helper}"))
+      write(test, updated, "updated") unless updated == source
+    end
+  end
+
+  def copy_assets
+    COPIED_ASSETS.merge(rspec? ? RSPEC_ASSETS : MINITEST_ASSETS).each do |from, to|
+      next record("kept", to) if exist?(to)
+
+      write(to, asset(from), "created")
+      FileUtils.chmod(0o755, path(to)) if EXECUTABLES.include?(to) && !@dry_run
+    end
+  end
+
+  def add_mutineer_config
+    return record("kept", ".mutineer.yml") if exist?(".mutineer.yml")
+
+    write(".mutineer.yml", asset("mutineer.yml") + (rspec? ? "framework: rspec\n" : ""), "created")
+  end
+
+  def add_rakefile
+    exist?("Rakefile") ? record("kept", "Rakefile") : write("Rakefile", asset("Rakefile"), "created")
+  end
+
+  def ignore_reports
+    current = read(".gitignore") || ""
+    present = current.lines.map { |line| line.strip.delete_prefix("/").delete_suffix("/").delete_suffix("/*") }
+    wanted = rspec? ? %w[coverage/ .mutineer/ spec/examples.txt] : %w[coverage/ .mutineer/]
+    missing = wanted.reject { |entry| present.include?(entry.delete_suffix("/")) }
+    return record("kept", ".gitignore") if missing.empty?
+
+    separator = current.empty? || current.end_with?("\n") ? "" : "\n"
+    write(".gitignore", current + separator + missing.join("\n") + "\n", current.empty? ? "created" : "updated")
+  end
+
+  def add_workflow
+    workflows = Dir.glob(".github/workflows/*.{yml,yaml}", base: @root).sort
+    return other_ci_notice if workflows.empty? && (@profile.ci & %i[gitlab circleci]).any?
+
+    verifying = workflows.find { |workflow| read(workflow).include?("bin/verify-change") }
+    return record("kept", verifying) if verifying
+
+    target = workflows.empty? ? ".github/workflows/ci.yml" : ".github/workflows/verify-change.yml"
+    return record("kept", target) if exist?(target)
+
+    template = workflows.empty? ? asset("github/ci.yml") : asset("github/verify-change.yml")
+    write(target, fill_workflow(template), "created")
+  end
+
+  def other_ci_notice
+    @out.puts "GitLab CI or CircleCI detected, no GitHub workflow: see references/ci.md, \"Any CI\", for the commands " \
+              "to run there. No GitHub workflow written."
+  end
+
+  def fill_workflow(template)
+    prepare = rails? ? "bin/rails db:test:prepare && " : ""
+    template.sub("__VERIFY_JOB__\n", asset("github/verify-job.yml"))
+            .gsub("__RUBY_VERSION__", ruby_version || RUBY_VERSION)
+            .gsub("__DEFAULT_BRANCH__", default_branch)
+            .gsub("__SUITE_COMMAND__", prepare + suite_command)
+            .gsub("__VERIFY_COMMAND__", %(#{prepare}bundle exec bin/verify-change "$BASE_REF"))
+  end
+
+  def suite_command
+    return "COVERAGE=1 bundle exec rspec" if rspec?
+
+    rails? ? "COVERAGE=1 bin/rails test" : "COVERAGE=1 bundle exec rake test"
+  end
+
+  def default_branch
+    head = read(".git/HEAD")&.[](%r{ref: refs/heads/(\S+)}, 1)
+    %w[main master].include?(head) ? head : "main"
+  end
+
+  def handle_linter
+    return unless @linter
+
+    guide = @profile.style_guide
+    if guide == :ambiguous
+      @err.puts "Two style guides found: choose one by hand. #{@linter} was not installed."
+      return
+    end
+
+    if guide
+      if guide.to_s == @linter
+        return exist?(style_guide_file(guide)) ? record("kept", style_guide_file(guide)) : install_linter(@linter)
+      end
+
+      @err.puts "#{guide} is already set up: keeping it instead of #{@linter}."
+      return
+    end
+
+    install_linter(@linter)
+  end
+
+  def style_guide_file(guide)
+    guide == :standard ? ".standard.yml" : ".rubocop.yml"
+  end
+
+  def install_linter(name)
+    case name
+    when "omakase"
+      add_gem_line("rubocop-rails-omakase")
+      write(".rubocop.yml", "inherit_gem:\n  rubocop-rails-omakase: rubocop.yml\n", "created") unless exist?(".rubocop.yml")
+    when "standard"
+      add_gem_line("standard")
+      write(".standard.yml", "# See https://github.com/standardrb/standard\n", "created") unless exist?(".standard.yml")
+    when "rubocop"
+      add_gem_line("rubocop")
+      write(".rubocop.yml", "# See https://docs.rubocop.org\n", "created") unless exist?(".rubocop.yml")
+    end
+  end
+
+  def add_gem_line(name)
+    gemfile = read("Gemfile")
+    return if gemfile.to_s.match?(/^\s*gem\s+["']#{Regexp.escape(name)}["']/)
+
+    write("Gemfile", "#{gemfile.chomp}\n\ngem \"#{name}\", require: false\n", "updated")
+  end
+
+  def print_next_steps
+    return if @dry_run
+
+    @out.puts "\nNext steps:\n  bundle install\n  #{suite_command}\n  git add -A && git commit -m \"Add the verification stack\"\n  bundle exec bin/verify-change main"
+  end
+
+  def write(relative, content, verb)
+    record(verb, relative)
+    return if @dry_run
+
+    FileUtils.mkdir_p(File.dirname(path(relative)))
+    File.write(path(relative), content)
+  end
+
+  def record(verb, relative)
+    @out.puts "#{@dry_run && verb != "kept" ? "would be #{verb}" : verb.ljust(7)} #{relative}"
+  end
+
+  def asset(relative)
+    File.read(File.join(ASSETS, relative))
+  end
+
+  def read(relative)
+    File.file?(path(relative)) ? File.read(path(relative)) : nil
+  end
+
+  def exist?(relative)
+    File.exist?(path(relative))
+  end
+
+  def path(relative)
+    File.join(@root, relative)
+  end
+end
+
+exit SetupProject.run(ARGV) if $PROGRAM_NAME == __FILE__

@@ -1,0 +1,126 @@
+{
+  "skill_name": "ruby-testing",
+  "notes": "Split from ruby-verifying's evals.json (2026-09-14): old ids 13, 14, 16 keep their scope here, renumbered 1-3 in that order. Old id 2 moved to ruby-quality-checking per review finding 17, because its expected output is mutation testing; new id 4 is this skill's own indirect positive in its place. New ids 5-8 are the collaboration-test, RSpec-refactor, fixtures-and-factories, and warning-never-blocks positives the plan and review required. Old ids 6 and 5 stay as near misses (new ids 9, 10); new id 11 mirrors ruby-quality-checking's near miss the other way. Trigger cases run with both ruby-testing and ruby-quality-checking installed from this marketplace, and with any personal ~/.claude/skills/ruby-testing moved out, so a near miss is not passing only because the sibling skill was absent.",
+  "evals": [
+    {
+      "id": 1,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "This Ruby script reads ENV and a HOME constant at the top level, and my test rewrites the source and evals it to point HOME at a temp dir. It's flaky. How should I fix it?",
+      "expected_output": "The skill activates on an indirect trigger. It rejects eval and constant rewriting, moves the logic into a class that takes home or config as a constructor argument with real defaults, guards the entry point with $PROGRAM_NAME == __FILE__, and tests it with Dir.mktmpdir and StringIO.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "Starting a new Rails 8.1 app. Should we write Minitest tests or RSpec specs?",
+      "expected_output": "The skill activates. It recommends Minitest for a new Rails app, and RSpec only for a project that already uses it, and says every quality-checking gate works with both.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "scope": "output-quality",
+      "set": "train",
+      "prompt": "Our Minitest 5 suite broke after upgrading to Minitest 6: `assert_equal nil, result` fails and `Time.stub` is undefined. What changed?",
+      "expected_output": "Minitest 6 rejects assert_equal nil, so write assert_nil result. Minitest::Mock and stub moved to the minitest-mock gem, so add that gem and require minitest/mock.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "This Checkout class is core logic and nothing covers it. Add the tests it needs.",
+      "expected_output": "The skill activates on an indirect trigger: it writes tests for Checkout in the project's own framework, without the prompt saying 'test' or naming a framework.",
+      "files": [
+        { "path": "lib/checkout.rb", "content": "class Checkout\n  FREE_SHIPPING_FROM = 100_00\n\n  def initialize(country:)\n    @country = country\n    @items = []\n  end\n\n  def add_item(price_cents)\n    @items << price_cents\n  end\n\n  def subtotal\n    @items.sum\n  end\n\n  def shipping\n    return 0 if @country == \"DE\" && subtotal >= FREE_SHIPPING_FROM\n\n    5_00\n  end\n\n  def total\n    subtotal + shipping\n  end\nend\n" },
+        { "path": "test/test_helper.rb", "content": "require \"minitest/autorun\"\n$LOAD_PATH.unshift File.expand_path(\"../lib\", __dir__)\nrequire \"checkout\"\n" }
+      ],
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Write a test for Checkout#complete: it should charge the gateway for the order total and deliver a receipt through OrderMailer.",
+      "expected_output": "A collaboration test that checks the gateway receives charge with the order total and OrderMailer is asked to deliver a receipt, using a Minitest::Mock or spy, an RSpec instance_double with have_received, or a Rails mailer assertion, not a hand-rolled stub of the whole gateway response.",
+      "files": [
+        { "path": "app/services/checkout.rb", "content": "class Checkout\n  def initialize(gateway:)\n    @gateway = gateway\n  end\n\n  def complete(order)\n    @gateway.charge(order.total_cents)\n    OrderMailer.receipt(order).deliver_later\n  end\nend\n" },
+        { "path": "test/test_helper.rb", "content": "ENV[\"RAILS_ENV\"] ||= \"test\"\nrequire_relative \"../config/environment\"\nrequire \"rails/test_help\"\n" }
+      ],
+      "assertions": []
+    },
+    {
+      "id": 6,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "These RSpec specs set @order in a before block and several examples read and mutate it. Clean them up.",
+      "expected_output": "The skill rewrites the shared @order into let, removing the before-block instance variable, and keeps each example independent of run order.",
+      "files": [
+        { "path": "lib/order.rb", "content": "class Order\n  def initialize\n    @items = []\n  end\n\n  def add_item(price_cents)\n    @items << price_cents\n  end\n\n  def total_cents\n    @items.sum\n  end\nend\n" },
+        { "path": "spec/order_spec.rb", "content": "require \"spec_helper\"\n\nRSpec.describe Order do\n  before do\n    @order = Order.new\n  end\n\n  it \"starts empty\" do\n    expect(@order.total_cents).to eq(0)\n  end\n\n  it \"totals a single item\" do\n    @order.add_item(500)\n    expect(@order.total_cents).to eq(500)\n  end\n\n  it \"totals items added across the example\" do\n    @order.add_item(500)\n    @order.add_item(300)\n    expect(@order.total_cents).to eq(800)\n  end\nend\n" },
+        { "path": "spec/spec_helper.rb", "content": "require_relative \"../lib/order\"\n\nRSpec.configure do |config|\n  config.expect_with :rspec do |expectations|\n    expectations.include_chain_clauses_in_custom_matcher_descriptions = true\n  end\n\n  config.mock_with :rspec do |mocks|\n    mocks.verify_partial_doubles = true\n  end\n\n  config.disable_monkey_patching!\n  config.order = :random\n  Kernel.srand config.seed\nend\n" },
+        { "path": ".rspec", "content": "--require spec_helper\n" }
+      ],
+      "assertions": []
+    },
+    {
+      "id": 7,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Add a test for this Rails model. The project has both test/fixtures and FactoryBot factories already.",
+      "expected_output": "The skill detects both fixtures and factories are present and writes the test in whichever style the existing tests near this model use, rather than picking one on its own or converting existing tests.",
+      "files": [
+        { "path": "Gemfile", "content": "source \"https://rubygems.org\"\n\ngem \"rails\", \"~> 8.1\"\ngem \"factory_bot_rails\", \"~> 6.5\"\n" },
+        { "path": "config/application.rb", "content": "require \"rails/all\"\n\nmodule Demo\n  class Application < Rails::Application\n  end\nend\n" },
+        { "path": "app/models/order.rb", "content": "class Order < ApplicationRecord\n  belongs_to :customer\nend\n" },
+        { "path": "test/fixtures/orders.yml", "content": "first:\n  customer: alice\n  total_cents: 5000\n" },
+        { "path": "test/factories/orders.rb", "content": "FactoryBot.define do\n  factory :order do\n    customer\n    total_cents { 5000 }\n  end\nend\n" },
+        { "path": "test/models/customer_test.rb", "content": "require \"test_helper\"\n\nclass CustomerTest < ActiveSupport::TestCase\n  test \"has a name\" do\n    assert_equal \"Alice\", customers(:alice).name\n  end\nend\n" }
+      ],
+      "assertions": []
+    },
+    {
+      "id": 8,
+      "scope": "discipline",
+      "set": "validation",
+      "prompt": "Write a Minitest test for this PriceCalculator class.",
+      "expected_output": "The skill detects no SimpleCov, mutation tool, or CRAP script in the project, says once that they are missing and what they would prove, and writes the test anyway; the warning never blocks or delays writing the test.",
+      "files": [
+        { "path": "Gemfile", "content": "source \"https://rubygems.org\"\n\ngem \"minitest\"\n" },
+        { "path": "lib/price_calculator.rb", "content": "class PriceCalculator\n  DISCOUNT_THRESHOLD_CENTS = 10_000\n  DISCOUNT_PERCENT = 10\n  TAX_PERCENT = 8\n\n  def initialize(subtotal_cents)\n    @subtotal_cents = subtotal_cents\n  end\n\n  def total_cents\n    discounted = @subtotal_cents - discount_cents\n    discounted + tax_cents(discounted)\n  end\n\n  private\n\n  def discount_cents\n    return 0 unless @subtotal_cents > DISCOUNT_THRESHOLD_CENTS\n\n    @subtotal_cents * DISCOUNT_PERCENT / 100\n  end\n\n  def tax_cents(amount_cents)\n    amount_cents * TAX_PERCENT / 100\n  end\nend\n" }
+      ],
+      "assertions": []
+    },
+    {
+      "id": 9,
+      "scope": "should-not-trigger",
+      "set": "train",
+      "prompt": "Set up Jest coverage thresholds for our TypeScript monorepo.",
+      "expected_output": "The skill does not activate: coverage for JavaScript and TypeScript is outside Ruby testing.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 10,
+      "scope": "should-not-trigger",
+      "set": "train",
+      "prompt": "What does a CRAP score of 56 mean?",
+      "expected_output": "This skill does not activate: reading a CRAP score is the ruby-quality-checking skill's job.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 11,
+      "scope": "should-not-trigger",
+      "set": "validation",
+      "prompt": "Mutineer survivor in lib/checkout.rb, Checkout#shipping, operator comparison (>= -> >). Write the Minitest test that kills it.",
+      "expected_output": "This skill does not activate: writing a test to kill a named mutation survivor is the ruby-quality-checking skill's job, not this skill's general test writing.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}
