@@ -8,7 +8,8 @@ description: >
   rubocop-rails-omakase to a project; explaining what a CRAP score,
   mutation score, or patch coverage number means; reading or fixing
   surviving mutants, uncovered lines, or high CRAP scores; writing the
-  test or spec that kills a named surviving mutant; or when tests passed
+  test or spec that kills a named surviving mutant; when someone asks to
+  run the whole test suite to check a small change; or when tests passed
   but a bug still shipped and someone asks whether the tests can be
   trusted. For writing or refactoring tests in general, use ruby-testing.
 license: MIT
@@ -29,6 +30,7 @@ Prove a change against 5 gates on the changed code only, in the project's own to
 - Never install a style guide unasked. With no style guide, print the 3 choices (rubocop-rails-omakase, standard, rubocop) and wait to be asked by name.
 - `bundle exec bin/verify-change BASE [--test FILE]...` applies all 5 gates with Minitest or RSpec. Pass `--test` for the integration or system tests of a touched feature. Exit 0 means verified, 1 a check failed, 2 a usage or git error.
 - A lint failure is reported under `Failed:` but never stops the other checks. Lint is skipped, not failed, with no style guide, two style guides, no changed Ruby files, or its gem missing from `Gemfile.lock`.
+- When someone asks to run the whole suite for a change, run `bin/verify-change` on the changed files instead. Do not offer the full suite as the local check, and say that the full suite runs in CI.
 - Exercise the changed feature as well: run the command, open the page, or walk the steps of the fixed bug.
 - After 2 failed attempts to kill the same survivor, stop and ask a person whether it is equivalent.
 - When the task is writing or refactoring a test rather than fixing a finding, use the ruby-testing skill: this skill's own test writing is limited to a test that kills a named survivor, covers an uncovered changed line, or lowers a CRAP score.

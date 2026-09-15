@@ -69,6 +69,8 @@ Complexity is 1, plus 1 for each `if`, `elsif`, ternary, `unless`, `while`, `unt
 
 - Tests lower the score of a complex method. Full coverage leaves only the complexity.
 - A method with complexity above 30 stays above the limit at full coverage. Split it.
+- At 0% coverage the score is complexity² + complexity, so a score of 56 means complexity 7.
+- When you explain a score, compare its fully covered score, the complexity, with the limit of 30. Say whether tests alone bring it under the limit or the method needs a split.
 
 In the demo, the untested `Refund#amount` had complexity 10 and scored 110. Boundary tests brought it to 10. Splitting it into small named methods brought the worst method to 4.
 
