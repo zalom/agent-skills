@@ -48,6 +48,18 @@ All notable changes to the skills in this repository, one section per skill. The
 
 ## plain-writing
 
+### [0.3.0] - 2026-09-19
+
+#### Added
+
+- The SessionStart hook now ships with the skill, at `hooks/session-start.rb`. It injects the activation set (`SKILL.md`, the Google highlights page, and the personal overrides) at the start of every session. Before this the hook existed only as an unversioned file in the user's own `~/.claude/hooks/`, so a fresh install got the gate but no activation set.
+- `hooks/run-hook.sh`, one POSIX shell entry point for both hooks. Claude Code registers it per event and names the hook as the first argument: `<shim> session-start` and `<shim> gate`. The shim resolves its own directory through symlinks, so an installed link keeps finding the skill it points into, and it exits 0 without output when Ruby is missing, the name is unknown, or the body is absent.
+
+#### Changed
+
+- The activation-set budget rose from 10,000 to 16,000 characters, and `SKILL.md` now outranks the highlights page when the set has to be cut. At 10,000 characters the three files came to 10,874, so an overrun of 8% dropped `SKILL.md` whole and the session ran without the routing table.
+- Injected files lose their YAML frontmatter. The skill listing already carries the description.
+
 ### [0.2.1] - 2026-09-19
 
 #### Fixed

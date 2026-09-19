@@ -7,7 +7,8 @@ require "tmpdir"
 require "fileutils"
 
 class GateTest < Minitest::Test
-  GATE = File.expand_path("../gate.rb", __dir__)
+  SHIM = File.expand_path("../run-hook.sh", __dir__)
+  HOOK_NAME = "gate"
   PAGE_BODY = "PAGE BODY SENTINEL"
 
   def setup
@@ -25,7 +26,7 @@ class GateTest < Minitest::Test
   def run_gate(extra = {})
     input = { "session_id" => "s1", "tool_name" => "Write",
               "tool_input" => { "file_path" => @doc, "content" => "# Title\n\nPlain text.\n" } }.merge(extra)
-    out, = Open3.capture2({ "HOME" => @home }, "ruby", GATE, stdin_data: JSON.generate(input))
+    out, = Open3.capture2({ "HOME" => @home }, SHIM, HOOK_NAME, stdin_data: JSON.generate(input))
     out
   end
 

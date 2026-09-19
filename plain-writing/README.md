@@ -48,13 +48,17 @@ references/
   google-pages.md       <- manifest: file, live URL, category (used for re-syncing)
   google/               <- 68 adapted pages, the base layer
 hooks/
+  run-hook.sh           <- one shell entry point; names the hook as its first argument
+  session-start.rb      <- injects the activation set at the start of a session
   gate.rb               <- names the routed pages a draft needs, at the moment it is written
   lint.rb               <- checks the rules a machine can decide, on every write
 ```
 
 ## Enforcement hooks
 
-The routing table asks an agent to open a page when it needs one. An agent that believes the skill is already loaded will skip that step and report the skill as applied, which is the failure these two optional hooks exist to close. Neither replaces the judgment in the skill. They make the mechanical half hold whether or not anything was read.
+The routing table asks an agent to open a page when it needs one. An agent that believes the skill is already loaded will skip that step and report the skill as applied, which is the failure these optional hooks exist to close. Neither replaces the judgment in the skill. They make the mechanical half hold whether or not anything was read.
+
+`hooks/session-start.rb` runs once, when a session begins. It injects the activation set the skill asks for: your `references/overrides.md`, `SKILL.md`, and the Google highlights page, in that order of priority. The set is capped at 16,000 characters; a file that does not fit is named in a notice rather than truncated, so the agent knows to open it. YAML frontmatter is stripped from each file. When the skill directory holds no `references/overrides.md`, the hook reads `~/.claude/plain-writing-overrides.md` instead, so your own layer never has to live inside an installed copy.
 
 `hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and names the pages that govern them with their paths, so the agent knows the guide holds more than its session does and opens what it has not read. No page text is injected, so nothing from the guide sits in context for the rest of the session. A document is pointed at a given page set once per session; checker findings are reported on every call. Tool calls made by a subagent are skipped entirely, keyed on the `agent_id` field Claude Code sets in the hook input for them.
 
@@ -82,12 +86,22 @@ Run it on its own at any time:
 ruby hooks/lint.rb README.md
 ```
 
-To install both, symlink them where your agent looks for hooks and register `gate.rb` on the pre-tool event. For Claude Code that is `~/.claude/settings.json`:
+Both hooks are reached through one entry point, `hooks/run-hook.sh`, which takes the hook name as its first argument. Symlink that one file where your agent looks for hooks and register it per event. For Claude Code that is `~/.claude/settings.json`:
+
+```sh
+ln -s "$PWD/hooks/run-hook.sh" ~/.claude/hooks/plain-writing
+```
 
 ```json
-{ "hooks": { "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
-  "hooks": [ { "type": "command", "command": "~/.claude/hooks/plain-writing-gate.rb" } ] } ] } }
+{ "hooks": {
+  "SessionStart": [ { "hooks": [ { "type": "command",
+    "command": "~/.claude/hooks/plain-writing session-start" } ] } ],
+  "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
+    "hooks": [ { "type": "command",
+      "command": "~/.claude/hooks/plain-writing gate" } ] } ] } }
 ```
+
+The shim is POSIX shell, so it runs anywhere. It resolves its own directory through the symlink, which is how it finds the skill it belongs to, and it exits 0 without output when Ruby is missing, the hook name is unknown, or the body is absent.
 
 Three properties are deliberate. Findings are advisory, so nothing is ever blocked; `BLOCKING_TOOLS` in `gate.rb` is the switch that makes a listed tool refuse instead, and it ships empty. A rule the guide genuinely permits in context is silenced by writing `lint-ok: <rule>` on that line, so an exception is recorded rather than taken quietly. And every failure path fails open: bad input, a missing checker, or a broken cache lets the tool call proceed untouched.
 
