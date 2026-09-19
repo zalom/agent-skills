@@ -22,7 +22,16 @@
 require "json"
 require "digest"
 
-SKILL_DIR = File.join(Dir.home, ".claude", "skills", "plain-writing")
+# The skill directory, wherever it is installed. An explicit root wins, then ~/.claude/skills,
+# then the directory above this hook, which is the skill itself whenever the hook runs from a
+# plugin install or a repository checkout.
+SKILL_ROOTS = [
+  ENV["PLAIN_WRITING_ROOT"],
+  File.join(Dir.home, ".claude", "skills", "plain-writing"),
+  File.expand_path("..", __dir__)
+].compact.freeze
+
+SKILL_DIR = SKILL_ROOTS.find { |root| File.directory?(File.join(root, "references", "google")) } || SKILL_ROOTS.last
 REF_DIR   = File.join(SKILL_DIR, "references", "google")
 LINTER    = File.expand_path("lint.rb", __dir__)
 

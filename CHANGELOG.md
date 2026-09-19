@@ -48,6 +48,12 @@ All notable changes to the skills in this repository, one section per skill. The
 
 ## plain-writing
 
+### [0.2.1] - 2026-09-19
+
+#### Fixed
+
+- The gate now finds the skill wherever it is installed. It reads `PLAIN_WRITING_ROOT`, then `~/.claude/skills/plain-writing`, then the directory above the hook itself, which is the skill whenever the hook runs from a plugin install or a repository checkout. Before this, the gate read one hardcoded path, so a plugin install left it silent: it named no pages and reported no findings.
+
 ### [0.2.0] - 2026-09-15
 
 #### Changed
