@@ -48,6 +48,18 @@ All notable changes to the skills in this repository, one section per skill. The
 
 ## plain-writing
 
+### [0.4.0] - 2026-09-19
+
+#### Added
+
+- A Stop hook, at `hooks/stop.rb`. It reads the reply the agent just finished from the session transcript and runs `lint.rb` over it, so prose typed straight into a session is checked by the same rules as prose written to a file. The gate only ever saw writes and publishes, which left reports, status updates, and narration unchecked.
+- Three modes, held in `~/.claude/plain-writing-observe.json` so the hook can be turned off without editing `settings.json`. `observe` records a tally and never interrupts, `block` sends a turn back once with the findings and the pages that govern them, and `off` does nothing. The shipped default is `observe`, for seven days.
+- The tally is bounded by construction: one entry per rule, at most three examples of 160 characters, so the file stops growing at a few kilobytes however many replies it sees. When the seven days are up the hook stops writing, and the SessionStart hook reports the counts once and asks whether to switch to `block`.
+
+#### Changed
+
+- `lint.rb` guards its command line behind `$PROGRAM_NAME == __FILE__`, so it can be loaded as a library. Running it as `ruby hooks/lint.rb FILE` behaves exactly as before.
+
 ### [0.3.0] - 2026-09-19
 
 #### Added

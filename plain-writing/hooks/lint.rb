@@ -11,6 +11,7 @@
 # Those still need the routed pages; this tool does not pretend to cover them.
 #
 # Usage:  plain-writing-lint.rb FILE [FILE...]
+# Also loadable: require it and use Linter.new(path).run, which is what the Stop hook does.
 # Exit:   0 clean, 1 violations found, 2 usage error.
 
 require "set"
@@ -264,34 +265,36 @@ class Linter
   end
 end
 
-if ARGV.empty?
-  warn "usage: plain-writing-lint.rb FILE [FILE...]"
-  exit 2
-end
-
-all = []
-ARGV.each do |path|
-  unless File.file?(path)
-    warn "skip (not a file): #{path}"
-    next
+if $PROGRAM_NAME == __FILE__
+  if ARGV.empty?
+    warn "usage: plain-writing-lint.rb FILE [FILE...]"
+    exit 2
   end
-  all.concat(Linter.new(path).run)
-rescue StandardError => e
-  warn "skip (#{e.class}): #{path}"
-end
 
-if all.empty?
-  puts "plain-writing-lint: clean (#{ARGV.length} file#{'s' if ARGV.length != 1})"
-  exit 0
-end
+  all = []
+  ARGV.each do |path|
+    unless File.file?(path)
+      warn "skip (not a file): #{path}"
+      next
+    end
+    all.concat(Linter.new(path).run)
+  rescue StandardError => e
+    warn "skip (#{e.class}): #{path}"
+  end
 
-by_rule = all.group_by(&:rule)
-puts "plain-writing-lint: #{all.length} violation#{'s' if all.length != 1} in #{by_rule.keys.length} rule#{'s' if by_rule.keys.length != 1}"
-puts
-by_rule.sort_by { |r, f| [-f.length, r] }.each do |rule, findings|
-  puts "#{rule} (#{findings.length})"
-  findings.first(12).each { |f| puts f }
-  puts "  ... and #{findings.length - 12} more" if findings.length > 12
+  if all.empty?
+    puts "plain-writing-lint: clean (#{ARGV.length} file#{'s' if ARGV.length != 1})"
+    exit 0
+  end
+
+  by_rule = all.group_by(&:rule)
+  puts "plain-writing-lint: #{all.length} violation#{'s' if all.length != 1} in #{by_rule.keys.length} rule#{'s' if by_rule.keys.length != 1}"
   puts
+  by_rule.sort_by { |r, f| [-f.length, r] }.each do |rule, findings|
+    puts "#{rule} (#{findings.length})"
+    findings.first(12).each { |f| puts f }
+    puts "  ... and #{findings.length - 12} more" if findings.length > 12
+    puts
+  end
+  exit 1
 end
-exit 1

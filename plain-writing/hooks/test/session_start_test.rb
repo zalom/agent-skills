@@ -8,6 +8,7 @@ require "open3"
 require "json"
 require "tmpdir"
 require "fileutils"
+require "date"
 
 class SessionStartHookTest < Minitest::Test
   SHIM = File.expand_path("../run-hook.sh", __dir__)
@@ -127,6 +128,46 @@ class SessionStartHookTest < Minitest::Test
       assert_equal 0, status.exitstatus
       payload = JSON.parse(out)
       assert payload.key?("hookSpecificOutput")
+    end
+  end
+
+  def test_it_reports_the_closed_observe_window_once
+    Dir.mktmpdir do |dir|
+      write_skill(dir, skill: "# Writing style\n", highlights: "# Highlights\n", overrides: "Use a hyphen.\n")
+      home = Dir.mktmpdir
+      FileUtils.mkdir_p(File.join(home, ".claude"))
+      state = File.join(home, ".claude", "plain-writing-observe.json")
+      File.write(state, JSON.generate(
+        "mode" => "observe", "until" => (Date.today - 1).to_s, "reported" => false,
+        "turns" => 40, "rules" => { "dashes" => { "count" => 6, "examples" => [] } }
+      ))
+
+      out, _err, status = Open3.capture3({ "HOME" => home }, SHIM, HOOK_NAME, dir, stdin_data: STDIN_PAYLOAD)
+      assert_equal 0, status.exitstatus
+      context = JSON.parse(out)["hookSpecificOutput"]["additionalContext"]
+      assert_includes context, "watched for a week"
+      assert_includes context, "6 violations in 40 replies"
+      assert_includes context, "dashes"
+      assert JSON.parse(File.read(state))["reported"]
+
+      again, = Open3.capture3({ "HOME" => home }, SHIM, HOOK_NAME, dir, stdin_data: STDIN_PAYLOAD)
+      refute_includes JSON.parse(again)["hookSpecificOutput"]["additionalContext"], "watched for a week"
+      FileUtils.rm_rf(home)
+    end
+  end
+
+  def test_an_open_observe_window_says_nothing
+    Dir.mktmpdir do |dir|
+      write_skill(dir, skill: "# Writing style\n", highlights: "# Highlights\n", overrides: "Use a hyphen.\n")
+      home = Dir.mktmpdir
+      FileUtils.mkdir_p(File.join(home, ".claude"))
+      File.write(File.join(home, ".claude", "plain-writing-observe.json"), JSON.generate(
+        "mode" => "observe", "until" => (Date.today + 3).to_s, "reported" => false, "turns" => 2, "rules" => {}
+      ))
+
+      out, = Open3.capture3({ "HOME" => home }, SHIM, HOOK_NAME, dir, stdin_data: STDIN_PAYLOAD)
+      refute_includes JSON.parse(out)["hookSpecificOutput"]["additionalContext"], "watched for a week"
+      FileUtils.rm_rf(home)
     end
   end
 

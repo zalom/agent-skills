@@ -13,6 +13,7 @@
 #
 # Fails open: never a non-zero exit, never a raise.
 
+require "date"
 require "json"
 
 LIMIT = 16_000
@@ -30,6 +31,7 @@ KEEP_ORDER = [
 ].freeze
 
 PERSONAL_OVERRIDES = File.join(Dir.home, ".claude", "plain-writing-overrides.md")
+OBSERVE_STATE = File.join(Dir.home, ".claude", "plain-writing-observe.json")
 PLUGIN_CACHE = File.join(Dir.home, ".claude", "plugins", "cache", "zalom-skills", "plain-writing")
 MARKETPLACE = File.join(Dir.home, ".claude", "plugins", "marketplaces", "zalom-skills", "plain-writing")
 SHIPPED_ROOT = File.expand_path("..", __dir__)
@@ -70,6 +72,34 @@ def fit(sections)
   end
   skipped = sections.keys - kept
   ([PREAMBLE, skipped_notice(skipped)] + sections.select { |rel, _| kept.include?(rel) }.values).join("\n")
+end
+
+# The Stop hook watches replies for a week and tallies what it would have caught. When that
+# week is over, say so once, here, rather than leaving a file for someone to remember.
+def observe_report
+  return nil unless File.file?(OBSERVE_STATE)
+
+  data = JSON.parse(File.read(OBSERVE_STATE))
+  return nil unless data["mode"] == "observe"
+  return nil if data["reported"]
+  return nil if Date.parse(data["until"].to_s) >= Date.today
+
+  rules = data["rules"] || {}
+  total = rules.values.sum { |entry| entry["count"].to_i }
+  top = rules.max_by { |_rule, entry| entry["count"].to_i }
+
+  data["reported"] = true
+  File.write(OBSERVE_STATE, JSON.pretty_generate(data) + "\n")
+
+  summary = if total.zero?
+              "found nothing in #{data['turns']} replies"
+            else
+              "found #{total} violations in #{data['turns']} replies, most often #{top[0]} (#{top[1]['count']})"
+            end
+  "The plain-writing Stop hook watched for a week and #{summary}. " \
+    "Ask the user whether to set \"mode\": \"block\" in #{OBSERVE_STATE}."
+rescue StandardError
+  nil
 end
 
 def not_found(root)
@@ -115,6 +145,9 @@ begin
   sections = sources.to_h { |rel, path| [rel, section(rel, File.read(path, encoding: "UTF-8"))] }
   context = ([PREAMBLE] + sections.values).join("\n")
   context = fit(sections) if context.length >= LIMIT
+
+  report = observe_report
+  context = "#{report}\n#{context}" if report
 
   payload = {
     "hookSpecificOutput" => {

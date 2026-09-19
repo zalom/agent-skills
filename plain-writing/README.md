@@ -50,6 +50,7 @@ references/
 hooks/
   run-hook.sh           <- one shell entry point; names the hook as its first argument
   session-start.rb      <- injects the activation set at the start of a session
+stop.rb               <- checks the reply the agent just finished, in the session itself
   gate.rb               <- names the routed pages a draft needs, at the moment it is written
   lint.rb               <- checks the rules a machine can decide, on every write
 ```
@@ -61,6 +62,16 @@ The routing table asks an agent to open a page when it needs one. An agent that 
 `hooks/session-start.rb` runs once, when a session begins. It injects the activation set the skill asks for: your `references/overrides.md`, `SKILL.md`, and the Google highlights page, in that order of priority. The set is capped at 16,000 characters; a file that does not fit is named in a notice rather than truncated, so the agent knows to open it. YAML frontmatter is stripped from each file. When the skill directory holds no `references/overrides.md`, the hook reads `~/.claude/plain-writing-overrides.md` instead, so your own layer never has to live inside an installed copy.
 
 `hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and names the pages that govern them with their paths, so the agent knows the guide holds more than its session does and opens what it has not read. No page text is injected, so nothing from the guide sits in context for the rest of the session. A document is pointed at a given page set once per session; checker findings are reported on every call. Tool calls made by a subagent are skipped entirely, keyed on the `agent_id` field Claude Code sets in the hook input for them.
+
+`hooks/stop.rb` runs when a reply is finished. The gate sees a document only when a tool writes or publishes it, so a report, a status update, or any other prose typed straight into the session is seen by nothing. This hook reads that reply from the session transcript and runs the checker below over it.
+
+It has three modes, held in `~/.claude/plain-writing-observe.json`, so it can be turned off without editing your agent's settings:
+
+- **`observe`**: it records what it found and never interrupts. This is the default, and it lasts seven days.
+- **`block`**: it sends the turn back once, with the findings and the pages that govern them. A turn is never sent back twice.
+- **`off`**: it does nothing.
+
+The record is a tally, not a log: one entry per rule, with a count and at most three examples, so the file stops growing at a few kilobytes however many replies it sees. When the seven days are up the hook stops writing, and the SessionStart hook reports the counts once and asks whether to switch to `block`.
 
 `hooks/lint.rb` decides what a page cannot. It reads a file and reports every rule below that the text breaks:
 
@@ -96,7 +107,9 @@ ln -s "$PWD/hooks/run-hook.sh" ~/.claude/hooks/plain-writing
 { "hooks": {
   "SessionStart": [ { "hooks": [ { "type": "command",
     "command": "~/.claude/hooks/plain-writing session-start" } ] } ],
-  "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
+  "Stop": [ { "hooks": [ { "type": "command",
+  "command": "~/.claude/hooks/plain-writing stop" } ] } ],
+"PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
     "hooks": [ { "type": "command",
       "command": "~/.claude/hooks/plain-writing gate" } ] } ] } }
 ```
