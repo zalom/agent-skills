@@ -37,9 +37,19 @@ class StopHookTest < Minitest::Test
     File.write(state_path, JSON.generate(data))
   end
 
-  def write_transcript(text, sidechain: false)
+  # A realistic turn: a prompt, narration, a tool call, the tool result coming back as a
+  # record of type "user", then the final reply.
+  def write_transcript(text, sidechain: false, narration: nil)
     records = [
       { "type" => "user", "message" => { "role" => "user", "content" => "go" } },
+      { "type" => "assistant", "isSidechain" => sidechain,
+        "message" => { "content" => [{ "type" => "text", "text" => narration.to_s }] } },
+      { "type" => "assistant", "isSidechain" => sidechain,
+        "message" => { "content" => [{ "type" => "tool_use", "name" => "Bash", "input" => {} }] } },
+      { "type" => "user", "toolUseResult" => { "stdout" => "" },
+        "message" => { "content" => [{ "type" => "tool_result", "content" => "ok" }] } },
+      { "type" => "assistant", "isSidechain" => sidechain,
+        "message" => { "content" => [{ "type" => "thinking", "thinking" => "The colour is grey." }] } },
       { "type" => "assistant", "isSidechain" => sidechain,
         "message" => { "content" => [{ "type" => "text", "text" => text }] } }
     ]
@@ -135,6 +145,21 @@ class StopHookTest < Minitest::Test
     assert_equal 0, code
     assert_empty out
     assert_equal 4, state["turns"]
+    assert_empty state["rules"]
+  end
+
+  def test_it_reads_past_a_tool_result_to_the_whole_turn
+    write_transcript(CLEAN, narration: "The colour is grey.")
+
+    run_stop
+    assert_equal 1, state["turns"]
+    assert_includes state["rules"].keys, "spelling"
+  end
+
+  def test_thinking_blocks_are_not_checked
+    write_transcript(CLEAN)
+
+    run_stop
     assert_empty state["rules"]
   end
 

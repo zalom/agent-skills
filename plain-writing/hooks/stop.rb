@@ -35,6 +35,8 @@ OBSERVE_DAYS = 7
 EXAMPLE_LIMIT = 3
 EXAMPLE_CHARS = 160
 TAIL_BYTES = 512 * 1024
+RECORD_LIMIT = 60
+TEXT_LIMIT = 20_000
 
 # rule => the page that governs it, named for the agent to open
 PAGES = {
@@ -105,26 +107,44 @@ rescue StandardError
   []
 end
 
+# A tool result comes back as a record of type "user" too, so the walk below has to tell a
+# real prompt from one. A tool result carries toolUseResult and its content blocks are
+# tool_result; a prompt carries neither.
+def prompt?(record)
+  return false unless record["type"] == "user"
+  return false if record.key?("toolUseResult")
+
+  blocks = record.dig("message", "content")
+  return true unless blocks.is_a?(Array)
+
+  blocks.none? { |b| b["type"] == "tool_result" }
+end
+
 # Everything the agent said in this turn: the text blocks of the assistant records that
-# follow the last user record. Subagent records carry isSidechain and are left out.
+# follow the last prompt, narration included, since the reader sees that too. Thinking
+# blocks and subagent records are left out. The two caps bound the work on a transcript
+# whose last prompt falls outside the tail that was read.
 def reply_text(path)
   return nil unless path && File.file?(path)
 
   out = []
+  seen = 0
   tail_lines(path).reverse_each do |line|
     record = begin
       JSON.parse(line)
     rescue StandardError
       next
     end
-    break if record["type"] == "user"
+    break if prompt?(record)
     next unless record["type"] == "assistant"
     next if record["isSidechain"]
+    break if (seen += 1) > RECORD_LIMIT
 
     blocks = record.dig("message", "content")
     next unless blocks.is_a?(Array)
 
     out.unshift(blocks.select { |b| b["type"] == "text" }.map { |b| b["text"].to_s }.join)
+    break if out.sum(&:length) > TEXT_LIMIT
   end
 
   text = out.join("\n").strip
