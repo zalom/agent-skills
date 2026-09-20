@@ -52,6 +52,7 @@ hooks/
   session-start.rb      <- injects the activation set at the start of a session
 stop.rb               <- checks the reply the agent just finished, in the session itself
   gate.rb               <- names the routed pages a draft needs, at the moment it is written
+  bash-gate.sh          <- applies the same gate to prose written through a shell command
   lint.rb               <- checks the rules a machine can decide, on every write
 ```
 
@@ -62,6 +63,8 @@ The routing table asks an agent to open a page when it needs one. An agent that 
 `hooks/session-start.rb` runs once, when a session begins. It injects the activation set the skill asks for: your `references/overrides.md`, `SKILL.md`, and the Google highlights page, in that order of priority. The set is capped at 16,000 characters; a file that does not fit is named in a notice rather than truncated, so the agent knows to open it. YAML frontmatter is stripped from each file. When the skill directory holds no `references/overrides.md`, the hook reads `~/.claude/plain-writing-overrides.md` instead, so your own layer never has to live inside an installed copy.
 
 `hooks/gate.rb` runs before a tool writes or publishes. It reads the draft, works out which devices the text actually uses, and names the pages that govern them with their paths, so the agent knows the guide holds more than its session does and opens what it has not read. No page text is injected, so nothing from the guide sits in context for the rest of the session. A document is pointed at a given page set once per session; checker findings are reported on every call. Tool calls made by a subagent are skipped entirely, keyed on the `agent_id` field Claude Code sets in the hook input for them.
+
+`hooks/bash-gate.sh` runs after a shell command. The gate above sees a document only when the agent writes it through a file tool, and an agent that writes with a heredoc, `sed -i`, `tee`, or a script it just wrote never touches those tools, so the document ships unchecked. This hook closes that path. It works out which prose files the command just wrote, including paths that appear only inside a script the command ran, and replays each one through `gate.rb`, so the page routing, the findings, and the once-per-session cache all behave the same way. A file the command did not touch is ignored, on modification time. It needs `jq`, and exits 0 without output when `jq` is absent.
 
 `hooks/stop.rb` runs when a reply is finished. The gate sees a document only when a tool writes or publishes it, so a report, a status update, or any other prose typed straight into the session is seen by nothing. This hook reads that reply from the session transcript and runs the checker below over it.
 
@@ -97,7 +100,7 @@ Run it on its own at any time:
 ruby hooks/lint.rb README.md
 ```
 
-Both hooks are reached through one entry point, `hooks/run-hook.sh`, which takes the hook name as its first argument. Symlink that one file where your agent looks for hooks and register it per event. For Claude Code that is `~/.claude/settings.json`:
+Every hook is reached through one entry point, `hooks/run-hook.sh`, which takes the hook name as its first argument. A `.sh` body wins over a `.rb` body of the same name, so a hook can move to shell without changing how it is registered. Symlink that one file where your agent looks for hooks and register it per event. For Claude Code that is `~/.claude/settings.json`:
 
 ```sh
 ln -s "$PWD/hooks/run-hook.sh" ~/.claude/hooks/plain-writing
@@ -111,7 +114,10 @@ ln -s "$PWD/hooks/run-hook.sh" ~/.claude/hooks/plain-writing
   "command": "~/.claude/hooks/plain-writing stop" } ] } ],
 "PreToolUse": [ { "matcher": "Artifact|Write|Edit|NotebookEdit",
     "hooks": [ { "type": "command",
-      "command": "~/.claude/hooks/plain-writing gate" } ] } ] } }
+      "command": "~/.claude/hooks/plain-writing gate" } ] } ],
+  "PostToolUse": [ { "matcher": "Bash",
+    "hooks": [ { "type": "command",
+      "command": "~/.claude/hooks/plain-writing bash-gate" } ] } ] } }
 ```
 
 The shim is POSIX shell, so it runs anywhere. It resolves its own directory through the symlink, which is how it finds the skill it belongs to, and it exits 0 without output when Ruby is missing, the hook name is unknown, or the body is absent.

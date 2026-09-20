@@ -4,6 +4,7 @@
 #
 #   SessionStart   .../plain-writing session-start
 #   PreToolUse     .../plain-writing gate
+#   PostToolUse    .../plain-writing bash-gate
 #
 # The shim resolves its own directory through any symlinks, so an installed link in
 # ~/.claude/hooks keeps finding the skill it points into. It fails open everywhere: a
@@ -27,6 +28,12 @@ shift
 case "$name" in
   *[!a-z-]*) exit 0 ;;
 esac
+
+# A shell hook wins over a Ruby one of the same name, so a hook can be ported to shell
+# without changing how it is registered.
+if [ -f "$hook_dir/$name.sh" ]; then
+  exec sh "$hook_dir/$name.sh" "$@"
+fi
 
 script="$hook_dir/$name.rb"
 [ -f "$script" ] || exit 0
