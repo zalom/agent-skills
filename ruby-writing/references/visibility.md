@@ -1,6 +1,6 @@
 # Visibility
 
-Proof scripts: `scripts/05_visibility.rb`, `scripts/15_protected_override.rb`.
+Proof scripts: `scripts/05_visibility.rb`, `scripts/15_protected_override.rb`, `scripts/19_call_interface.rb`.
 
 ## `private` is right whenever the call is on `self`
 
@@ -33,16 +33,44 @@ Employee vs Employee   -> true
 
 The fault is one-sided. A test that exercises only the subclass passes. When a comparison needs `protected`, test the parent against the subclass as well.
 
+## `call` is the interface, and the base class does no work before it
+
+A class that does one job answers `call`, the same message a lambda answers. A class method builds the object and sends it `call`. Use this in place of a `run` method.
+
+```ruby
+class Command
+  def self.call(...)
+    new(...).call
+  end
+
+  def call
+    raise NoMethodError, "#{self.class} must define call"
+  end
+end
+
+class Status < Command
+  def call
+    report
+  end
+end
+
+Status.call(arguments)
+```
+
+`call` is public, because callers send it. It is no hook.
+
+The base class does nothing before a `call` that it cannot answer. A `run` that parses the arguments and then sends `call` does work that the next line throws away. Keep setup lazy, inside a reader that a subclass uses, or put it in the subclass.
+
 ## A plain `def` in a subclass is public
 
-Visibility belongs to each definition. When the base class declares a private hook, a subclass that writes a plain `def call` makes `call` public on that subclass. Write `private` above the hook in the subclass too.
+Visibility belongs to each definition. When the base class declares a private hook, a subclass that writes a plain `def options` makes `options` public on that subclass. Write `private` above the hook in the subclass too.
 
 ```ruby
 class Status < Command
   private
 
-  def call
-    # ...
+  def options(parser)
+    parser.on("--all")
   end
 end
 ```

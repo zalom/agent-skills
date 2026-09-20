@@ -24,7 +24,8 @@ Write the simplest Ruby that is easy to change, and get the traps below right be
 
 ## Rules
 
-- Declare every hook and every constant that a base class reads. A hook is a method that the base class calls and each subclass defines. Declare it `private` in the base class and raise `NoMethodError, "#{self.class} must define call"`. Never raise `NotImplementedError`: it is a `ScriptError`, so a plain `rescue` misses it. An undeclared hook raises `NameError`, which a `rescue NoMethodError` also misses.
+- Give a class that does one job a public `call`, and a class method `def self.call(...) = new(...).call` that builds and runs it. Never name it `run`. In a base class, `call` raises `NoMethodError, "#{self.class} must define call"`, and nothing runs before it: no parsing, no setup.
+- Declare every hook and every constant that a base class reads. A hook is a method that the base class calls on itself and each subclass defines. Declare it `private` in the base class and raise `NoMethodError` with the class name. Never raise `NotImplementedError`: it is a `ScriptError`, so a plain `rescue` misses it. An undeclared hook raises `NameError`, which a `rescue NoMethodError` also misses.
 - Write `private` again above the hook in each subclass. A plain `def` in a subclass is public, whatever the parent declared.
 - Use `private` unless one object must call the method on another object of the same class, as in `balance > other.balance`. Only that case needs `protected`, and a subclass that redefines a protected method breaks the parent's call.
 - Use `and` and `or` only as a trailing `or raise` or `and return`. Never use them to produce a value: `report and USAGE` returns `nil` when `report` returns `nil`.

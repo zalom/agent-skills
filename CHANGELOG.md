@@ -8,7 +8,7 @@ All notable changes to the skills in this repository, one section per skill. The
 
 #### Added
 
-- The skill: 13 rules that no linter catches, 14 references routed by task, and 18 proof scripts that show each Ruby behavior on the installed Ruby.
+- The skill: 14 rules that no linter catches, 14 references routed by task, and 19 proof scripts that show each Ruby behavior on the installed Ruby.
 - `references/rails.md`, which names the Rails method to use (37signals first, the Rails guides for facts, another method only when the project asks) and the traps that the guides document.
 - `references/design-rules.md`, which carries the size limits, the no-comments rule, and the idioms worth keeping.
 - Replaces the plain Ruby skills `ruby` and `sandi-metz-rules` from superpowers-ruby, and corrects their advice to use `fail`.
