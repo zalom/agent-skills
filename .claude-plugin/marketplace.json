@@ -7,6 +7,20 @@
   "description": "Agent skills written by Zlatko Alomerovic.",
   "plugins": [
     {
+      "name": "ruby-writing",
+      "source": "./ruby-writing",
+      "strict": false,
+      "description": "Writes plain Ruby that is right on the first draft: the rules that no linter catches, with a proof script for each, and the Rails method to use.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["ruby", "rails", "writing", "idioms", "exceptions", "visibility", "value-objects", "design", "37signals"],
+      "category": "development"
+    },
+    {
       "name": "ruby-testing",
       "source": "./ruby-testing",
       "strict": false,

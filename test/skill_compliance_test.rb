@@ -8,7 +8,11 @@ class SkillComplianceTest < Minitest::Test
                        "`SKILL_DIR` is the absolute path of that directory; find it before running a script. Run a " \
                        "script by its full path, `SKILL_DIR/scripts/...`, and read its real output. Never predict " \
                        "or invent what a script prints."
-  SKILLS = { "ruby-testing" => TESTING_SKILL_ROOT, "ruby-quality-checking" => QUALITY_SKILL_ROOT }.freeze
+  SKILLS = {
+    "ruby-writing" => WRITING_SKILL_ROOT,
+    "ruby-testing" => TESTING_SKILL_ROOT,
+    "ruby-quality-checking" => QUALITY_SKILL_ROOT
+  }.freeze
   QUALITY_STACK_NAMES = %w[setup-project bin/verify-change .mutineer.yml bin/crap].freeze
 
   MOCK_BAN_PATTERN = /stub only at|at (a |true )?boundar(y|ies)|(pass|prefer) real objects|couples the test|fixtures over factories/i

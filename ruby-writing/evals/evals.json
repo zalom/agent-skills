@@ -1,0 +1,96 @@
+{
+  "skill_name": "ruby-writing",
+  "notes": "Written 2026-09-20 with the skill. Ids 1 to 5 come from faults that reached review or shipped in real code on that day. Assertions are empty until the first paired run, per the skill-evaluating rule of writing assertions after observing output. No eval has been run yet.",
+  "evals": [
+    {
+      "id": 1,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "Write a base class for my CLI commands. Each command has a run method in the base that parses arguments and then does the command-specific work, which each subclass provides.",
+      "expected_output": "The skill activates. The base class declares the hook as a private method that raises NoMethodError with the class name in the message. It does not raise NotImplementedError, does not leave the hook undeclared, and does not use protected. Subclasses define the hook under private.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "scope": "should-trigger",
+      "set": "train",
+      "prompt": "My reviewer keeps sending my Ruby back even though RuboCop is green. Can you look at this class before I push?\n\nclass Report\n  def run\n    @out.usage(LINE) and USAGE\n  end\n  protected\n  def build = raise NotImplementedError\nend",
+      "expected_output": "The skill activates on an indirect trigger. It names three faults: and used to produce a value, protected where private is right, and NotImplementedError for an abstract method. It gives the corrected code.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Add a Money value object with amount and currency so I can use it as a Hash key and compare two of them.",
+      "expected_output": "Uses Data.define, or defines ==, eql? and hash together. Never defines == alone. If it defines <=>, it returns nil for a value that it cannot compare.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Write a method that runs git with a branch name the user typed, and returns our own exit code: 0 for success and 1 for failure.",
+      "expected_output": "Passes a list of arguments to system or Open3, never one interpolated command string. Maps the status on purpose: handles a signalled child where exitstatus is nil, and does not pass the child code straight through.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "scope": "output-quality",
+      "set": "train",
+      "prompt": "My CLI should suggest the closest command when the user mistypes one, like stauts for status. Write that helper.",
+      "expected_output": "Uses DidYouMean::SpellChecker from the standard library, or a real edit distance. Never builds a distance from Array#- on characters, which scores an anagram as a match.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 6,
+      "scope": "discipline",
+      "set": "validation",
+      "prompt": "Write a small Ruby class that loads a YAML config from the home directory, with good documentation comments so the next developer understands it.",
+      "expected_output": "Writes self-explanatory code with no comment blocks, and says once that names and the commit message carry the explanation. Takes the home directory as a constructor argument with a real default. Uses raise, never fail.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 7,
+      "scope": "should-trigger",
+      "set": "validation",
+      "prompt": "In our Rails app the Order model is getting big. Should I pull the refund logic into a RefundService?",
+      "expected_output": "The skill activates and routes to the Rails reference. It answers with the 37signals method first: a concern or a plain object that the model delegates to, called as order.refund. It does not create a service object by default, and says another method comes in only when the project asks for it.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 8,
+      "scope": "should-not-trigger",
+      "set": "train",
+      "prompt": "Write Minitest tests for this Ruby class and make sure they would kill mutants.",
+      "expected_output": "The ruby-testing skill handles this. ruby-writing does not activate for writing tests.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 9,
+      "scope": "should-not-trigger",
+      "set": "validation",
+      "prompt": "Check my change before I push: lint, patch coverage, mutation score and CRAP.",
+      "expected_output": "The ruby-quality-checking skill handles this. ruby-writing does not activate.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 10,
+      "scope": "should-not-trigger",
+      "set": "train",
+      "prompt": "Write a Python script that renames files in a folder.",
+      "expected_output": "No Ruby is involved. ruby-writing does not activate.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}

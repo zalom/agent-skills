@@ -2,6 +2,7 @@ require "fileutils"
 require "tmpdir"
 
 TESTING_SKILL_ROOT = File.expand_path("../../ruby-testing", __dir__)
+WRITING_SKILL_ROOT = File.expand_path("../../ruby-writing", __dir__)
 QUALITY_SKILL_ROOT = File.expand_path("../../ruby-quality-checking", __dir__)
 
 module ProjectFixtures
