@@ -80,6 +80,7 @@ class Linter
     check_tables
     check_br_structure
     check_spelled_numbers
+    check_shorthand
     @findings.sort_by(&:line)
   end
 
@@ -260,6 +261,28 @@ class Linter
 
           add(n, "numbers", "#{word.inspect} is 10 or greater; use a numeral outside sentence-initial position")
         end
+      end
+    end
+  end
+
+  # --- abbreviations.md: spell out on first reference ------------------------------------
+  #
+  # A shorthand id is one capital letter and up to four digits, with an optional letter
+  # suffix: D30, I5, N1, F2, D38g. On its own it is a token standing for a thing the reader
+  # was never told about. The id is allowed only inside parentheses, after the plain words
+  # that name the thing: "the ruling that keeps three databases (D38)".
+  SHORTHAND = /(?<![\w\/#.\-<])([A-Z]\d{1,4}[a-z]?)(?![\w\-\/])/
+
+  def check_shorthand
+    each_prose_line do |line, n|
+      line.scan(SHORTHAND) do
+        token = Regexp.last_match(1)
+        before = line[0...Regexp.last_match.begin(0)]
+        next if before.end_with?('="', "='")
+        next if before.count("(") > before.count(")")
+
+        add(n, "shorthand", "#{token.inspect} is a shorthand id; say what it names in plain words " \
+                            "and put the id in parentheses after it, or drop it")
       end
     end
   end

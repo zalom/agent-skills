@@ -4,3 +4,4 @@ tmp/
 plain-writing/references/overrides.md
 *.bak
 *.bak-*
+.enola/

@@ -52,7 +52,8 @@ PAGES = {
   "table-scope" => "tables.md",
   "table-merge" => "tables.md",
   "cell-br" => "tables.md",
-  "numbers" => "numbers.md"
+  "numbers" => "numbers.md",
+  "shorthand" => "abbreviations.md"
 }.freeze
 
 def payload

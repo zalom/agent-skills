@@ -93,6 +93,7 @@ The record is a tally, not a log: one entry per rule, with a count and at most t
 | `table-merge` | `colspan` or `rowspan` in a data table |
 | `cell-br` | `br` used as structure inside a table cell |
 | `numbers` | A number of 10 or greater spelled out, outside sentence-initial position |
+| `shorthand` | A bare id such as `D30` or `N1`, one capital letter and digits, outside parentheses; name the thing in plain words first and put the id in parentheses after it |
 
 Run it on its own at any time:
 
