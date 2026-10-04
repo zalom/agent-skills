@@ -75,6 +75,20 @@
       "license": "MIT",
       "keywords": ["skills", "agent-skills", "evals", "testing"],
       "category": "development"
+    },
+    {
+      "name": "enola-using",
+      "source": "./enola-using",
+      "strict": false,
+      "description": "Uses Enola through its command line to map a repository, answer structure questions from the snapshot files, and check what a change did to the architecture.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["enola", "architecture", "code-graph", "command-line"],
+      "category": "development"
     }
   ]
 }
