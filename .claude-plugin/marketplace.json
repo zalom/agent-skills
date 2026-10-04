@@ -77,8 +77,8 @@
       "category": "development"
     },
     {
-      "name": "enola-using",
-      "source": "./enola-using",
+      "name": "enola",
+      "source": "./enola",
       "strict": false,
       "description": "Uses Enola through its command line to map a repository, answer structure questions from the snapshot files, and check what a change did to the architecture.",
       "version": "0.1.0",

@@ -11,7 +11,7 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 | `plain-writing` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
 | `skill-creating` | Authors or revises an Agent Skill, a subagent or agent role file, or a lifecycle hook with progressive disclosure. |
 | `skill-evaluating` | Evaluates skills for correctness, convention compliance, and progressive disclosure. |
-| `enola-using` | Uses Enola through its command line to map a repository, answer structure questions from the snapshot files, and check what a change did to the architecture. |
+| `enola` | Uses Enola through its command line to map a repository, answer structure questions from the snapshot files, and check what a change did to the architecture. |
 
 ## Install
 
@@ -22,7 +22,7 @@ claude plugin install ruby-quality-checking@zalom-skills
 claude plugin install plain-writing@zalom-skills
 claude plugin install skill-creating@zalom-skills
 claude plugin install skill-evaluating@zalom-skills
-claude plugin install enola-using@zalom-skills
+claude plugin install enola@zalom-skills
 ```
 
 Restart Claude Code after installing. The plain-writing hooks are optional and installed by hand, as its own README describes.

@@ -1,5 +1,5 @@
 ---
-name: enola-using
+name: enola
 description: >
   Uses Enola, the code-graph tool, through its command line to map a
   repository, answer structure questions from the snapshot files, and check
