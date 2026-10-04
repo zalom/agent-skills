@@ -2,14 +2,6 @@
 
 All notable changes to the skills in this repository, one section per skill. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## enola
-
-### [0.1.0] - 2026-10-04
-
-#### Added
-
-- The skill: Enola through its command line only, with setup, the three contract files of a snapshot, the check of a change, and the steps to load a snapshot into another tool.
-
 ## ruby-quality-checking
 
 ### [0.1.0] - 2026-09-14
