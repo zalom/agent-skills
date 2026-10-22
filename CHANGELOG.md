@@ -2,6 +2,16 @@
 
 All notable changes to the skills in this repository, one section per skill. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## c4-model-diagramming
+
+### [0.1.0] - 2026-10-22
+
+#### Added
+
+- A router over the notation and six diagram references: system context, container, component, system landscape, dynamic, and deployment, each with its scope, elements, audience, the keys it uses, an example, and layout advice.
+- `scripts/c4.rb`, which draws every C4 shape, relationship, boundary, step marker, and key as standalone SVG <!-- lint-ok: shorthand; C4 is the name of the model --> with the palette as CSS tokens and a dark set, and `scripts/build.rb`, which writes the 17 key elements and the six examples into `references/`.
+- A Minitest suite that rebuilds the set, checks every SVG is well formed and labeled, and fails when a committed SVG is stale.
+
 ## ruby-quality-checking
 
 ### [0.1.0] - 2026-09-14

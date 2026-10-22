@@ -1,0 +1,48 @@
+{
+  "skill_name": "c4-model-diagramming",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Draw a C4 container diagram for our Rails app: a web UI, an API, a Postgres database, a Sidekiq worker, and Stripe for payments.",
+      "expected_output": "The skill activates. The response opens references/container.md, draws one SVG with scripts/c4.rb that has a title naming the type and scope, a key, a boundary around the four containers with a technology in every bracket, Stripe as an external system, and one labelled, one-direction line per connection with its protocol. It checks the render in a browser before presenting it.",
+      "files": [],
+      "assertions": [
+        "The skill activates (a direct request for a C4 container diagram).",
+        "The diagram has a title with the type and the scope, and a key.",
+        "Every container names its technology and every line between containers names its protocol.",
+        "Stripe is drawn as an external system outside the boundary."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a picture for Thursday's design review showing who uses the order service and which other systems it depends on.",
+      "expected_output": "The skill activates on an indirect trigger: no diagram type is named, but people plus dependent systems around one system is a system context diagram. The response opens references/system-context.md and draws it with the sign-in provider included when users sign in through one.",
+      "files": [],
+      "assertions": [
+        "The skill activates without the words C4 or diagram type in the prompt.",
+        "The response draws a system context diagram, not a container diagram.",
+        "People and external systems are typed and described, and every line has a specific verb."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Show where each part of the system runs in production, including how many API instances there are.",
+      "expected_output": "The skill activates. The response opens references/deployment.md and draws a deployment diagram for the production environment with nested deployment nodes, container instances inside them, an instance count on the API node, and infrastructure nodes where they exist.",
+      "files": [],
+      "assertions": [
+        "The skill activates (a deployment view is in scope).",
+        "The diagram covers one environment and shows the instance count on the node.",
+        "Nodes are labelled with their technology."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Plot our monthly order volume for the last year as a bar chart.",
+      "expected_output": "The skill does not activate. A bar chart of data is a data visualization, not an architecture diagram. Near-miss negative: shares the word 'order' with the examples and asks for a picture, but nothing about system structure.",
+      "files": [],
+      "assertions": [
+        "The skill does not activate (a data chart is not a C4 diagram)."
+      ]
+    }
+  ]
+}

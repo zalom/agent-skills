@@ -11,6 +11,7 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 | `plain-writing` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
 | `skill-creating` | Authors or revises an Agent Skill, a subagent or agent role file, or a lifecycle hook with progressive disclosure. |
 | `skill-evaluating` | Evaluates skills for correctness, convention compliance, and progressive disclosure. |
+| `c4-model-diagramming` | Draws C4 model diagrams as standalone SVG with a title and a key: system context, container, component, system landscape, dynamic, and deployment. Ships the drawing script, every key element, and one example per type. | <!-- lint-ok: shorthand; C4 is the name of the model -->
 
 ## Install
 
@@ -21,6 +22,7 @@ claude plugin install ruby-quality-checking@zalom-skills
 claude plugin install plain-writing@zalom-skills
 claude plugin install skill-creating@zalom-skills
 claude plugin install skill-evaluating@zalom-skills
+claude plugin install c4-model-diagramming@zalom-skills
 ```
 
 Restart Claude Code after installing. The plain-writing hooks are optional and installed by hand, as its own README describes.
