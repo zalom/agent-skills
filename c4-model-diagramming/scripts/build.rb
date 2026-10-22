@@ -22,9 +22,9 @@ module C4
       "container-web-browser" => [240, 130, "Browser application container", ->(d) { d.browser(20, 12, 200, 106, "Order desk web app", "Container · React", ["Order search and status"]) }],
       "container-console" => [240, 120, "Server-side or console container", ->(d) { d.console(20, 20, 200, 80, "Sync worker", "Container · Ruby", ["Pulls orders every 15 min"]) }],
       "component" => [250, 120, "Component", ->(d) { d.component(30, 20, 200, 80, "Order lookup", "Rails model", ["Finds an order by number"]) }],
-      "boundary" => [260, 130, "Boundary", ->(d) { d.boundary(20, 15, 220, 100, "Order desk", "Software system").container(60, 55, 150, 46, "API application", "Rails") }],
-      "group" => [260, 150, "Group", ->(d) { d.group(20, 15, 220, 120, "Sales department").person(85, 25, 90, 68, "Sales agent") }],
-      "deployment-node" => [260, 140, "Deployment node", ->(d) { d.node(20, 12, 220, 116, "Application server", "Ubuntu 24.04", instances: 2).container(60, 28, 140, 46, "API application", "Rails") }],
+      "boundary" => [260, 130, "Boundary", ->(d) { d.boundary(20, 15, 220, 100, "Order desk", "Software system").container(45, 52, 180, 50, "API application", "Rails") }],
+      "group" => [260, 150, "Group", ->(d) { d.group(20, 15, 220, 120, "Sales department").person(70, 20, 120, 84, "Sales agent") }],
+      "deployment-node" => [260, 140, "Deployment node", ->(d) { d.node(20, 12, 220, 116, "Application server", "Ubuntu 24.04", instances: 2).container(40, 26, 180, 50, "API application", "Rails") }],
       "infrastructure-node" => [260, 120, "Infrastructure node", ->(d) { d.infra(20, 15, 220, 90, "Load balancer", "Nginx") }],
       "relationship" => [260, 90, "Relationship", ->(d) { d.rel("20,40 240,40", "Reads order status from", tech: "JSON/HTTPS", lx: 130, ly: 28) }],
       "relationship-numbered" => [260, 90, "Numbered relationship", ->(d) { d.rel("20,40 240,40", "Looks up the order", tech: "SQL", lx: 140, ly: 28).step(28, 40, 1) }],
@@ -163,19 +163,19 @@ module C4
         d.title(30, 34, "Deployment diagram", "Order desk · production")
         d.node(40, 80, 260, 170, "Agent's laptop", "macOS or Windows")
         d.node(70, 100, 200, 90, "Web browser", "Chrome, Edge")
-        d.container(95, 108, 150, 44, "Web app", "React")
+        d.container(95, 108, 150, 50, "Web app", "React")
         d.node(340, 80, 580, 460, "Company cloud account", "AWS eu-central-1")
         d.infra(380, 110, 180, 70, "Load balancer", "ALB")
         d.node(370, 230, 230, 130, "App server", "Ubuntu 24.04, t3.medium", instances: 2)
         d.container(390, 245, 175, 50, "API", "Rails")
-        d.node(680, 230, 240, 130, "Database server", "Amazon RDS")
-        d.database(710, 238, 180, 62, "Orders DB", "Container · PostgreSQL 16")
+        d.node(680, 230, 240, 140, "Database server", "Amazon RDS")
+        d.database(710, 236, 190, 82, "Orders DB", "Container · PostgreSQL 16")
         d.node(370, 390, 230, 100, "Worker", "Ubuntu 24.04, t3.small", instances: 1)
         d.console(390, 402, 175, 46, "Sync worker", "Container · Ruby")
         d.rel("245,130 388,130", "Calls", tech: "HTTPS", lx: 315, ly: 117)
         d.rel("470,180 470,245", "Forwards to", tech: "HTTP", lx: 482, ly: 212, anchor: "start")
         d.rel("565,270 710,270", "Reads and writes", tech: "SQL", lx: 638, ly: 256)
-        d.path("M565 425 L860 425 L860 300", "Writes to", tech: "SQL", lx: 848, ly: 375, anchor: "end")
+        d.path("M565 425 L860 425 L860 318", "Writes to", tech: "SQL", lx: 848, ly: 385, anchor: "end")
         d.key(30, 570, [CONTAINER_KEY, STORE_KEY, NODE_KEY])
       end
     end

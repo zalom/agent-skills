@@ -49,7 +49,7 @@ diagram of a set.
 | `--person` | `#5B5FA8` | `#9BA0E0` | People |
 | `--accent` | `#B77914` | `#E0A33E` | Candidates and step markers |
 | `--ink` | `#1A1D23` | `#E8E6E1` | Containers, components, lines, names |
-| `--muted` | `#6B7285` | `#8B92A5` | External systems, type labels, technology |
+| `--muted` | `#6B7285` | `#8B92A5` | External systems, technology on relationships |
 | `--ground` | `#F7F6F3` | `#12151A` | The canvas |
 
 Each SVG declares the tokens in its own `<style>` with a `prefers-color-scheme: dark` set,
