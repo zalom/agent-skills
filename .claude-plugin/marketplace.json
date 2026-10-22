@@ -81,7 +81,7 @@
       "source": "./c4-model-diagramming",
       "strict": false,
       "description": "Draws C4 model diagrams of a software system as standalone SVG with a title and a key: system context, container, component, system landscape, dynamic, and deployment.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Zlatko Alomerovic",
         "url": "https://github.com/zalom"
