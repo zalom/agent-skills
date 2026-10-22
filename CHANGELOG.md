@@ -2,6 +2,39 @@
 
 All notable changes to the skills in this repository, one section per skill. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## report-writing
+
+### [0.1.0] - 2026-10-22
+
+#### Added
+
+- A router over five references: the story (order of the argument, facts against unknowns, rules against examples, questions that advance the work), the page (type, palette, tables, figures, expanders, print), figures (when one earns its place, architecture views, numbering, reuse), checking (lint, browser render, reviewer model, the review record), and publishing (published copies, manifest, package, links file, live-equals-disk).
+- `assets/report-page.html`, the page template with the report style.
+- Four evals: a design proposal, an indirect request for findings with open questions, an edit to an accepted report, and a README as the near-miss negative.
+
+## c4-model-diagramming
+
+### [0.2.0] - 2026-10-22
+
+#### Added
+
+- Candidates: the key lists a candidate once per kind it dashes ("Candidate component", "Candidate external system"), a candidate's line names what settles it, and a note under the figure says where each candidate comes from.
+- Fills: a fill's title ends with the fill's name after a middle dot, and a fill may hold only candidates attached to the base.
+- `references/placing-figures.md`: numbering, captions, fonts, width, and reuse when a set's figures go into a document.
+- A fifth eval: a candidate fill of an existing component diagram.
+
+#### Changed
+
+- The candidate key is drawn as a dashed component with "candidate" in its type bracket, and the container example names its candidate's kind in the key and the trial on its line.
+
+### [0.1.0] - 2026-10-22
+
+#### Added
+
+- A router over the notation and six diagram references: system context, container, component, system landscape, dynamic, and deployment, each with its scope, elements, audience, the keys it uses, an example, and layout advice.
+- `scripts/c4.rb`, which draws every C4 shape, relationship, boundary, step marker, and key as standalone SVG <!-- lint-ok: shorthand; C4 is the name of the model --> with the palette as CSS tokens and a dark set, and `scripts/build.rb`, which writes the 17 key elements and the six examples into `references/`.
+- A Minitest suite that rebuilds the set, checks every SVG is well formed and labeled, and fails when a committed SVG is stale.
+
 ## ruby-quality-checking
 
 ### [0.1.0] - 2026-09-14
