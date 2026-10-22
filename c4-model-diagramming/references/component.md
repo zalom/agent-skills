@@ -32,3 +32,11 @@ it calls to its right and below, in the order a request flows. Neighbouring cont
 outside the boundary. The same grid, with a technology in every bracket, serves as the fill
 for each implementation option; keep box positions identical across fills so a reader can
 compare them.
+
+## Fills
+
+- Each fill's title ends with the fill's name after a middle dot: "Component diagram ·
+  API container · Rails fill". The subtitle names what the fill shows.
+- A fill may hold no chosen technology: a fill of candidates shows which existing tools or
+  services could attach to the base, each dashed, with its settling label on the line.
+- The key of a fill lists every element kind and every candidate kind the fill shows.

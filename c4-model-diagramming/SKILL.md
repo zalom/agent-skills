@@ -27,12 +27,19 @@ Paths in this file start at the skill directory, the directory that holds this `
   brackets, such as [JSON/HTTPS] or [SQL].
 - Name only what the source names. A technology, protocol, or system the code or the
   design does not name is drawn as a dashed candidate marked "to confirm", never guessed.
+  A candidate keeps the shape of its kind and the key lists it once per kind it dashes:
+  "Candidate component", "Candidate external system". A candidate's line is labeled with
+  what settles it ("alternative entry · trial", "same interface"), and a note under the
+  figure says where each candidate comes from and what keeps it a candidate.
 - Colors are free but consistent across the set: one hue per element kind, the same in
   every diagram. The shape and the type label carry the meaning, so every diagram still
   reads in gray and for color-blind readers.
 - One base. When options or phases exist, draw the base once and make each option a fill
   of the same boxes with a technology in each bracket. An option never redraws the base,
-  and a phase adds elements but never changes existing ones.
+  and a phase adds elements but never changes existing ones. A fill's title ends with the
+  fill's name after a middle dot ("Component diagram · Order desk API · Rails fill"), and a
+  fill may hold no chosen technology at all, only candidates attached to the base, when it
+  shows what could attach.
 - Lines route around elements, never through them. A crossing gets a hop or a reroute,
   and a label sits beside its line and overlaps nothing.
 - Start with the context, then the containers. Draw components only where they explain a
@@ -50,6 +57,7 @@ Paths in this file start at the skill directory, the directory that holds this `
 | The systems of one organization and how they connect, with no focus system | `references/system-landscape.md` |
 | The order of calls in one scenario, numbered step by step | `references/dynamic.md` |
 | Where the containers run: nodes, infrastructure, instance counts, one per environment | `references/deployment.md` |
+| Placing a set's figures in a document: numbering, captions, fills, and fonts | `references/placing-figures.md` |
 
 ## Draw with the script
 

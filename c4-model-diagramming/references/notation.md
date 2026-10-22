@@ -19,6 +19,18 @@ diagram of a set.
 - Color is free but consistent, and the diagram still reads in gray: shapes and type
   labels carry the meaning for printers and color-blind readers.
 
+## Candidates
+
+- A candidate is drawn in the shape of its kind, dashed and amber, with "candidate" in its
+  type bracket: [Component · candidate], [External system · candidate].
+- The key lists candidates once per kind the diagram dashes. "Candidate component" and
+  "Candidate external system" are two entries; one "Candidate" entry hides which kinds
+  are open.
+- A candidate's line carries a label that names what settles it: "alternative entry ·
+  trial", "same interface", "to confirm with the owner".
+- A note under the figure says where every candidate comes from (a named source, a stated
+  option) and what keeps it a candidate (a trial, a decision, a missing fact).
+
 ## Element shapes
 
 | Element | Shape | Key file | Script call |
@@ -33,7 +45,7 @@ diagram of a set.
 | Browser application container | Window with a title bar and three dots | `references/keys/container-web-browser.svg` | `browser` |
 | Server-side or console container | Box with a `>_` prompt mark | `references/keys/container-console.svg` | `console` |
 | Component | Box with two small tabs on its left edge | `references/keys/component.svg` | `component` |
-| Candidate element | Any shape, dashed, amber: not yet decided | `references/keys/candidate.svg` | any call with `hue: :candidate, dashed: true` |
+| Candidate element | The shape of its kind, dashed, amber: not yet decided. The key names the kind: "Candidate component", "Candidate external system" | `references/keys/candidate.svg` | any call with `hue: :candidate, dashed: true` |
 | Boundary | Dashed rounded rectangle, labeled at the top left with [Software system] or [Container] | `references/keys/boundary.svg` | `boundary` |
 | Group | Dotted rectangle, labeled at the bottom left, for an organization or a department | `references/keys/group.svg` | `group` |
 | Deployment node | Solid rounded rectangle, labeled at the bottom left with [Deployment node · technology], an instance count at the top right, nestable | `references/keys/deployment-node.svg` | `node` |

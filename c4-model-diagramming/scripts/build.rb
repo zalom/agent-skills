@@ -28,7 +28,7 @@ module C4
       "infrastructure-node" => [260, 120, "Infrastructure node", ->(d) { d.infra(20, 15, 220, 90, "Load balancer", "Nginx") }],
       "relationship" => [260, 90, "Relationship", ->(d) { d.rel("20,40 240,40", "Reads order status from", tech: "JSON/HTTPS", lx: 130, ly: 28) }],
       "relationship-numbered" => [260, 90, "Numbered relationship", ->(d) { d.rel("20,40 240,40", "Looks up the order", tech: "SQL", lx: 140, ly: 28).step(28, 40, 1) }],
-      "candidate" => [240, 120, "Candidate element", ->(d) { d.system(20, 20, 200, 80, "Shipping forecast", ["Not yet decided"], hue: :candidate, dashed: true) }]
+      "candidate" => [250, 120, "Candidate element", ->(d) { d.component(30, 20, 200, 80, "Shipping forecast", "candidate", ["Not yet decided"], hue: :candidate, dashed: true) }]
     }.freeze
 
     def self.write(out_dir)
@@ -51,7 +51,7 @@ module C4
     CONTAINER_KEY = ["Container", :container].freeze
     STORE_KEY = ["Data store", :store].freeze
     COMPONENT_KEY = ["Component", :component].freeze
-    CANDIDATE_KEY = ["Candidate", :candidate, true].freeze
+    CANDIDATE_KEY = ["Candidate container", :candidate, true].freeze
     NODE_KEY = ["Deployment node", :node].freeze
 
     def self.all
@@ -84,7 +84,7 @@ module C4
         d.boundary(250, 80, 440, 440, "Order desk", "Software system")
         d.browser(280, 130, 170, 90, "Web app", "Container · React", ["Order search"])
         d.container(520, 130, 150, 90, "API", "Rails", ["Order endpoints"])
-        d.container(280, 270, 160, 90, "Answer service", "Ruby", ["Calls a language", "model API"], hue: :candidate, dashed: true)
+        d.container(260, 274, 200, 100, "Answer service", "Ruby · candidate", ["Calls a language", "model API"], hue: :candidate, dashed: true)
         d.database(520, 270, 150, 100, "Orders DB", "Container · PostgreSQL", ["Order copies"])
         d.console(520, 410, 150, 80, "Sync worker", "Container · Ruby", ["Pulls orders"])
         d.external(770, 130, 180, 80, "Company sign-in", ["Identity provider"])
@@ -93,8 +93,8 @@ module C4
         d.rel("450,165 520,165", "Calls", tech: "JSON/HTTPS", lx: 485, ly: 118)
         d.rel("670,165 770,165", "Checks tokens with", tech: "OpenID Connect", lx: 720, ly: 118)
         d.rel("595,220 595,270", "Reads and writes", tech: "SQL", lx: 607, ly: 242, anchor: "start")
-        d.path("M560 220 L560 245 L360 245 L360 270", "Asks for an answer from", tech: "JSON/HTTP", lx: 460, ly: 226, dashed: true)
-        d.rel("440,315 520,315", "Reads from", tech: "SQL", lx: 480, ly: 300)
+        d.path("M560 220 L560 234 L360 234 L360 274", "Asks for an answer · trial", tech: "JSON/HTTP", lx: 470, ly: 253, dashed: true)
+        d.rel("460,322 520,322", "Reads from", tech: "SQL", lx: 490, ly: 306)
         d.rel("595,410 595,370", "Writes to", tech: "SQL", lx: 607, ly: 388, anchor: "start")
         d.rel("670,450 770,450", "Pulls orders from", tech: "REST/JSON", lx: 720, ly: 436)
         d.key(30, 560, [PERSON_KEY, CONTAINER_KEY, STORE_KEY, EXTERNAL_KEY, CANDIDATE_KEY])

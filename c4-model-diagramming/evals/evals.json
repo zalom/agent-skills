@@ -36,6 +36,19 @@
       ]
     },
     {
+      "id": 5,
+      "prompt": "We have the component diagram of the API. Draw a second version showing which of our existing tools could plug into it: the document archive and the company chat client. None of them is decided yet.",
+      "expected_output": "The skill activates. The response opens references/component.md and references/notation.md, keeps the base grid and box positions, draws the two tools as dashed candidates in the shape of their kind with 'candidate' in the type bracket, labels each candidate line with what settles it, ends the title with the fill's name, lists 'Candidate external system' in the key, and adds a note under the figure on where each candidate comes from.",
+      "files": [],
+      "assertions": [
+        "The base boxes keep their positions from the first component diagram.",
+        "The title line ends with the fill's name after a middle dot.",
+        "Each candidate is dashed, carries 'candidate' in its type bracket, and its line names what settles it.",
+        "The key lists the candidate kind by name, not a bare 'Candidate'.",
+        "A note under the figure names where each candidate comes from."
+      ]
+    },
+    {
       "id": 4,
       "prompt": "Plot our monthly order volume for the last year as a bar chart.",
       "expected_output": "The skill does not activate. A bar chart of data is a data visualization, not an architecture diagram. Near-miss negative: shares the word 'order' with the examples and asks for a picture, but nothing about system structure.",
