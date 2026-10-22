@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report title</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--ground:#F7F6F3;--raised:#fff;--ink:#1A1D23;--soft:#3D434E;--muted:#6B7285;--rule:#DCD9D2;--teal:#2E7D76;--teal-soft:#D7EBE8;--amber:#B77914;--amber-soft:#F5E6C9;--indigo:#5B5FA8;--indigo-soft:#E2E3F4;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:18px/1.65 'Source Serif 4',Georgia,'Times New Roman',serif}
+main{max-width:1040px;margin:auto;padding:48px 30px 60px}
+header{padding-bottom:30px}
+h1,h2,h3,nav,th,.byline,.section-number,.page-label,figcaption,caption,.review-note,.source-note{font-family:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif}
+h1{font-size:54px;letter-spacing:-1.8px;line-height:1.1;margin:10px 0 22px}
+h2{font-size:32px;letter-spacing:-.6px;line-height:1.25;margin:0 0 25px}
+h3{font-size:22px;line-height:1.4;margin:32px 0 14px}
+p{max-width:76ch;margin:0 0 18px}
+.lede{font-size:24px;line-height:1.45;max-width:65ch}
+.byline,.review-note,.section-number,.page-label{font-size:14px;color:var(--muted)}
+.section-number{margin:0 0 5px}
+.page-label{margin:0 0 20px;letter-spacing:.04em;text-transform:uppercase}
+section.page{border-top:1px solid var(--rule);padding:34px 0 38px}
+a{color:var(--teal);text-underline-offset:3px;overflow-wrap:anywhere}
+nav{display:flex;flex-wrap:wrap;gap:10px 25px;margin-top:25px;font-size:15px}
+code{font-family:'JetBrains Mono','SFMono-Regular',Consolas,monospace;font-size:.88em;background:#eeece7;padding:1px 4px;border-radius:3px}
+ul{max-width:74ch;padding-left:24px}ol{max-width:78ch;padding-left:26px}li{margin-bottom:10px}
+.table-scroll{overflow-x:auto;margin:1.3rem 0;border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--raised);line-height:1.62}
+th,td{text-align:left;padding:.62rem .85rem;border-bottom:1px solid var(--rule);font-size:.9rem;vertical-align:top}
+th{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:#EDEBE6;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+caption{caption-side:top;text-align:left;font-size:.84rem;color:var(--muted);padding:.7rem .85rem;background:var(--ground);border-bottom:1px solid var(--rule)}
+td p{margin:.45rem 0 0}td p:last-child{margin-bottom:0}
+.tag{display:inline-block;font-family:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.16em .5em;border-radius:3px}
+.tag.yes{background:var(--teal-soft);color:var(--teal)}.tag.condition{background:var(--amber-soft);color:#77510F}
+figure{margin:28px 0 30px;background:var(--raised);padding:20px 18px 14px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.diagram-scroll{overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:660px;color:var(--ink)}
+figcaption{margin:15px 0 0;color:var(--soft);font-size:14px;line-height:1.5;max-width:80ch}
+.source-note{font-size:14px;color:var(--soft);border-top:1px solid var(--rule);padding-top:15px;margin-top:25px}
+details{margin:28px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:17px 0}
+summary{font:600 16px/1.5 'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;color:var(--teal);cursor:pointer}
+details[open]>summary{margin-bottom:20px}
+@media(max-width:650px){main{padding:28px 18px 40px}body{font-size:17px}h1{font-size:39px}h2{font-size:27px}.lede{font-size:21px}figure{padding:15px 10px}nav{gap:8px 18px}}
+@media print{
+@page{size:A4;margin:15mm}
+body{background:white;font-size:10.4pt;line-height:1.45}main{max-width:none;padding:0}header{padding-bottom:12px}
+h1{font-size:30pt}h2{font-size:20pt}h3{font-size:13pt;break-after:avoid}.lede{font-size:14pt}nav{display:none}
+section.page{padding:20px 0;break-before:page}section.page:first-of-type{break-before:auto}p{max-width:none}
+figure{padding:10px;break-inside:avoid}svg{min-width:0}table{min-width:0;font-size:9pt}th{font-size:9pt;white-space:normal}td,th{padding:8px}tr{break-inside:avoid}
+.table-scroll{overflow:visible;border-radius:0}caption,figcaption,.byline,.review-note,.source-note,.page-label{font-size:9pt}.section-number{font-size:8pt}a{color:inherit}
+details::details-content{content-visibility:visible}details>summary{margin-bottom:12px}summary{font-size:10pt}code{background:none}
+}
+</style>
+</head>
+<body><main>
+
+<section class="page" id="top" data-page="1">
+  <p class="page-label">Report title · 1 of 2</p>
+  <header>
+    <p class="byline">Author · Month and year</p>
+    <h1>Report title</h1>
+    <p class="lede">One sentence that says what the document answers.</p>
+    <p class="review-note">Who it is for</p>
+  </header>
+  <p>One paragraph on what the document recommends. The following table maps the sections to their supporting documents.</p>
+  <div class="table-scroll"><table>
+    <caption><b>Table 1.</b> Report structure and supporting detail</caption>
+    <thead><tr><th scope="col">Section</th><th scope="col">Contains</th><th scope="col">Supporting detail</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#analysis"><strong>Analysis</strong></a></td><td>What the data and the rules say about the question.</td><td><a href="report--analysis.html" target="_blank" rel="noopener">Analysis: Rules and data</a></td></tr>
+      <tr><td><a href="#proposal"><strong>Proposal</strong></a></td><td>What to build first and how it is validated.</td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="page" id="analysis" data-page="2">
+  <p class="page-label">Report title · 2 of 2</p>
+  <p class="section-number">01</p>
+  <h2>Analysis</h2>
+  <figure><div class="diagram-scroll">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 120" role="img" aria-labelledby="f1-title f1-desc">
+      <title id="f1-title">Figure 1 placeholder</title>
+      <desc id="f1-desc">Replace this box with the figure drawn for the section.</desc>
+      <rect x="1" y="1" width="898" height="118" rx="6" fill="var(--teal-soft)" stroke="var(--teal)" stroke-width="1.3"/>
+      <text x="450" y="66" text-anchor="middle" font-family="Bricolage Grotesque, Helvetica Neue, Arial, sans-serif" font-size="17" fill="var(--ink)">Figure placeholder</text>
+    </svg>
+  </div><figcaption><b>Figure 1.</b> What the reader should see, and the scope it covers.</figcaption></figure>
+  <p>The prose the figure needs, and nothing the figure already says. Figure 1 is referred to by its number.</p>
+  <details><summary>The worked example on one record</summary>
+    <p>Optional depth that a reader may skip.</p>
+  </details>
+  <p class="source-note">Sources: name each document, table, or statement the section rests on, with its date.</p>
+</section>
+
+</main></body>
+</html>
