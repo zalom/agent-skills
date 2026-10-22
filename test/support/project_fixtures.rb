@@ -4,6 +4,7 @@ require "tmpdir"
 TESTING_SKILL_ROOT = File.expand_path("../../ruby-testing", __dir__)
 QUALITY_SKILL_ROOT = File.expand_path("../../ruby-quality-checking", __dir__)
 C4_SKILL_ROOT = File.expand_path("../../c4-model-diagramming", __dir__) unless defined?(C4_SKILL_ROOT)
+REPORT_SKILL_ROOT = File.expand_path("../../report-writing", __dir__) unless defined?(REPORT_SKILL_ROOT)
 
 module ProjectFixtures
   def in_project(files)
