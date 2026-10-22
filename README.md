@@ -1,6 +1,6 @@
 # Agent skills
 
-Skills I write for my own work, published as a Claude Code plugin marketplace. Each skill lives in its own directory at the repository root, in the Agent Skills layout: a `SKILL.md` that routes, references loaded only when a task needs them, and scripts or assets where a step must be exact.
+Skills I write for my own work, using the portable [Agent Skills format](https://agentskills.io/specification). Install them across coding agents with the `skills` command, or through the Claude Code plugin marketplace. Each skill lives in its own directory at the repository root: a `SKILL.md` that routes, references loaded only when a task needs them, and scripts or assets where a step must be exact.
 
 ## Skills
 
@@ -16,6 +16,51 @@ Skills I write for my own work, published as a Claude Code plugin marketplace. E
 
 ## Install
 
+Choose one installation route per agent to avoid duplicate skills. For example, keep existing Claude Code plugins and select only `codex` in the portable installer.
+
+### Install across coding agents
+
+Use the [skills command](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) to discover and install skills from this repository. These examples use the verified version, 1.7.4, which requires Node.js 22.20 or later.
+
+Preview the available skills:
+
+```sh
+npx skills@1.7.4 add zalom/agent-skills --list
+```
+
+Install every skill for Codex and Claude Code across your projects:
+
+```sh
+npx skills@1.7.4 add zalom/agent-skills --global --agent codex claude-code --skill '*'
+```
+
+Keep the default symlink method: Codex reads the shared copy in `~/.agents/skills/`, and Claude Code receives links in `~/.claude/skills/`. Use `--copy` when the filesystem does not support symlinks. Omit `--global` for a project installation, or add `--yes` for an unattended command. Other agent names are listed in the [supported agents reference](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+
+The command installs the skills available when it runs; it does not watch the repository. Rerun it to discover and install newly added skills. To list or update skills already installed through this route:
+
+```sh
+npx skills@1.7.4 list --global
+npx skills@1.7.4 update --global report-writing c4-model-diagramming
+```
+
+Replace the names in the update command with the skills you want to update. Updates for Claude Code plugins use the marketplace commands below. Installing a skill makes its instructions and supporting files available; it does not register optional hooks or copy agent settings. See the [plain-writing hook setup](plain-writing/README.md) for those steps.
+
+Codex detects skill changes automatically; restart it if a skill does not appear. Check Claude Code in a fresh session after installation.
+
+### Use a local checkout
+
+From the repository root, replace the GitHub source with `.` to install local files:
+
+```sh
+npx skills@1.7.4 add . --global --agent codex --skill report-writing
+```
+
+This installs a snapshot of the local skill. Rerun the command after edits. For live authoring, a direct symlink from an agent's skill directory to the checkout keeps edits visible without reinstalling. Keep existing development links out of broad install or update commands, which can replace them.
+
+### Install Claude Code plugins <!-- lint-ok: heading-case; Claude Code is a product name. -->
+
+Use this route when you want Claude Code to manage skill versions through its plugin marketplace:
+
 ```sh
 claude plugin marketplace add zalom/agent-skills
 claude plugin install ruby-testing@zalom-skills
@@ -27,7 +72,14 @@ claude plugin install c4-model-diagramming@zalom-skills
 claude plugin install report-writing@zalom-skills
 ```
 
-Restart Claude Code after installing. The plain-writing hooks are optional and installed by hand, as its own README describes.
+Update the marketplace and an installed plugin with:
+
+```sh
+claude plugin marketplace update zalom-skills
+claude plugin update report-writing@zalom-skills
+```
+
+Replace `report-writing` with the plugin to update. Restart Claude Code after installing or updating. The plain-writing hooks are optional and installed by hand, as its own README describes.
 
 ## Use a skill without an agent
 
