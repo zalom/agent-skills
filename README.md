@@ -45,7 +45,15 @@ npx skills@1.7.4 update --global report-writing c4-model-diagramming
 
 Replace the names in the update command with the skills you want to update. Updates for Claude Code plugins use the marketplace commands below. Installing a skill makes its instructions and supporting files available; it does not register optional hooks or copy agent settings. See the [plain-writing hook setup](plain-writing/README.md) for those steps.
 
-Codex detects skill changes automatically; restart it if a skill does not appear. Check Claude Code in a fresh session after installation.
+This installation does not schedule updates. For unattended updates, use your operating system's scheduler to run a command such as:
+
+```sh
+npx --yes skills@1.7.4 update --global --yes report-writing c4-model-diagramming
+```
+
+Use `--global` to keep the update scope independent of the working directory, and name only the skills you want updated. Updating installed skills does not install newly added skills; use the `add` command for those.
+
+Codex detects local skill changes automatically; it does not fetch this repository. Restart it if a skill does not appear. Check Claude Code in a fresh session after installation.
 
 ### Use a local checkout
 
@@ -80,6 +88,8 @@ claude plugin update report-writing@zalom-skills
 ```
 
 Replace `report-writing` with the plugin to update. Restart Claude Code after installing or updating. The plain-writing hooks are optional and installed by hand, as its own README describes.
+
+Claude Code also supports [automatic plugin updates](https://code.claude.com/docs/en/discover-plugins#keep-plugins-updated). They are off by default for custom marketplaces such as `zalom-skills`. To enable them, run `/plugin`, open the **Marketplaces** tab, select **zalom-skills**, and select **Enable auto-update**. Claude Code updates installed plugins after a session starts; restart to load the updated versions. This setting applies to marketplace plugins, not to portable installations or development links.
 
 ## Use a skill without an agent
 
