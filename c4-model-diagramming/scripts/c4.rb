@@ -109,8 +109,8 @@ def label(cx, y, name, kind, lines, w: nil, size: NAME_SIZE)
       @out << %(<text x="#{cx}" y="#{ty}" font-size="#{KIND_SIZE}" text-anchor="middle">#{text}</text>)
     end
   end
-  Array(lines).flat_map { |l| l.empty? ? [l] : wrap(l, max_px, LINE_SIZE * 0.53) }.each do |l|
-    ty += 15
+  Array(lines).flat_map { |l| l.empty? ? [l] : wrap(l, max_px, LINE_SIZE * 0.53) }.each_with_index do |l, i|
+    ty += i.zero? && kind ? 20 : 15
     @out << %(<text x="#{cx}" y="#{ty}" font-size="#{LINE_SIZE}" text-anchor="middle" fill="var(--ink-soft)">#{esc(l)}</text>)
   end
   self

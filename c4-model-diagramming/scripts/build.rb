@@ -15,7 +15,7 @@ module C4
       "person" => [220, 170, "Person", ->(d) { d.person(50, 10, 120, 130, "Sales agent", ["Answers customers"]) }],
       "software-system" => [240, 120, "Software system", ->(d) { d.system(20, 20, 200, 80, "Order desk", ["Takes and tracks orders"]) }],
       "external-system" => [240, 120, "External system", ->(d) { d.external(20, 20, 200, 80, "Payment provider", ["Settles card payments"]) }],
-      "container" => [240, 120, "Container", ->(d) { d.container(20, 20, 200, 80, "API application", "Ruby on Rails", ["Serves the order endpoints"]) }],
+      "container" => [240, 130, "Container", ->(d) { d.container(20, 20, 200, 90, "API application", "Ruby on Rails", ["Serves the order endpoints"]) }],
       "container-database" => [240, 130, "Database container", ->(d) { d.database(40, 12, 160, 106, "Orders database", "Container · PostgreSQL", ["Orders and shipments"]) }],
       "container-bucket" => [240, 130, "Object store container", ->(d) { d.bucket(40, 12, 160, 106, "Document store", "Container · S3", ["Signed order PDFs"]) }],
       "container-directory" => [240, 130, "Directory container", ->(d) { d.directory(30, 12, 180, 106, "Export folder", "Container · File system", ["Nightly CSV exports"]) }],
@@ -23,7 +23,7 @@ module C4
       "container-console" => [240, 120, "Server-side or console container", ->(d) { d.console(20, 20, 200, 80, "Sync worker", "Container · Ruby", ["Pulls orders every 15 min"]) }],
       "component" => [250, 120, "Component", ->(d) { d.component(30, 20, 200, 80, "Order lookup", "Rails model", ["Finds an order by number"]) }],
       "boundary" => [260, 130, "Boundary", ->(d) { d.boundary(20, 15, 220, 100, "Order desk", "Software system").container(45, 52, 180, 50, "API application", "Rails") }],
-      "group" => [260, 150, "Group", ->(d) { d.group(20, 15, 220, 120, "Sales department").person(70, 20, 120, 84, "Sales agent") }],
+      "group" => [260, 150, "Group", ->(d) { d.group(20, 15, 220, 120, "Sales department").person(70, 18, 120, 92, "Sales agent") }],
       "deployment-node" => [260, 140, "Deployment node", ->(d) { d.node(20, 12, 220, 116, "Application server", "Ubuntu 24.04", instances: 2).container(40, 26, 180, 50, "API application", "Rails") }],
       "infrastructure-node" => [260, 120, "Infrastructure node", ->(d) { d.infra(20, 15, 220, 90, "Load balancer", "Nginx") }],
       "relationship" => [260, 90, "Relationship", ->(d) { d.rel("20,40 240,40", "Reads order status from", tech: "JSON/HTTPS", lx: 130, ly: 28) }],
@@ -105,17 +105,17 @@ module C4
       C4.draw(960, 520, "Component diagram for the API container") do |d|
         d.title(30, 34, "Component diagram", "API container · the parts that answer an order question")
         d.boundary(40, 70, 620, 410, "API", "Container · Rails")
-        d.component(80, 140, 170, 80, "Question endpoint", "Rails controller", ["Receives a question"])
-        d.component(430, 140, 190, 80, "Intent reader", "Ruby", ["Finds the order number", "with a language model API"])
-        d.component(80, 310, 170, 80, "Order lookup", "Rails model", ["Loads the order"])
-        d.component(430, 310, 190, 80, "Answer writer", "Ruby", ["Writes one sentence", "with the source"])
+        d.component(80, 140, 170, 90, "Question endpoint", "Rails controller", ["Receives a question"])
+        d.component(430, 140, 190, 90, "Intent reader", "Ruby", ["Finds the order number", "with a language model API"])
+        d.component(80, 310, 170, 90, "Order lookup", "Rails model", ["Loads the order"])
+        d.component(430, 310, 190, 90, "Answer writer", "Ruby", ["Writes one sentence", "with the source"])
         d.browser(730, 120, 170, 90, "Web app", "Container · React")
         d.database(730, 300, 170, 110, "Orders DB", "Container · PostgreSQL")
         d.path("M730 150 L690 150 L690 100 L165 100 L165 140", "Sends a question to", tech: "JSON/HTTPS", lx: 440, ly: 94)
         d.rel("250,180 430,180", "Asks the meaning of", lx: 335, ly: 170)
-        d.path("M525 220 L525 265 L165 265 L165 310", "Hands the order number to", lx: 345, ly: 258)
+        d.path("M525 230 L525 265 L165 265 L165 310", "Hands the order number to", lx: 345, ly: 258)
         d.rel("250,350 430,350", "Gives the order to", lx: 335, ly: 340)
-        d.path("M165 390 L165 430 L815 430 L815 410", "Reads the order from", tech: "SQL", lx: 500, ly: 423)
+        d.path("M165 400 L165 430 L815 430 L815 410", "Reads the order from", tech: "SQL", lx: 500, ly: 423)
         d.key(30, 500, [COMPONENT_KEY, CONTAINER_KEY, STORE_KEY])
       end
     end
@@ -148,7 +148,7 @@ module C4
         d.browser(240, 150, 140, 90, "Web app", "Container · React")
         d.container(500, 150, 140, 90, "API", "Rails")
         d.database(760, 140, 150, 110, "Orders DB", "Container · PostgreSQL")
-        d.external(490, 330, 160, 80, "Language model API", ["Reads the question"])
+        d.external(490, 330, 160, 90, "Language model API", ["Reads the question"])
         d.rel("150,200 240,200", "Asks a question", lx: 195, ly: 180).step(165, 200, 1)
         d.rel("380,195 500,195", "Posts the question", tech: "JSON/HTTPS", lx: 440, ly: 165).step(398, 195, 2)
         d.rel("570,240 570,330", "Asks for the order number", tech: "HTTPS", lx: 582, ly: 290, anchor: "start").step(570, 262, 3)
