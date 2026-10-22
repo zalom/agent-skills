@@ -1,0 +1,50 @@
+{
+  "skill_name": "report-writing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write the design proposal for the order assistant from these notes. It goes to Thursday's design review with the engineering team.",
+      "expected_output": "The skill activates. The response starts from assets/report-page.html, opens references/story.md and references/layout.md, orders the document from context and source data through rules, analysis, answers, and open questions to the proposal, numbers every figure and table with a caption, draws the architecture with the c4-model-diagramming skill, keeps a neutral voice without first person, and renders every page in a browser before presenting it.",
+      "files": [],
+      "assertions": [
+        "The skill activates (a direct request for a design proposal document).",
+        "The document is one column of numbered pages with a page label on each page.",
+        "The problem and its evidence come before the proposal.",
+        "Every table has a numbered caption and every figure has a numbered figcaption, and the text refers to them by number in lowercase.",
+        "No first person and no method vocabulary appears in the document."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Turn what we found about the order data into something I can hand to the operations lead, with the questions she still has to answer.",
+      "expected_output": "The skill activates on an indirect trigger: no document type is named, but findings for a reader plus open questions is an evidence-led report. The response opens references/story.md, keeps facts, interpretations, and unknowns apart, puts each caveat beside its result, and groups the questions by what raised them with an owner and what changes when each is answered.",
+      "files": [],
+      "assertions": [
+        "The skill activates without the words report or proposal in the prompt.",
+        "Facts carry a source and interpretations carry their assumption.",
+        "Each open question names a definition, source, owner, frequency, or condition, and what changes when it is answered.",
+        "No value is invented where the data has none."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Apply the three findings from yesterday's review to the accepted proposal. Keep it looking the way it is.",
+      "expected_output": "The skill activates. The response keeps the accepted document's structure and styling, applies each finding where it belongs, renumbers figures and references if a figure moved, lints the prose, renders every page, and checks the whole document, not only the changed pages, before reporting.",
+      "files": [],
+      "assertions": [
+        "The document's structure and styling are unchanged apart from the three findings.",
+        "Every figure and table reference still matches its number after the edit.",
+        "The response reports a lint run and a browser render of every page."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Write the README for the repository so a new contributor can run the tests.",
+      "expected_output": "The skill does not activate. A README is project documentation in plain prose, governed by the plain-writing skill, not an evidence-led report with pages, figures, and a publishing step. Near-miss negative: it asks for a written document, but nothing about findings, evidence, a review, or a page layout.",
+      "files": [],
+      "assertions": [
+        "The skill does not activate (a README is not a report)."
+      ]
+    }
+  ]
+}
