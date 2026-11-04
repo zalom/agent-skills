@@ -11,6 +11,7 @@ All notable changes to the skills in this repository, one section per skill. The
 - A general prose-editing skill with selective plain-writing guidance for clarity, sentence structure, and conversational voice.
 - References for editing, research, Jev review, and application examples that preserve attribution and operational conditions.
 - Evaluation cases for faithful editing, pressure to invent claims, research limits, and unrelated requests.
+- Installation, verification, and invocation examples for Codex and both Claude Code installation routes.
 
 ## report-writing
 

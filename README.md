@@ -19,6 +19,41 @@ Skills I write for my own work, using the portable [Agent Skills format](https:/
 
 Choose one installation route per agent to avoid duplicate skills. For example, keep existing Claude Code plugins and select only `codex` in the portable installer.
 
+### Install natural-writing
+
+For Codex, run this in your shell:
+
+```sh
+npx skills@1.7.4 add zalom/agent-skills --global --agent codex --skill natural-writing
+```
+
+For Claude Code, choose either the marketplace route:
+
+```sh
+claude plugin marketplace add zalom/agent-skills
+claude plugin install natural-writing@zalom-skills --scope user
+```
+
+Or install the standalone skill:
+
+```sh
+npx skills@1.7.4 add zalom/agent-skills --global --agent claude-code --skill natural-writing
+```
+
+If the marketplace is already registered, run `claude plugin marketplace update zalom-skills` before installing the new plugin. Use one Claude Code route, not both. To install the standalone skill for both agents in one command, set `--agent codex claude-code`.
+
+Verify the installation and invoke it in the matching agent:
+
+| Agent and route | Verification | Invocation |
+|---|---|---|
+| Codex, standalone | `npx skills@1.7.4 list --global --agent codex` | `$natural-writing Review and improve this text: ...` |
+| Claude Code, standalone | `npx skills@1.7.4 list --global --agent claude-code` | `/natural-writing Review and improve this text: ...` |
+| Claude Code, marketplace | `claude plugin list` | `/natural-writing:natural-writing Review and improve this text: ...` |
+
+The explicit commands follow the [Codex skill guidance](https://learn.chatgpt.com/docs/build-skills) and [Claude Code skill guidance](https://code.claude.com/docs/en/skills). A natural-language request such as "Use natural-writing to improve this text" also works. Start a fresh session if the skill does not appear.
+
+Natural-writing works on its own. If plain-writing is installed, it uses the guidance that fits the requested prose. Jev review is optional and requires an available, authorized TypeSafe connection. Installing natural-writing does not configure credentials, add hooks, or install those companions.
+
 ### Install across coding agents
 
 Use the [skills command](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) to discover and install skills from this repository. These examples use the verified version, 1.7.4, which requires Node.js 22.20 or later.
@@ -64,6 +99,7 @@ Use this route when you want Claude Code to manage skill versions through its pl
 
 ```sh
 claude plugin marketplace add zalom/agent-skills
+claude plugin install natural-writing@zalom-skills
 claude plugin install ruby-testing@zalom-skills
 claude plugin install ruby-quality-checking@zalom-skills
 claude plugin install plain-writing@zalom-skills
@@ -77,10 +113,10 @@ Update the marketplace and an installed plugin with:
 
 ```sh
 claude plugin marketplace update zalom-skills
-claude plugin update report-writing@zalom-skills
+claude plugin update natural-writing@zalom-skills
 ```
 
-Replace `report-writing` with the plugin to update. Restart Claude Code after installing or updating. The plain-writing hooks are optional and installed by hand, as its own README describes.
+Replace `natural-writing` with the plugin to update. Restart Claude Code after installing or updating. The plain-writing hooks are optional and installed by hand, as its own README describes.
 
 ## Use a skill without an agent
 
