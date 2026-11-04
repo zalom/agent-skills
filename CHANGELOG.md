@@ -2,6 +2,16 @@
 
 All notable changes to the skills in this repository, one section per skill. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## natural-writing
+
+### [0.1.0] - 2026-11-04
+
+#### Added
+
+- A general prose-editing skill with selective plain-writing guidance for clarity, sentence structure, and conversational voice.
+- References for editing, research, Jev review, and application examples that preserve attribution and operational conditions.
+- Evaluation cases for faithful editing, pressure to invent claims, research limits, and unrelated requests.
+
 ## report-writing
 
 ### [0.1.0] - 2026-10-22

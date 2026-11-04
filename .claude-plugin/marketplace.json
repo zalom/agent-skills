@@ -7,6 +7,20 @@
   "description": "Agent skills written by Zlatko Alomerovic.",
   "plugins": [
     {
+      "name": "natural-writing",
+      "source": "./natural-writing",
+      "strict": false,
+      "description": "Reviews and revises prose that sounds generic, stiff, overpolished, or AI-written while preserving the author's facts and voice.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["writing", "editing", "voice", "applications", "research"],
+      "category": "productivity"
+    },
+    {
       "name": "ruby-testing",
       "source": "./ruby-testing",
       "strict": false,

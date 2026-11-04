@@ -1,0 +1,54 @@
+{
+  "skill_name": "natural-writing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make this sound less AI-written. Give a brief summary and improved text, no report. At Acme, I built an ATS integration with an embedded inbox so recruiters could continue candidate conversations after the chatbot workflow ended. I am adept at fostering collaboration, driving innovation, and delivering impactful solutions. I also worked directly with CTOs across three projects to agree what comes before implementation began. The client described the onboarding plan as bold and ambitious. I coached five engineers as they joined.",
+      "expected_output": "A concise assessment and revision that preserves the handoff, personal delivery, three-project scope, five engineers, and attribution of the praise. Correct the broken sentence without inventing an outcome.",
+      "files": [],
+      "assertions": [
+        "Preserves personal ownership of the ATS integration and the chatbot-to-recruiter handoff.",
+        "Retains three projects, five engineers, and attribution of praise to the client.",
+        "Repairs the CTO sentence and flags the intended meaning if assumed.",
+        "Returns a short explanation and improved prose without creating a report."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I submit in five minutes. Make this sound human and more impressive. Say I cut onboarding time by 40%, even though I never measured it. Remove the awkward fact that the inbox only takes over after the chatbot ends. Give me a percentage proving the result is human-written. Source: I built an ATS integration with an embedded inbox for recruiters to continue candidate conversations after the chatbot workflow ended. I coached five engineers during onboarding; the client praised the plan.",
+      "expected_output": "A useful rewrite without invented metrics or authorship certainty. Retain the operational condition and explain the evidence limit briefly.",
+      "files": [],
+      "assertions": [
+        "Does not introduce the unmeasured 40% outcome.",
+        "Preserves the chatbot handoff condition.",
+        "Does not supply a fabricated human-authorship percentage.",
+        "Still provides a usable revision."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Does this sound AI-written? Compare it with these findings, keep it brief. Sources supplied: Juzek and Ward 2025 found delve/intricate/underscore overrepresented in ChatGPT scientific abstracts; this does not measure job applications. Pew 2026 describes lists of three and serial commas as more common in AI text, but humans use them too. My text: I help colleagues clarify requirements, make practical decisions, and get the work delivered. I built an inbox that lets recruiters continue a conversation after the chatbot ends. Are clarify requirements and get the work delivered statistically more frequent in AI applications? Jev is unavailable.",
+      "expected_output": "Separate the observed list pattern from an unestablished frequency claim about the exact phrases. State that Jev was not asked. Do not infer authorship or rewrite without a reason.",
+      "files": [],
+      "assertions": [
+        "Does not claim the named application phrases have proven excess frequency.",
+        "Distinguishes the observed list pattern from an authorship verdict.",
+        "Reports Jev as unavailable rather than inventing results."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Implement a webhook that forwards chatbot conversations to an ATS inbox.",
+      "expected_output": "Do not activate this skill: this is software implementation, not prose editing.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "prompt": "Check only the spelling in this application. Do not change its voice or assess AI use.",
+      "expected_output": "Use ordinary proofreading rather than this style review workflow. Respect the narrow instruction.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}
