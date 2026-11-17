@@ -1,6 +1,6 @@
 {
-  "skill_name": "ruby-writing",
-  "notes": "Written 2026-09-20 with the skill. Ids 1 to 5 come from faults that reached review or shipped in real code on that day. Assertions are empty until the first paired run, per the skill-evaluating rule of writing assertions after observing output. No eval has been run yet.",
+  "skill_name": "ruby-programming",
+  "notes": "Ids 1 to 10 were written 2026-09-20 for ruby-writing; ids 1 to 5 come from faults that reached review or shipped in real code on that day. Ids 11 to 13 were written 2026-11-17 for ruby-designing, which merged into this skill on the same day. Assertions are written after the first paired run, per the skill-evaluating rule. No eval has been run yet.",
   "evals": [
     {
       "id": 1,
@@ -70,7 +70,7 @@
       "scope": "should-not-trigger",
       "set": "train",
       "prompt": "Write Minitest tests for this Ruby class and make sure they would kill mutants.",
-      "expected_output": "The ruby-testing skill handles this. ruby-writing does not activate for writing tests.",
+      "expected_output": "The ruby-testing skill handles this. ruby-programming does not activate for writing tests.",
       "files": [],
       "assertions": []
     },
@@ -79,7 +79,7 @@
       "scope": "should-not-trigger",
       "set": "validation",
       "prompt": "Check my change before I push: lint, patch coverage, mutation score and CRAP.",
-      "expected_output": "The ruby-quality-checking skill handles this. ruby-writing does not activate.",
+      "expected_output": "The ruby-quality-checking skill handles this. ruby-programming does not activate.",
       "files": [],
       "assertions": []
     },
@@ -88,7 +88,34 @@
       "scope": "should-not-trigger",
       "set": "train",
       "prompt": "Write a Python script that renames files in a folder.",
-      "expected_output": "No Ruby is involved. ruby-writing does not activate.",
+      "expected_output": "No Ruby is involved. ruby-programming does not activate.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 11,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "This data migration, Migration0042, loads every account through the Account model, sets each one's plan to free when its trial has ended, and saves it. A digest check after the loop compares the counts. Can you review it?",
+      "expected_output": "Replaces the per-row loop with one set-based UPDATE in one transaction, keeps application models out of the migration, drops the digest check, and renames the migration after what it does.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 12,
+      "scope": "output-quality",
+      "set": "train",
+      "prompt": "Reek reports FeatureEnvy, DataClump and ControlParameter on our Report class, and the team wants to add the three smells to .reek.yml so the build goes green. Is that fine?",
+      "expected_output": "Declines to silence the smells and gives the design fix for each: move the envious method to the object whose data it uses, make the clump one Data.define value, split the flag into two methods or pass a role object.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 13,
+      "scope": "output-quality",
+      "set": "validation",
+      "prompt": "Our store class keeps its database connection in a class instance variable, calls Time.now inside save, and has a reset! method that only the tests call. How would you restructure it?",
+      "expected_output": "Makes the store an instance that receives its database and clock as keyword arguments with production defaults, reads the time from the injected clock, and deletes reset! because each test builds its own instance.",
       "files": [],
       "assertions": []
     }

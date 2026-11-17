@@ -1,6 +1,10 @@
 # Rails code
 
+Each rule on this page carries how far to trust it. *Quoted* means a Rails guide or API page says it, read on 2026-09-20, and nothing was run. *Judgment* means a choice of method, with its source named. Unlike the Ruby pages, no rule here has a proof script, because a script would need a Rails application.
+
 ## Which method to use
+
+*Judgment: the owner's ruling, with Jorge Manrubia's article as its source.*
 
 1. **The 37signals method first, always.** Vanilla Rails, rich models, thin controllers, concerns named for a capability, Minitest, and no service objects by default. When a `37signals-style` skill is installed, use it for every Rails decision.
 2. **The Rails guides for facts.** When a question is about what a Rails version does, read the guide for that version, or a `rails-guides` skill or a Rails documentation server when one is present. Never answer a version question from memory.
@@ -9,6 +13,8 @@
 Jorge Manrubia of 37signals, in "Vanilla Rails is plenty": "we don't default to create services, actions, commands, or interactors to implement controller actions." And: "We are fine with plain CRUD accesses from controllers for simple scenarios."
 
 ## The second choice: layered design
+
+*Judgment, with each quote taken from the `layered-rails` skill.*
 
 When a project asks for layers, use the `layered-rails` skill from `palkan/layered-rails-skills`. It follows the book "Layered Design for Ruby on Rails Applications" by Vladimir Dementyev. Install it in that project only, never for every project:
 
@@ -37,14 +43,12 @@ Six of its rules are safe under the 37signals method, as review questions:
 
 ## Traps that the Rails guides document
 
-Nothing on this page was run. Each rule quotes the guide, read on 2026-09-20.
-
-- **Work that touches another system goes in `after_commit`, never in `after_save`.** That includes enqueuing a job. The guide: "during after_commit the data was already persisted to the database, and thus any exception won't roll anything back anymore." Work that must be able to stop the save goes in `after_save`.
-- **One `after_commit` that raises cancels the rest.** The guide: "the exception will bubble up and any remaining after_commit or after_rollback methods will not be executed."
-- **`validates uniqueness` needs a unique index.** The guide: "This validation does not create a uniqueness constraint in the database". Add `add_index ..., unique: true` in the same change, on both columns for a scoped validation. The rule `Rails/UniqueValidationWithoutIndex` in `rubocop-rails` catches a missing index.
-- **Seven methods skip validations:** `increment!`, `toggle!`, `update_attribute`, `update_attribute!`, `update_column`, `update_columns`, and `save(validate: false)`. `Rails/SkipsModelValidations` flags them.
-- **`find_each` ignores an `order`.** Records come in primary key order, and by default the given order is dropped with a warning only.
-- **`pluck` runs the query at once and returns arrays.** It cannot be chained, and model method overrides do not apply to the values.
-- **`enum` raises `ArgumentError` for an unknown value,** before validation runs. A form or an API that can receive a bad value needs `validate: true`.
-- **Use `dependent: :delete_all` when the children have no callbacks.** `:destroy` loads each row and runs its callbacks; `:delete_all` sends one statement.
-- **Keep callbacks for setup and cleanup.** Business logic goes in a method with a name that the controller or the job calls.
+- **Work that touches another system goes in `after_commit`, never in `after_save`.** That includes enqueuing a job. The guide: "during after_commit the data was already persisted to the database, and thus any exception won't roll anything back anymore." Work that must be able to stop the save goes in `after_save`. *Quoted: the callbacks guide.*
+- **One `after_commit` that raises cancels the rest.** The guide: "the exception will bubble up and any remaining after_commit or after_rollback methods will not be executed." *Quoted: the callbacks guide.*
+- **`validates uniqueness` needs a unique index.** The guide: "This validation does not create a uniqueness constraint in the database". Add `add_index ..., unique: true` in the same change, on both columns for a scoped validation. The rule `Rails/UniqueValidationWithoutIndex` in `rubocop-rails` catches a missing index. *Quoted: the validations guide.*
+- **Seven methods skip validations:** `increment!`, `toggle!`, `update_attribute`, `update_attribute!`, `update_column`, `update_columns`, and `save(validate: false)`. `Rails/SkipsModelValidations` flags them. *Quoted: the validations guide.*
+- **`find_each` ignores an `order`.** Records come in primary key order, and by default the given order is dropped with a warning only. *Quoted: the querying guide.*
+- **`pluck` runs the query at once and returns arrays.** It cannot be chained, and model method overrides do not apply to the values. *Quoted: the querying guide.*
+- **`enum` raises `ArgumentError` for an unknown value,** before validation runs. A form or an API that can receive a bad value needs `validate: true`. *Quoted: the `ActiveRecord::Enum` API page.*
+- **Use `dependent: :delete_all` when the children have no callbacks.** `:destroy` loads each row and runs its callbacks; `:delete_all` sends one statement. *Quoted: the association basics guide.*
+- **Keep callbacks for setup and cleanup.** Business logic goes in a method with a name that the controller or the job calls. *Judgment, from the callbacks guide and the 37signals method.*

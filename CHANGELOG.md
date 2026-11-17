@@ -51,7 +51,7 @@ All notable changes to the skills in this repository, one section per skill. The
 
 #### Added
 
-- The skill: 11 rules for the least complexity in any language, from comparing options on fit and complexity to fixing a smell where it is found.
+- The skill: a section on how to approach the work, nine principles from Judo, Ikigai, Stoicism, minimalism, and the Muslim virtues of trust, endurance, excellence, obedience, and moderation, each turned into an engineering habit. Then 12 rules for the least complexity in any language, from comparing options on fit and complexity to fixing a smell where it is found. `ruby-programming` and `database-designing` both start from it.
 - `references/dependencies.md`: where a dependency points, how to break a cycle, coupling from weakest to strongest, and a route to `database-designing` for data.
 - `references/testing.md`: what to test for each kind of message, real collaborators first, the test layers, and repository guards kept apart from behavior tests.
 - Three evals: an old rule that keeps a custom job scheduler, a large dependency cycle, and a speculative plugin system.
@@ -66,26 +66,19 @@ All notable changes to the skills in this repository, one section per skill. The
 - `references/modeling.md`, `references/queries-and-transactions.md`, `references/migrations.md`, `references/testing-databases.md` and `references/choosing-a-store.md`: each rule on one line, with its sources.
 - Four evals: a row loop between two database files, a second store the relational database already covers, a column rename on a live table, and a data-layer test setup with fakes.
 
-## ruby-designing
+## ruby-programming
 
 ### [0.1.0] - 2026-11-17
 
 #### Added
 
-- The skill: nine Ruby rules on injected collaborators, instances over class singletons, requires that point down, value results, data work left to the database, and tests through public methods.
-- `references/design.md`: the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop in Ruby, and code only tests call.
-- `references/design-rules.md`, moved from `ruby-writing`: the size limits, the no-comments rule, where a responsibility belongs, and the idioms worth keeping.
-- Three evals: a data migration that loops over rows, Reek smells to silence, and a store with a class-level connection.
-
-## ruby-writing
-
-### [0.1.0] - 2026-09-20
-
-#### Added
-
-- The skill: 14 rules that no linter catches, 14 references routed by task, and 19 proof scripts that show each Ruby behavior on the installed Ruby.
-- `references/rails.md`, which names the Rails method to use (37signals first, the Rails guides for facts, another method only when the project asks) and the traps that the guides document.
-- A route to `ruby-designing` for size limits, where a responsibility belongs, and how objects depend on each other.
+- The skill, rebuilt from `ruby-writing` with `ruby-designing` merged in. Neither was released, so nothing installed changes name. It opens from `simple-architecture-designing` and states each rule once, grouped as objects, hooks and visibility, errors, files and processes, idioms, and data and smells.
+- One size rule: Sandi Metz's limits, as the Ruby measure of the smallest design that fits.
+- One error rule: raise a named error when the caller cannot go on, and return a value only for an outcome the caller handles as a normal branch. `references/exceptions.md` shows both.
+- `references/design-rules.md` and `references/design-fixes.md`, from `ruby-designing`: size limits, where a responsibility belongs, and the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop, and code only tests call.
+- `scripts/20_require_cycle.rb` and `scripts/21_injected_collaborators.rb`, which prove the design rules that rest on Ruby behavior.
+- A trust mark on each rule of `references/rails.md`: quoted from a named Rails guide, or a judgment with its source.
+- 13 evals: the 10 from `ruby-writing` and the 3 from `ruby-designing`.
 - Replaces the plain Ruby skills `ruby` and `sandi-metz-rules` from superpowers-ruby, and corrects their advice to use `fail`.
 
 ## ruby-quality-checking

@@ -7,10 +7,9 @@ Skills I write for my own work, using the portable [Agent Skills format](https:/
 | Skill | What it does |
 |---|---|
 | `natural-writing` | Revises generic or overpolished prose while preserving facts and voice. Separates AI-writing research from editorial judgment and uses Jev when available. |
-| `ruby-writing` | Writes plain Ruby that is right on the first draft: the rules that no linter catches, such as declared hooks that raise `NoMethodError`, `private` over `protected`, and `and` never used for a value. Ships a proof script for each rule, and names the Rails method to use: 37signals first. |
+| `ruby-programming` | Writes and designs Ruby that is right on the first draft and easy to change: the traps that no linter catches, objects that receive their collaborators, requires that point one way, and data work left to the database. Ships a proof script for each Ruby behavior it relies on, and names the Rails method to use: 37signals first. |
 | `database-designing` | Designs data storage for the least complexity: schemas that hold their own rules, set-based queries, one transaction, safe migrations, tests on the real engine, and a second store only when it earns its place. |
-| `ruby-designing` | Designs Ruby code for the least complexity: objects that receive their collaborators, requires that point one way, data work left to the database, and Reek smells fixed in the design. |
-| `simple-architecture-designing` | Designs code in any language for the least complexity: the simplest design that fits, layers that depend downward with no cycles, and a test at each public boundary. |
+| `simple-architecture-designing` | Designs code in any language for the least complexity. Opens with how to approach the work, from Judo, Ikigai, Stoicism, minimalism, and the Muslim virtues of trust, endurance, and excellence, then gives the rules: the simplest design that fits, layers that depend downward with no cycles, and a test at each public boundary. |
 | `ruby-testing` | Writes and refactors Ruby and Rails tests in the project's own framework, Minitest or RSpec, with its fixtures or factories and its mocking library. Ships a read-only `detect-tools` report. |
 | `ruby-quality-checking` | Checks a Ruby or Rails change on the changed code only: lint in the project's style guide, green tests, SimpleCov patch coverage, Mutineer mutation testing, and CRAP scores. Ships a setup script and `bin/verify-change`. |
 | `plain-writing` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
@@ -104,9 +103,8 @@ Use this route when you want Claude Code to manage skill versions through its pl
 ```sh
 claude plugin marketplace add zalom/agent-skills
 claude plugin install natural-writing@zalom-skills
-claude plugin install ruby-writing@zalom-skills
+claude plugin install ruby-programming@zalom-skills
 claude plugin install database-designing@zalom-skills
-claude plugin install ruby-designing@zalom-skills
 claude plugin install simple-architecture-designing@zalom-skills
 claude plugin install ruby-testing@zalom-skills
 claude plugin install ruby-quality-checking@zalom-skills

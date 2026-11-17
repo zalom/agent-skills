@@ -1,5 +1,7 @@
 # Ruby design fixes
 
+Proof scripts: `scripts/20_require_cycle.rb`, `scripts/21_injected_collaborators.rb`.
+
 Each fix removes the cause. Silencing a smell in `.reek.yml` or a todo file leaves the cause in place.
 
 ## Reek smells and their design fix
@@ -58,7 +60,3 @@ The same holds without an ORM: send one `UPDATE` or `INSERT ... SELECT`, not a l
 ## Code only tests call
 
 Delete the method and the tests that call it. When the tests stood in for a real check, move the check to where production runs it (a startup check, a doctor check) or into the guard file with the other repository checks.
-
-## Sources
-
-Sandi Metz, Jim Weirich, Kent Beck, Gary Bernhardt, Avdi Grimm, Martin Fowler, Reek's smell documentation, and the code of Sequel, Rake, Minitest, Hanami and Rack.

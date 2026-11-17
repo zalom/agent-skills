@@ -4,6 +4,7 @@ Proof scripts: `scripts/01_exceptions.rb`, `scripts/02_undeclared_hook_vcall.rb`
 
 ## Contents
 
+- Raise, or return a value
 - An abstract hook raises `NoMethodError`
 - An undeclared hook raises `NameError`
 - `and` and `or` never produce a value
@@ -13,6 +14,34 @@ Proof scripts: `scripts/01_exceptions.rb`, `scripts/02_undeclared_hook_vcall.rb`
 - Rescue `StandardError`, never `Exception`
 - `raise`, `fail`, and `cause`
 - `Timeout::Error` is a `StandardError`
+
+## Raise, or return a value
+
+One rule decides it: can the caller go on with its work after this outcome?
+
+- **It cannot: raise.** A missing file, a refused command, bad input, a broken contract. Raise a named error from the library's own error family, and let one boundary, the entry point or the controller, turn it into an exit code or a response. Code between the failure and that boundary neither rescues nor checks a return value.
+- **It can, and it branches: return a value.** A declined payment, a search with no match, a validation that the form shows again. Return a `Data` result or a null object that says which branch happened.
+- **Never return `nil`, `false`, or a status symbol to mean "failed".** The caller forgets to check it, and the failure travels on as a wrong value.
+
+```ruby
+class Plan
+  Error = Class.new(StandardError)
+  Refused = Class.new(Error)
+
+  def close(intent)
+    raise Refused, "#{intent.id} has open work" if intent.open_work?
+
+    intent.close
+  end
+end
+
+Charge = Data.define(:status, :reference)
+
+def charge(card, amount)
+  response = @gateway.charge(card, amount)
+  Charge.new(status: response.approved? ? :approved : :declined, reference: response.id)
+end
+```
 
 ## An abstract hook raises `NoMethodError`
 

@@ -2,8 +2,7 @@ require "fileutils"
 require "tmpdir"
 
 TESTING_SKILL_ROOT = File.expand_path("../../ruby-testing", __dir__)
-WRITING_SKILL_ROOT = File.expand_path("../../ruby-writing", __dir__)
-DESIGNING_SKILL_ROOT = File.expand_path("../../ruby-designing", __dir__)
+PROGRAMMING_SKILL_ROOT = File.expand_path("../../ruby-programming", __dir__)
 ARCHITECTURE_SKILL_ROOT = File.expand_path("../../simple-architecture-designing", __dir__)
 DATABASE_SKILL_ROOT = File.expand_path("../../database-designing", __dir__)
 QUALITY_SKILL_ROOT = File.expand_path("../../ruby-quality-checking", __dir__)

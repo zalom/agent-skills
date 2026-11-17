@@ -17,7 +17,7 @@ metadata:
 
 # Database designing
 
-Let the database hold the truth. Declare the rules as constraints, change data with set-based statements in one transaction, and add a second store only when a named need earns it. These rules hold for any engine. Where one depends on an engine feature, check the engine's documentation for it.
+Let the database hold the truth. Declare the rules as constraints, change data with set-based statements in one transaction, and add a second store only when a named need earns it. These rules hold for any engine. Where one depends on an engine feature, check the engine's documentation for it. The `simple-architecture-designing` skill sets how to approach the work, and these rules apply it to data.
 
 ## Rules
 

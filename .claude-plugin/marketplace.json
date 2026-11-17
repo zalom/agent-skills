@@ -119,17 +119,17 @@
       "category": "productivity"
     },
     {
-      "name": "ruby-writing",
-      "source": "./ruby-writing",
+      "name": "ruby-programming",
+      "source": "./ruby-programming",
       "strict": false,
-      "description": "Writes plain Ruby that is right on the first draft: the rules that no linter catches, with a proof script for each, and the Rails method to use.",
+      "description": "Writes and designs Ruby that is right on the first draft and easy to change: the traps no linter catches with a proof script for each, injected collaborators, requires that point one way, data work left to the database, and the Rails method to use.",
       "version": "0.1.0",
       "author": {
         "name": "Zlatko Alomerovic",
         "url": "https://github.com/zalom"
       },
       "license": "MIT",
-      "keywords": ["ruby", "rails", "writing", "idioms", "exceptions", "visibility", "value-objects", "design", "37signals"],
+      "keywords": ["ruby", "rails", "idioms", "exceptions", "visibility", "value-objects", "design", "dependencies", "reek", "injection", "37signals"],
       "category": "development"
     },
     {
@@ -146,32 +146,18 @@
       "keywords": ["architecture", "design", "dependencies", "simplicity", "layers", "testing"],
       "category": "development"
     },
-{
-  "name": "database-designing",
-  "source": "./database-designing",
-  "strict": false,
-  "description": "Designs data storage for the least complexity: schemas that hold their own rules, set-based queries, one transaction, safe migrations, tests on the real engine, and a second store only when it earns its place.",
-  "version": "0.1.0",
-  "author": {
-    "name": "Zlatko Alomerovic",
-    "url": "https://github.com/zalom"
-  },
-  "license": "MIT",
-  "keywords": ["database", "schema", "migrations", "transactions", "constraints", "design"],
-  "category": "development"
-},
     {
-      "name": "ruby-designing",
-      "source": "./ruby-designing",
+      "name": "database-designing",
+      "source": "./database-designing",
       "strict": false,
-      "description": "Designs Ruby code for the least complexity: small objects that receive their collaborators, requires that point one way, data work left to the database, and tests of public behavior.",
+      "description": "Designs data storage for the least complexity: schemas that hold their own rules, set-based queries, one transaction, safe migrations, tests on the real engine, and a second store only when it earns its place.",
       "version": "0.1.0",
       "author": {
         "name": "Zlatko Alomerovic",
         "url": "https://github.com/zalom"
       },
       "license": "MIT",
-      "keywords": ["ruby", "design", "dependencies", "reek", "value-objects", "injection"],
+      "keywords": ["database", "schema", "migrations", "transactions", "constraints", "design"],
       "category": "development"
     }
   ]
