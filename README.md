@@ -7,6 +7,7 @@ Skills I write for my own work, using the portable [Agent Skills format](https:/
 | Skill | What it does |
 |---|---|
 | `natural-writing` | Revises generic or overpolished prose while preserving facts and voice. Separates AI-writing research from editorial judgment and uses Jev when available. |
+| `ruby-writing` | Writes plain Ruby that is right on the first draft: the rules that no linter catches, such as declared hooks that raise `NoMethodError`, `private` over `protected`, and `and` never used for a value. Ships a proof script for each rule, and names the Rails method to use: 37signals first. |
 | `ruby-testing` | Writes and refactors Ruby and Rails tests in the project's own framework, Minitest or RSpec, with its fixtures or factories and its mocking library. Ships a read-only `detect-tools` report. |
 | `ruby-quality-checking` | Checks a Ruby or Rails change on the changed code only: lint in the project's style guide, green tests, SimpleCov patch coverage, Mutineer mutation testing, and CRAP scores. Ships a setup script and `bin/verify-change`. |
 | `plain-writing` | Keeps AI-written prose, documentation, commit messages, and replies in one style: the Google developer documentation style guide, plus optional personal overrides and 2 enforcement hooks. |
@@ -100,6 +101,7 @@ Use this route when you want Claude Code to manage skill versions through its pl
 ```sh
 claude plugin marketplace add zalom/agent-skills
 claude plugin install natural-writing@zalom-skills
+claude plugin install ruby-writing@zalom-skills
 claude plugin install ruby-testing@zalom-skills
 claude plugin install ruby-quality-checking@zalom-skills
 claude plugin install plain-writing@zalom-skills

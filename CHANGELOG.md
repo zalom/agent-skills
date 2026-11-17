@@ -45,6 +45,16 @@ All notable changes to the skills in this repository, one section per skill. The
 - A router over the notation and six diagram references: system context, container, component, system landscape, dynamic, and deployment, each with its scope, elements, audience, the keys it uses, an example, and layout advice.
 - `scripts/c4.rb`, which draws every C4 shape, relationship, boundary, step marker, and key as standalone SVG <!-- lint-ok: shorthand; C4 is the name of the model --> with the palette as CSS tokens and a dark set, and `scripts/build.rb`, which writes the 17 key elements and the six examples into `references/`.
 - A Minitest suite that rebuilds the set, checks every SVG is well formed and labeled, and fails when a committed SVG is stale.
+## ruby-writing
+
+### [0.1.0] - 2026-09-20
+
+#### Added
+
+- The skill: 14 rules that no linter catches, 14 references routed by task, and 19 proof scripts that show each Ruby behavior on the installed Ruby.
+- `references/rails.md`, which names the Rails method to use (37signals first, the Rails guides for facts, another method only when the project asks) and the traps that the guides document.
+- `references/design-rules.md`, which carries the size limits, the no-comments rule, and the idioms worth keeping.
+- Replaces the plain Ruby skills `ruby` and `sandi-metz-rules` from superpowers-ruby, and corrects their advice to use `fail`.
 
 ## ruby-quality-checking
 
