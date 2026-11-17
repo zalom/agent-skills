@@ -8,7 +8,15 @@ class SkillComplianceTest < Minitest::Test
                        "`SKILL_DIR` is the absolute path of that directory; find it before running a script. Run a " \
                        "script by its full path, `SKILL_DIR/scripts/...`, and read its real output. Never predict " \
                        "or invent what a script prints."
-  SKILLS = { "ruby-testing" => TESTING_SKILL_ROOT, "ruby-quality-checking" => QUALITY_SKILL_ROOT, "c4-model-diagramming" => C4_SKILL_ROOT, "report-writing" => REPORT_SKILL_ROOT }.freeze
+  SKILLS = {
+    "ruby-programming" => PROGRAMMING_SKILL_ROOT,
+    "simple-architecture-designing" => ARCHITECTURE_SKILL_ROOT,
+    "database-designing" => DATABASE_SKILL_ROOT,
+    "ruby-testing" => TESTING_SKILL_ROOT,
+    "ruby-quality-checking" => QUALITY_SKILL_ROOT,
+    "c4-model-diagramming" => C4_SKILL_ROOT,
+    "report-writing" => REPORT_SKILL_ROOT
+  }.freeze
   QUALITY_STACK_NAMES = %w[setup-project bin/verify-change .mutineer.yml bin/crap].freeze
 
   MOCK_BAN_PATTERN = /stub only at|at (a |true )?boundar(y|ies)|(pass|prefer) real objects|couples the test|fixtures over factories/i
@@ -96,6 +104,50 @@ class SkillComplianceTest < Minitest::Test
           assert File.exist?(File.join(root, "references", bare)), "#{name} #{file}: #{bare} does not resolve inside #{name}/references"
         end
       end
+    end
+  end
+
+  def test_one_ruby_skill_holds_both_writing_and_designing
+    marketplace = File.read(File.expand_path("../.claude-plugin/marketplace.json", __dir__))
+    %w[ruby-writing ruby-designing].each do |retired|
+      refute File.exist?(File.expand_path("../#{retired}", __dir__)), retired
+      refute_includes marketplace, %Q{"#{retired}"}, retired
+    end
+  end
+
+  def test_the_base_skill_opens_with_how_to_approach_the_work
+    content = File.read(File.join(ARCHITECTURE_SKILL_ROOT, "SKILL.md"))
+    assert_operator content.index("## How to approach the work"), :<, content.index("## Rules")
+  end
+
+  def test_the_specific_skills_start_from_the_base_skill
+    [PROGRAMMING_SKILL_ROOT, DATABASE_SKILL_ROOT].each do |root|
+      assert_includes File.read(File.join(root, "SKILL.md")), "simple-architecture-designing", root
+    end
+  end
+
+  def test_every_proof_script_is_named_by_a_reference
+    references = markdown_files(PROGRAMMING_SKILL_ROOT).map { |file| File.read(file) }.join
+    Dir.children(File.join(PROGRAMMING_SKILL_ROOT, "scripts")).each do |script|
+      assert_includes references, "scripts/#{script}", script
+    end
+  end
+
+  def test_the_base_skills_name_no_database_engine
+    [ARCHITECTURE_SKILL_ROOT, DATABASE_SKILL_ROOT].each do |root|
+      markdown_files(root).each { |file| refute_match(/sqlite|postgres|mysql|mongo|redis|dynamo/i, File.read(file), file) }
+    end
+  end
+
+  def test_the_general_skills_name_no_programming_language
+    [ARCHITECTURE_SKILL_ROOT, DATABASE_SKILL_ROOT].each do |root|
+      markdown_files(root).each { |file| refute_match(/\b(ruby|rails|python|javascript|typescript|java|golang|rust)\b/i, File.read(file), file) }
+    end
+  end
+
+  def test_the_design_skills_route_data_work_to_database_designing
+    [PROGRAMMING_SKILL_ROOT, ARCHITECTURE_SKILL_ROOT].each do |root|
+      assert_includes File.read(File.join(root, "SKILL.md")), "database-designing", root
     end
   end
 

@@ -1,0 +1,48 @@
+# Design rules: simple code that is easy to change
+
+Proof script: `scripts/21_injected_collaborators.rb`. The size limits are a judgment from Sandi Metz's rules, not a Ruby behavior, so no script proves them.
+
+## The order of concerns
+
+1. Make it right: the traps in `SKILL.md`.
+2. Make it small: the limits below.
+3. Make it plain: no clever construct where a plain method does the job.
+
+Speed comes last, and only with a measurement.
+
+## Size limits
+
+These are Sandi Metz's rules. Break one only with a reason that can be said in one sentence.
+
+- A class holds 100 lines or fewer.
+- A method holds five lines or fewer.
+- A method takes four parameters or fewer. Keys of an options hash count.
+- A Rails controller action creates one object, and the view reads one instance variable.
+
+A method that needs a comment to explain a step is two methods. Give the step a name and the comment goes away.
+
+## Comments
+
+Keep only the lines that Ruby reads, such as `# frozen_string_literal: true`, and a `# rubocop:disable` line with its reason when a rule must be turned off for one line. A block of prose above a class is a sign that the class name is wrong or that the class does two jobs.
+
+## Where a responsibility belongs
+
+- Ask what the object knows and what it is asked to do. A method that uses only its arguments and none of the object's state belongs somewhere else. Reek reports this as `UtilityFunction`.
+- Call a method once and keep the result in a local variable, when the same call appears twice in one method. Reek reports this as `DuplicateMethodCall`.
+- Never read `ENV` or `Dir.home` deep inside the code. The entry point reads them and passes the values down.
+- Depend on a message, not on a class. A caller that needs `call` takes anything that answers `call`, a lambda included.
+- Prefer a plain object with two methods to a module that is mixed in. Use inheritance for a real "is a" with a shared, stable base, and declare its hooks as `references/visibility.md` shows.
+
+## Idioms worth keeping
+
+- Guard clauses at the top of a method in place of nested conditions.
+- `fetch` for a key that must exist: `config.fetch(:api_key)` raises `KeyError` with the key's name.
+- `filter_map`, `tally`, `sum`, `each_with_object`, and `to_h` with a block, before a hand-written loop.
+- A domain error base class per library, with specific errors below it. `references/exceptions.md` says when to raise one and when to return a value.
+
+## Tools that help, and their limits
+
+- The linter is a safety net for known faults. It does not catch the rules in `SKILL.md`.
+- Reek finds design smells that the linter misses. Fix each one in the design, as `references/design-fixes.md` shows. Turn off only `IrresponsibleModule`: it asks for a comment on every class, which breaks the comments rule.
+- The Ruby LSP answers "where is this defined" and "who calls this", also inside gems. Use it before a text search.
+- Skip type checkers and package boundary tools until the project has the problem that they solve.

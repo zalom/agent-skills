@@ -1,0 +1,41 @@
+{
+  "skill_name": "simple-architecture-designing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A team rule from two years ago says we never use the framework's built-in job queue, so we wrote our own scheduler with a retry table, a lock column and a cleanup job. The built-in queue now has retries and locking. Which design should we keep?",
+      "expected_output": "Treats the old rule as an input to challenge, compares both designs on fit and complexity, and recommends the built-in queue because it removes the scheduler, the retry table, the lock column and the cleanup job.",
+      "files": [],
+      "assertions": [
+        "Challenges the old rule instead of treating it as a constraint",
+        "Compares the options on fit and complexity before choosing",
+        "Recommends the built-in queue and names what it removes",
+        "Checks that the built-in queue covers the needs before replacing the custom one"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The architecture tool says most of our modules form one dependency cycle. The domain and storage packages raise error classes defined in the command line package, and the root file both defines shared helpers and requires every package. Where do we start?",
+      "expected_output": "Finds the upward edges: moves the error types down into a kernel or the lower layer, separates the shared kernel from the composition root, and keeps dependencies pointing downward; does not propose one big rewrite.",
+      "files": [],
+      "assertions": [
+        "Identifies the error classes as an upward dependency from inner layers to the command line layer",
+        "Moves the shared types into a lower kernel package",
+        "Separates the root file's kernel role from its composition role",
+        "States that layers depend downward only"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to add a plugin system, a config option for each future format, and an abstract base class for exporters. Right now we export one format, CSV.",
+      "expected_output": "Advises against the speculative design: one CSV exporter today, no plugin system or options without a production caller, and an abstraction only at the third real use.",
+      "files": [],
+      "assertions": [
+        "Recommends the single exporter that fits today",
+        "Names the plugin system and the options as speculative generality",
+        "Says to extract an abstraction only at its third use",
+        "Says what the proposed design would add in complexity"
+      ]
+    }
+  ]
+}

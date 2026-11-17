@@ -1,0 +1,53 @@
+{
+  "skill_name": "database-designing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We archive old orders from our main database file into a second database file. The script reads each order into memory, inserts it into the archive one row at a time in a loop, and deletes it from the main file afterward. It takes an hour. Can you review it?",
+      "expected_output": "Replaces the row loop with one set-based insert-from-select, and a delete of the same rows, inside one transaction over both databases, without passing rows through application code. Notes that atomicity across two database files depends on the engine and its journal mode, and says to check the engine's documentation.",
+      "files": [],
+      "assertions": [
+        "Replaces the per-row loop with one set-based statement",
+        "Does not pass the rows through application code",
+        "Puts the copy and the delete in one transaction",
+        "Says to check what a transaction guarantees across two database files for the engine in use"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our app stores users, orders and sessions in a relational database that handles our load well. A teammate wants to add a key-value cache and a document store for orders because they are the usual choice. Should we?",
+      "expected_output": "Advises staying with the relational database, because no named access pattern fails on it. Says a second store must earn its place, and names its costs: no transaction across stores, a second backup, and code that keeps the copies in step. If a cache is added later, every key expires and the source of truth stays the database.",
+      "files": [],
+      "assertions": [
+        "Recommends starting and staying relational while no measured access pattern fails",
+        "Names the cost of a second store, such as no cross-store transaction or extra operations",
+        "Says the source of truth is named and other copies are rebuildable",
+        "Says a cache key needs an expiry if one is added later"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We want to rename the column orders.total to orders.total_cents on a table that serves live traffic, with several app servers deployed one at a time. The plan is one migration that renames the column and a deploy of the new code right after.",
+      "expected_output": "Rejects the single rename and proposes expand, migrate, contract over three releases: add total_cents, write both columns and backfill in batches with a set-based statement, move readers, then drop total in a later release. The migration uses the query language only and is named by its purpose.",
+      "files": [],
+      "assertions": [
+        "Explains that a direct rename breaks the servers still running the old code",
+        "Splits the change into expand, migrate and contract",
+        "Backfills with a set-based statement, in batches, outside the schema change",
+        "Drops the old column only in a later release, after nothing reads it"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Our test suite for the data layer replaces the database with an in-memory fake, and there is one test file per migration that checks the table after it runs. Is that a good setup?",
+      "expected_output": "Advises testing on the real engine and version used in production, wrapping each test in a transaction or using a fresh database, testing the migrator once with small fixture migrations, one test that migrates an empty database and compares it with the schema snapshot, and no test per migration.",
+      "files": [],
+      "assertions": [
+        "Replaces the fake with the real engine and version",
+        "Isolates tests with a rolled-back transaction or a fresh database",
+        "Removes the test per migration",
+        "Keeps one test that migrates an empty database and compares the schema with the snapshot"
+      ]
+    }
+  ]
+}

@@ -45,6 +45,41 @@ All notable changes to the skills in this repository, one section per skill. The
 - A router over the notation and six diagram references: system context, container, component, system landscape, dynamic, and deployment, each with its scope, elements, audience, the keys it uses, an example, and layout advice.
 - `scripts/c4.rb`, which draws every C4 shape, relationship, boundary, step marker, and key as standalone SVG <!-- lint-ok: shorthand; C4 is the name of the model --> with the palette as CSS tokens and a dark set, and `scripts/build.rb`, which writes the 17 key elements and the six examples into `references/`.
 - A Minitest suite that rebuilds the set, checks every SVG is well formed and labeled, and fails when a committed SVG is stale.
+## simple-architecture-designing
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill: a section on how to approach the work, nine principles from Judo, Ikigai, Stoicism, minimalism, and the Muslim virtues of trust, endurance, excellence, obedience, and moderation, each turned into an engineering habit. Then 12 rules for the least complexity in any language, from comparing options on fit and complexity to fixing a smell where it is found. `ruby-programming` and `database-designing` both start from it.
+- `references/dependencies.md`: where a dependency points, how to break a cycle, coupling from weakest to strongest, and a route to `database-designing` for data.
+- `references/testing.md`: what to test for each kind of message, real collaborators first, the test layers, and repository guards kept apart from behavior tests.
+- Three evals: an old rule that keeps a custom job scheduler, a large dependency cycle, and a speculative plugin system.
+
+## database-designing
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill: 15 rules for the least complexity in data storage: constraints in the schema, third normal form then stop, set-based statements, one transaction instead of an outbox, expand-migrate-contract, tests on the real engine, and a second store only when it earns its place.
+- `references/modeling.md`, `references/queries-and-transactions.md`, `references/migrations.md`, `references/testing-databases.md` and `references/choosing-a-store.md`: each rule on one line, with its sources.
+- Four evals: a row loop between two database files, a second store the relational database already covers, a column rename on a live table, and a data-layer test setup with fakes.
+
+## ruby-programming
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill, rebuilt from `ruby-writing` with `ruby-designing` merged in. Neither was released, so nothing installed changes name. It opens from `simple-architecture-designing` and states each rule once, grouped as objects, hooks and visibility, errors, files and processes, idioms, and data and smells.
+- One size rule: Sandi Metz's limits, as the Ruby measure of the smallest design that fits.
+- One error rule: raise a named error when the caller cannot go on, and return a value only for an outcome the caller handles as a normal branch. `references/exceptions.md` shows both.
+- `references/design-rules.md` and `references/design-fixes.md`, from `ruby-designing`: size limits, where a responsibility belongs, and the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop, and code only tests call.
+- `scripts/20_require_cycle.rb` and `scripts/21_injected_collaborators.rb`, which prove the design rules that rest on Ruby behavior.
+- A trust mark on each rule of `references/rails.md`: quoted from a named Rails guide, or a judgment with its source.
+- 13 evals: the 10 from `ruby-writing` and the 3 from `ruby-designing`.
+- Replaces the plain Ruby skills `ruby` and `sandi-metz-rules` from superpowers-ruby, and corrects their advice to use `fail`.
 
 ## ruby-quality-checking
 
