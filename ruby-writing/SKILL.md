@@ -10,7 +10,7 @@ description: >
   exit status; globbing files; or moving code to Ruby 3.4 or 4.0. Also use
   when a reviewer keeps sending Ruby code back, or when code passes RuboCop
   and still reads wrong. For Rails code, this skill routes to the Rails method
-  to use. For tests use ruby-testing. For lint, coverage, mutation, and CRAP
+  to use. For design and structure use ruby-designing. For tests use ruby-testing. For lint, coverage, mutation, and CRAP
   use ruby-quality-checking.
 license: MIT
 compatibility: Needs Ruby 3.2 or newer to run the proof scripts. The rules hold from Ruby 3.0.
@@ -56,7 +56,7 @@ Paths in this file start at the skill directory, the directory that holds this `
 | Memoizing a value, or sharing state between threads or Ractors | Read `references/memoization-and-threads.md`. |
 | Writing for Ruby 3.4 or 4.0, or following advice written for an older Ruby | Read `references/ruby-4-changes.md`. |
 | Parsing command-line options | Read `references/option-parser.md`. |
-| Deciding how large a class or a method may grow, or where a responsibility belongs | Read `references/design-rules.md`. |
+| Deciding how large a class or a method may grow, where a responsibility belongs, or how objects and files depend on each other | Use the `ruby-designing` skill. |
 | The code is in a Rails application | Read `references/rails.md` first. It names the Rails method to use and the traps that the guides document. |
 | A rule here is doubted, or a Ruby upgrade may have changed it | Run the matching script: `ruby SKILL_DIR/scripts/NN_name.rb`. Each reference names its script. |
 | Someone asks where a rule comes from | Read `references/sources.md`. |

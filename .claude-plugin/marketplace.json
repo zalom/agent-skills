@@ -131,6 +131,34 @@
       "license": "MIT",
       "keywords": ["ruby", "rails", "writing", "idioms", "exceptions", "visibility", "value-objects", "design", "37signals"],
       "category": "development"
+    },
+    {
+      "name": "simple-architecture-designing",
+      "source": "./simple-architecture-designing",
+      "strict": false,
+      "description": "Designs code and application architecture in any language for the least complexity: the simplest design that fits, dependencies that point one way, and the platform features before custom code.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["architecture", "design", "dependencies", "simplicity", "layers", "testing"],
+      "category": "development"
+    },
+    {
+      "name": "ruby-designing",
+      "source": "./ruby-designing",
+      "strict": false,
+      "description": "Designs Ruby code for the least complexity: small objects that receive their collaborators, requires that point one way, plain SQL for data, and tests of public behavior.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Zlatko Alomerovic",
+        "url": "https://github.com/zalom"
+      },
+      "license": "MIT",
+      "keywords": ["ruby", "design", "dependencies", "reek", "sqlite", "migrations"],
+      "category": "development"
     }
   ]
 }

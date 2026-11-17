@@ -1,0 +1,41 @@
+{
+  "skill_name": "ruby-designing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This migration moves the intents table from work.db to knowledge.db. It opens both files, reads every row of work.intents in Ruby, inserts each into knowledge.intents, compares a digest of both tables, then drops the old one. The class is called SchemaStore4. Can you review it?",
+      "expected_output": "Recommends one connection with knowledge.db attached and INSERT INTO knowledge.intents SELECT * FROM main.intents plus DROP TABLE in one transaction, ATTACH before BEGIN, and a name that says what the migration does.",
+      "files": [],
+      "assertions": [
+        "Replaces the Ruby row loop with ATTACH and INSERT ... SELECT in one transaction",
+        "Says ATTACH runs before the transaction begins",
+        "Renames SchemaStore4 after what it does, without a sequence number",
+        "Does not keep the digest compare as part of the migration"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Reek reports FeatureEnvy, DataClump and ControlParameter on our Report class, and the team wants to add the three smells to .reek.yml so the build goes green. Is that fine?",
+      "expected_output": "Declines to silence the smells and gives the design fix for each: move the envious method to the object whose data it uses, make the clump one Data.define value, split the flag into two methods or pass a role object.",
+      "files": [],
+      "assertions": [
+        "Advises against adding the smells to .reek.yml",
+        "Gives a design fix for FeatureEnvy that moves the method",
+        "Gives Data.define or a value object for the data clump",
+        "Gives two methods or a role object for the control parameter"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our store class keeps its SQLite connection in a class instance variable, calls Time.now inside save, and has a reset! method that only the tests call. How would you restructure it?",
+      "expected_output": "Makes the store an instance that receives its database and clock as keyword arguments with production defaults, reads the time from the injected clock, and deletes reset! because each test builds its own instance.",
+      "files": [],
+      "assertions": [
+        "Moves the connection into an instance created with initialize",
+        "Injects the clock as a keyword argument with a production default",
+        "Removes reset! as code only tests call",
+        "Tests replace dependencies through the constructor, not send or instance_variable_set"
+      ]
+    }
+  ]
+}

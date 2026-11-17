@@ -45,6 +45,28 @@ All notable changes to the skills in this repository, one section per skill. The
 - A router over the notation and six diagram references: system context, container, component, system landscape, dynamic, and deployment, each with its scope, elements, audience, the keys it uses, an example, and layout advice.
 - `scripts/c4.rb`, which draws every C4 shape, relationship, boundary, step marker, and key as standalone SVG <!-- lint-ok: shorthand; C4 is the name of the model --> with the palette as CSS tokens and a dark set, and `scripts/build.rb`, which writes the 17 key elements and the six examples into `references/`.
 - A Minitest suite that rebuilds the set, checks every SVG is well formed and labeled, and fails when a committed SVG is stale.
+## simple-architecture-designing
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill: 11 rules for the least complexity in any language, from comparing options on fit and complexity to fixing a smell where it is found.
+- `references/dependencies.md`: where a dependency points, how to break a cycle, coupling from weakest to strongest, data moved in SQL, and migrations named by purpose.
+- `references/testing.md`: what to test for each kind of message, real collaborators first, the test layers, and how to test migrations.
+- Three evals: an old rule that forces a complex design, a large dependency cycle, and a speculative plugin system.
+
+## ruby-designing
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill: nine Ruby rules on injected collaborators, instances over class singletons, requires that point down, value results, SQL-only migrations, and tests through public methods.
+- `references/design.md`: the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop between SQLite files, and code only tests call.
+- `references/design-rules.md`, moved from `ruby-writing`: the size limits, the no-comments rule, where a responsibility belongs, and the idioms worth keeping.
+- Three evals: a migration that loops over rows, Reek smells to silence, and a store with a class-level connection.
+
 ## ruby-writing
 
 ### [0.1.0] - 2026-09-20
@@ -53,7 +75,7 @@ All notable changes to the skills in this repository, one section per skill. The
 
 - The skill: 14 rules that no linter catches, 14 references routed by task, and 19 proof scripts that show each Ruby behavior on the installed Ruby.
 - `references/rails.md`, which names the Rails method to use (37signals first, the Rails guides for facts, another method only when the project asks) and the traps that the guides document.
-- `references/design-rules.md`, which carries the size limits, the no-comments rule, and the idioms worth keeping.
+- A route to `ruby-designing` for size limits, where a responsibility belongs, and how objects depend on each other.
 - Replaces the plain Ruby skills `ruby` and `sandi-metz-rules` from superpowers-ruby, and corrects their advice to use `fail`.
 
 ## ruby-quality-checking

@@ -10,6 +10,8 @@ class SkillComplianceTest < Minitest::Test
                        "or invent what a script prints."
   SKILLS = {
     "ruby-writing" => WRITING_SKILL_ROOT,
+    "ruby-designing" => DESIGNING_SKILL_ROOT,
+    "simple-architecture-designing" => ARCHITECTURE_SKILL_ROOT,
     "ruby-testing" => TESTING_SKILL_ROOT,
     "ruby-quality-checking" => QUALITY_SKILL_ROOT,
     "c4-model-diagramming" => C4_SKILL_ROOT,
@@ -105,7 +107,19 @@ class SkillComplianceTest < Minitest::Test
     end
   end
 
-  private
+def test_no_ruby_rule_file_lives_in_two_ruby_skills
+  writing = Dir.children(File.join(WRITING_SKILL_ROOT, "references"))
+  designing = Dir.children(File.join(DESIGNING_SKILL_ROOT, "references"))
+  assert_empty writing & designing
+  refute_includes writing, "design-rules.md"
+end
+
+def test_the_ruby_writing_and_designing_skills_route_to_each_other
+  assert_includes File.read(File.join(WRITING_SKILL_ROOT, "SKILL.md")), "ruby-designing"
+  assert_includes File.read(File.join(DESIGNING_SKILL_ROOT, "SKILL.md")), "ruby-writing"
+end
+
+private
 
   def read_frontmatter(skill_md_path)
     content = File.read(skill_md_path)

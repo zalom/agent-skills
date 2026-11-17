@@ -2,7 +2,7 @@
 
 ## The order of concerns
 
-1. Make it right: the traps in `SKILL.md` and these references.
+1. Make it right: the traps in the `ruby-writing` skill.
 2. Make it small: the limits below.
 3. Make it plain: no clever construct where a plain method does the job.
 
@@ -29,20 +29,20 @@ Code carries itself through names and small methods. The commit message and the 
 - Call a method once and keep the result in a local variable, when the same call appears twice in one method. Reek reports this as `DuplicateMethodCall`.
 - Pass collaborators in. Give IO, `ENV`, the clock, the home directory, and other objects as constructor or method arguments with real defaults. A test then passes its own. Never read `ENV` or `Dir.home` deep inside the code.
 - Depend on a message, not on a class. A caller that needs `call` takes anything that answers `call`.
-- Prefer a plain object with two methods to a module that is mixed in. Use inheritance for a real "is a" with a shared, stable base. Declare its hooks, as `references/visibility.md` shows.
+- Prefer a plain object with two methods to a module that is mixed in. Use inheritance for a real "is a" with a shared, stable base. Declare its hooks, as the visibility page of the `ruby-writing` skill shows.
 
 ## Idioms worth keeping
 
 - Guard clauses at the top of a method in place of nested conditions.
 - `fetch` for a key that must exist: `config.fetch(:api_key)` raises `KeyError` with the key's name.
-- `Data.define` for a value. See `references/values-and-equality.md`.
+- `Data.define` for a value. The values page of the `ruby-writing` skill covers equality.
 - `filter_map`, `tally`, `sum`, `each_with_object`, and `to_h` with a block, before a hand-written loop.
 - A domain error base class per library, `class Error < StandardError; end`, with specific errors below it. Rescue the narrowest one that the code can handle.
 - For a failure that is an expected outcome, such as a declined payment, return a value that says so. Keep exceptions for the unexpected.
 
 ## Tools that help, and their limits
 
-- The linter is a safety net for known faults. It does not catch the rules in `SKILL.md`.
-- Reek finds design smells that the linter misses. Read it as a report. As a gate it demands a comment on every class, which breaks the no-comments rule; turn off `IrresponsibleModule` when it runs.
+- The linter is a safety net for known faults. It does not catch the rules in `SKILL.md` or in the `ruby-writing` skill.
+- Reek finds design smells that the linter misses. Fix each one in the design, as `references/design.md` shows. Turn off only `IrresponsibleModule`: it asks for a comment on every class, which breaks the no-comments rule.
 - The Ruby LSP answers "where is this defined" and "who calls this", also inside gems. Use it before a text search.
 - Skip type checkers and package boundary tools until the project has the problem that they solve.
