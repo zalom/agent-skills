@@ -3,14 +3,14 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "This migration moves the intents table from work.db to knowledge.db. It opens both files, reads every row of work.intents in Ruby, inserts each into knowledge.intents, compares a digest of both tables, then drops the old one. The class is called SchemaStore4. Can you review it?",
-      "expected_output": "Recommends one connection with knowledge.db attached and INSERT INTO knowledge.intents SELECT * FROM main.intents plus DROP TABLE in one transaction, ATTACH before BEGIN, and a name that says what the migration does.",
+      "prompt": "This data migration, Migration0042, loads every account through the Account model, sets each one's plan to free when its trial has ended, and saves it. A digest check after the loop compares the counts. Can you review it?",
+      "expected_output": "Replaces the per-row loop with one set-based UPDATE in one transaction, keeps application models out of the migration, drops the digest check, and renames the migration after what it does.",
       "files": [],
       "assertions": [
-        "Replaces the Ruby row loop with ATTACH and INSERT ... SELECT in one transaction",
-        "Says ATTACH runs before the transaction begins",
-        "Renames SchemaStore4 after what it does, without a sequence number",
-        "Does not keep the digest compare as part of the migration"
+        "Replaces the Ruby loop with one set-based statement",
+        "Says the migration must not load application models",
+        "Renames Migration0042 after what it does",
+        "Does not keep the count check as part of the migration"
       ]
     },
     {
@@ -27,7 +27,7 @@
     },
     {
       "id": 3,
-      "prompt": "Our store class keeps its SQLite connection in a class instance variable, calls Time.now inside save, and has a reset! method that only the tests call. How would you restructure it?",
+      "prompt": "Our store class keeps its database connection in a class instance variable, calls Time.now inside save, and has a reset! method that only the tests call. How would you restructure it?",
       "expected_output": "Makes the store an instance that receives its database and clock as keyword arguments with production defaults, reads the time from the injected clock, and deletes reset! because each test builds its own instance.",
       "files": [],
       "assertions": [

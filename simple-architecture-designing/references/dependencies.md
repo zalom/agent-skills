@@ -6,7 +6,7 @@ A dependency is a promise that one part changes when another does. Keep few of t
 
 - Layers depend downward only: the shell (command line, web, hooks) on the use cases, the use cases on the domain and storage. A lower layer never names a type from a higher one (Robert Martin, acyclic and stable dependencies).
 - The shared core depends on nothing above it. A package that everything uses must also be the one that changes least.
-- The core never names an extension. Extensions depend on the core and load by name (Sequel and Roda plugins).
+- The core never names an extension. Extensions depend on the core and load by name.
 - A file loads only what it uses at load time, from its own layer or below.
 
 ## Break a cycle
@@ -44,18 +44,9 @@ Jim Weirich's connascence: two pieces of code are connascent when changing one f
 - A variant that combines with another variant is an injected role, not a subclass.
 - Extract an abstraction at its third use, and only with a clear name. A shared method that grew a flag per caller goes back inline (Sandi Metz, "The Wrong Abstraction").
 
-## Data stays in the database
+## Data and migrations
 
-- Rows that stay in the database move with one set-based statement in one transaction: `INSERT ... SELECT`, `UPDATE ... FROM`. In SQLite, `ATTACH` brings a second file onto the same connection, and in rollback journal mode one transaction over attached files is atomic.
-- A whole-database copy uses the engine's copy (`VACUUM INTO`, the backup API), never a row loop.
-- A row loop in code is only for a change the query language cannot express. It then runs in one explicit transaction with one prepared statement.
-- In SQLite's WAL mode a transaction over attached files is atomic per file only. Choose the journal mode before relying on cross-file atomicity.
-
-## Migrations
-
-- Name a migration after what it does, with its version as a prefix only. A number alone says nothing.
-- A migration uses the query language only and never loads application code, so later code changes cannot break it.
-- Migrations that no released database has run can still be folded into one before the release. After the release, a landed migration never changes; a schema snapshot builds a new database.
+Data work belongs to the database. Rows move with set-based statements in one transaction, never with a loop in application code, and a migration is named after what it does. The `database-designing` skill holds the rules for schemas, queries, transactions and migrations.
 
 ## Fewest elements
 
@@ -63,4 +54,4 @@ Kent Beck's four rules, in order: passes the tests, reveals intention, no duplic
 
 ## Sources
 
-Sandi Metz, *Practical Object-Oriented Design* (chapters 3, 4 and 6), "Nothing is Something" and "The Wrong Abstraction". Jim Weirich, "The Grand Unified Theory of Software Design" and "Connascence Examined". Kent Beck's rules of simple design. Gary Bernhardt, "Boundaries". Robert Martin's package principles. Martin Fowler, *Refactoring*. The code of Sequel, Roda, Rack, Hanami, dry-system, Rake, Minitest, Bundler and Rails. The SQLite documentation on `ATTACH`, WAL and `VACUUM INTO`.
+Sandi Metz, *Practical Object-Oriented Design* (chapters 3, 4 and 6), "Nothing is Something" and "The Wrong Abstraction". Jim Weirich, "The Grand Unified Theory of Software Design" and "Connascence Examined". Kent Beck's rules of simple design. Gary Bernhardt, "Boundaries". Robert Martin's package principles. Martin Fowler, *Refactoring*.

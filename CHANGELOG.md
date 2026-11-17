@@ -52,9 +52,19 @@ All notable changes to the skills in this repository, one section per skill. The
 #### Added
 
 - The skill: 11 rules for the least complexity in any language, from comparing options on fit and complexity to fixing a smell where it is found.
-- `references/dependencies.md`: where a dependency points, how to break a cycle, coupling from weakest to strongest, data moved in SQL, and migrations named by purpose.
-- `references/testing.md`: what to test for each kind of message, real collaborators first, the test layers, and how to test migrations.
-- Three evals: an old rule that forces a complex design, a large dependency cycle, and a speculative plugin system.
+- `references/dependencies.md`: where a dependency points, how to break a cycle, coupling from weakest to strongest, and a route to `database-designing` for data.
+- `references/testing.md`: what to test for each kind of message, real collaborators first, the test layers, and repository guards kept apart from behavior tests.
+- Three evals: an old rule that keeps a custom job scheduler, a large dependency cycle, and a speculative plugin system.
+
+## database-designing
+
+### [0.1.0] - 2026-11-17
+
+#### Added
+
+- The skill: 15 rules for the least complexity in data storage: constraints in the schema, third normal form then stop, set-based statements, one transaction instead of an outbox, expand-migrate-contract, tests on the real engine, and a second store only when it earns its place.
+- `references/modeling.md`, `references/queries-and-transactions.md`, `references/migrations.md`, `references/testing-databases.md` and `references/choosing-a-store.md`: each rule on one line, with its sources.
+- Four evals: a row loop between two database files, a second store the relational database already covers, a column rename on a live table, and a data-layer test setup with fakes.
 
 ## ruby-designing
 
@@ -62,10 +72,10 @@ All notable changes to the skills in this repository, one section per skill. The
 
 #### Added
 
-- The skill: nine Ruby rules on injected collaborators, instances over class singletons, requires that point down, value results, SQL-only migrations, and tests through public methods.
-- `references/design.md`: the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop between SQLite files, and code only tests call.
+- The skill: nine Ruby rules on injected collaborators, instances over class singletons, requires that point down, value results, data work left to the database, and tests through public methods.
+- `references/design.md`: the design fix for each Reek smell, a require cycle, a class-level singleton, a global clock, a row loop in Ruby, and code only tests call.
 - `references/design-rules.md`, moved from `ruby-writing`: the size limits, the no-comments rule, where a responsibility belongs, and the idioms worth keeping.
-- Three evals: a migration that loops over rows, Reek smells to silence, and a store with a class-level connection.
+- Three evals: a data migration that loops over rows, Reek smells to silence, and a store with a class-level connection.
 
 ## ruby-writing
 

@@ -13,7 +13,7 @@ Each fix removes the cause. Silencing a smell in `.reek.yml` or a todo file leav
 | DuplicateMethodCall | The same call repeats in one method | Name the result once with a local or a method; when it repeats across methods, the object is missing a query |
 | NestedIterators | A loop inside a loop | Use one pipeline (`flat_map`, `group_by`, `to_h`), move the inner loop into a method of the element, or let SQL do it |
 | TooManyMethods, TooManyInstanceVariables, TooManyConstants | The class does several jobs | Extract each job into its own object, named after it |
-| UncommunicativeModuleName | The name carries a number or no meaning | Rename after what it does (`MoveIntentsToKnowledge`, not `SchemaStore4`) |
+| UncommunicativeModuleName | The name carries a number or no meaning | Rename after what it does (`AddEmailToUsers`, not `Migration4`) |
 | LongParameterList | Positional coupling | Keyword arguments, or one value object |
 
 ## A require cycle
@@ -29,7 +29,7 @@ Each fix removes the cause. Silencing a smell in `.reek.yml` or a todo file leav
 ```ruby
 # Hidden global: one connection for the whole process, and tests share it.
 class Store
-  def self.save(row) = (@db ||= SQLite3::Database.new(PATH)).execute(SQL, row)
+  def self.save(row) = (@db ||= Database.connect(URL)).execute(SQL, row)
 end
 
 # An instance that receives its collaborator.
@@ -41,23 +41,19 @@ end
 
 ## A global clock
 
-Pass `clock:` (or `now:`) into the object that stamps time, with the production default, and pass it down from the entry point. A module method such as `Plastic.now` that every layer calls is a global input: tests then stub it or read the real clock.
+Pass `clock:` (or `now:`) into the object that stamps time, with the production default, and pass it down from the entry point. A module method such as `App.now` that every layer calls is a global input: tests then stub it or read the real clock.
 
-## A row loop between SQLite files
+## A row loop in Ruby
 
 ```ruby
-# Ruby objects per row, a digest compare, a drop: many lines, many failure points.
-source.execute("SELECT * FROM intents").each { |row| target.execute(INSERT, row) }
+# One object and one write per row: slow, and a crash leaves half the rows changed.
+User.where(trial_ended: true).find_each { |user| user.update!(plan: "free") }
 
-# One statement on one connection, atomic in rollback journal mode.
-connection.execute("ATTACH DATABASE ? AS knowledge", [knowledge_path])
-connection.transaction(:immediate) do
-  connection.execute("INSERT INTO knowledge.intents SELECT * FROM main.intents")
-  connection.execute("DROP TABLE main.intents")
-end
+# One statement, one transaction, done by the database.
+User.where(trial_ended: true).update_all(plan: "free")
 ```
 
-`ATTACH` must run before `BEGIN`: SQLite refuses it inside a transaction.
+The same holds without an ORM: send one `UPDATE` or `INSERT ... SELECT`, not a loop of single-row statements. The `database-designing` skill has the rules for moving data.
 
 ## Code only tests call
 
@@ -65,4 +61,4 @@ Delete the method and the tests that call it. When the tests stood in for a real
 
 ## Sources
 
-The design and testing research of 2026-11-17: Sandi Metz, Jim Weirich, Kent Beck, Gary Bernhardt, Avdi Grimm, Martin Fowler, Reek's smell documentation, and the code of Sequel, Rake, Minitest, Hanami and Rack.
+Sandi Metz, Jim Weirich, Kent Beck, Gary Bernhardt, Avdi Grimm, Martin Fowler, Reek's smell documentation, and the code of Sequel, Rake, Minitest, Hanami and Rack.

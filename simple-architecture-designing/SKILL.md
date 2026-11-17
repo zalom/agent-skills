@@ -23,7 +23,7 @@ Do more with less. The best design is the smallest one that fits, and every line
 - Compare the options on fit and complexity before choosing. The simpler option wins unless the other one fits much better.
 - A remembered rule or ruling is an input, not a constraint. When it forces the more complex design, say so and challenge it.
 - Say early what raises complexity and what would lower it. After an agreement, keep looking for a simpler form of it.
-- Use the force already there: the database's own SQL for data, the standard library, the framework's conventions. Never loop over rows in code to do what one SQL statement does.
+- Use the force already there: the database's own set-based statements for data, the standard library, the framework's conventions. Never loop over rows in code to do what one statement does.
 - Name a thing after what it does or holds, never after its order or its history.
 - Dependencies point toward what changes less. Pass collaborators in, depend on an interface rather than a concrete class, and talk only to immediate neighbors.
 - Layers depend downward only: the shell (command line, web, hooks) on the use cases, the use cases on the domain and storage, never the reverse. Packages form no cycle.
@@ -40,4 +40,5 @@ Paths in this file start at the skill directory, the directory that holds this `
 |---|---|
 | Breaking a cycle, a layer break or a god class, or choosing where a dependency points | `references/dependencies.md` |
 | Deciding what to test, at which layer | `references/testing.md` |
-| Writing Ruby | the `ruby-designing` skill, which applies these rules to Ruby |
+| Designing a schema, a query, a transaction or a migration, or testing them | the `database-designing` skill |
+| Writing code in a language that has its own design skill | that skill, which applies these rules to the language |

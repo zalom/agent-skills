@@ -44,14 +44,7 @@ Skip what cannot really break, such as plain accessors and constructors.
 | Integration | Several real parts in-process, with the real database and files in a temporary home | One per collaboration that can break |
 | End-to-end | The real program as a subprocess, on a fresh temporary home | About one per command or option, checking only output, exit code and files on disk |
 
-Use these three names. "System" means browser tests in Rails, and "functional" meant controller tests in older Rails, so both surprise a reader.
-
-## Migrations
-
-- Test the migrator once, with tiny fixture migrations, on a real database.
-- Keep one test that migrates an empty database to the newest version and compares the schema with the expected one.
-- Write no test per migration. Rails and Sequel write none.
-- A check that landed migrations never change is one guard or a startup check, not a behavior test.
+Use these three names. Names such as "system" or "functional" mean different things in different frameworks, so they surprise a reader.
 
 ## Guards
 
@@ -59,4 +52,4 @@ A test that searches the codebase for a repository rule is lint, not behavior. K
 
 ## Sources
 
-Sandi Metz, "The Magic Tricks of Testing" (2013) and *Practical Object-Oriented Design in Ruby*, chapter 9. Kent Beck, "Test Desiderata". Gary Bernhardt, "Boundaries". Martin Fowler, "UnitTest" and "Mocks Aren't Stubs". Justin Searls, "Please don't mock me". David Heinemeier Hansson, "Test-induced design damage". The suites of Sequel, Rails, Rake, Bundler, RubyGems, Minitest and Thor.
+Sandi Metz, "The Magic Tricks of Testing" (2013) and *Practical Object-Oriented Design*, chapter 9. Kent Beck, "Test Desiderata". Gary Bernhardt, "Boundaries". Martin Fowler, "UnitTest" and "Mocks Aren't Stubs". Justin Searls, "Please don't mock me". David Heinemeier Hansson, "Test-induced design damage".

@@ -3,19 +3,19 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Our past rule says we never join two SQLite files in one connection, so we built an outbox table, a drain job and a repair check to keep two writes in step. A colleague says ATTACH would do it in one transaction. Which design should we keep?",
-      "expected_output": "Treats the remembered rule as an input to challenge, checks that the journal mode is rollback (not WAL), and recommends ATTACH with one transaction because it removes the outbox, the drain and the repair check; names the complexity the old rule added.",
+      "prompt": "A team rule from two years ago says we never use the framework's built-in job queue, so we wrote our own scheduler with a retry table, a lock column and a cleanup job. The built-in queue now has retries and locking. Which design should we keep?",
+      "expected_output": "Treats the old rule as an input to challenge, compares both designs on fit and complexity, and recommends the built-in queue because it removes the scheduler, the retry table, the lock column and the cleanup job.",
       "files": [],
       "assertions": [
         "Challenges the old rule instead of treating it as a constraint",
-        "Checks the journal mode, since WAL makes attached transactions atomic per file only",
-        "Recommends the simpler ATTACH design and names what it removes",
-        "Compares the options on fit and complexity before choosing"
+        "Compares the options on fit and complexity before choosing",
+        "Recommends the built-in queue and names what it removes",
+        "Checks that the built-in queue covers the needs before replacing the custom one"
       ]
     },
     {
       "id": 2,
-      "prompt": "The architecture tool says 49 of our modules form one dependency cycle. The domain and storage packages raise error classes defined in the command line package, and the root file both defines shared helpers and requires every package. Where do we start?",
+      "prompt": "The architecture tool says most of our modules form one dependency cycle. The domain and storage packages raise error classes defined in the command line package, and the root file both defines shared helpers and requires every package. Where do we start?",
       "expected_output": "Finds the upward edges: moves the error types down into a kernel or the lower layer, separates the shared kernel from the composition root, and keeps dependencies pointing downward; does not propose one big rewrite.",
       "files": [],
       "assertions": [

@@ -12,6 +12,7 @@ class SkillComplianceTest < Minitest::Test
     "ruby-writing" => WRITING_SKILL_ROOT,
     "ruby-designing" => DESIGNING_SKILL_ROOT,
     "simple-architecture-designing" => ARCHITECTURE_SKILL_ROOT,
+    "database-designing" => DATABASE_SKILL_ROOT,
     "ruby-testing" => TESTING_SKILL_ROOT,
     "ruby-quality-checking" => QUALITY_SKILL_ROOT,
     "c4-model-diagramming" => C4_SKILL_ROOT,
@@ -107,19 +108,37 @@ class SkillComplianceTest < Minitest::Test
     end
   end
 
-def test_no_ruby_rule_file_lives_in_two_ruby_skills
-  writing = Dir.children(File.join(WRITING_SKILL_ROOT, "references"))
-  designing = Dir.children(File.join(DESIGNING_SKILL_ROOT, "references"))
-  assert_empty writing & designing
-  refute_includes writing, "design-rules.md"
-end
+  def test_no_ruby_rule_file_lives_in_two_ruby_skills
+    writing = Dir.children(File.join(WRITING_SKILL_ROOT, "references"))
+    designing = Dir.children(File.join(DESIGNING_SKILL_ROOT, "references"))
+    assert_empty writing & designing
+    refute_includes writing, "design-rules.md"
+  end
 
-def test_the_ruby_writing_and_designing_skills_route_to_each_other
-  assert_includes File.read(File.join(WRITING_SKILL_ROOT, "SKILL.md")), "ruby-designing"
-  assert_includes File.read(File.join(DESIGNING_SKILL_ROOT, "SKILL.md")), "ruby-writing"
-end
+  def test_the_ruby_writing_and_designing_skills_route_to_each_other
+    assert_includes File.read(File.join(WRITING_SKILL_ROOT, "SKILL.md")), "ruby-designing"
+    assert_includes File.read(File.join(DESIGNING_SKILL_ROOT, "SKILL.md")), "ruby-writing"
+  end
 
-private
+  def test_the_base_skills_name_no_database_engine
+    [DESIGNING_SKILL_ROOT, ARCHITECTURE_SKILL_ROOT, DATABASE_SKILL_ROOT].each do |root|
+      markdown_files(root).each { |file| refute_match(/sqlite|postgres|mysql|mongo|redis|dynamo/i, File.read(file), file) }
+    end
+  end
+
+  def test_the_general_skills_name_no_programming_language
+    [ARCHITECTURE_SKILL_ROOT, DATABASE_SKILL_ROOT].each do |root|
+      markdown_files(root).each { |file| refute_match(/\b(ruby|rails|python|javascript|typescript|java|golang|rust)\b/i, File.read(file), file) }
+    end
+  end
+
+  def test_the_design_skills_route_data_work_to_database_designing
+    [DESIGNING_SKILL_ROOT, ARCHITECTURE_SKILL_ROOT].each do |root|
+      assert_includes File.read(File.join(root, "SKILL.md")), "database-designing", root
+    end
+  end
+
+  private
 
   def read_frontmatter(skill_md_path)
     content = File.read(skill_md_path)
